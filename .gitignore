@@ -1,0 +1,13 @@
+# PharmaSim .gitignore
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+build/
+.DS_Store
+*.log
+data/simulation_result.json

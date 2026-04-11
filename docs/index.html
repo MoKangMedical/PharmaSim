@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaSim - AI药品上市预测仿真平台</title>
+    <style>
+        :root {
+            --primary: #0066FF;
+            --primary-dark: #0052CC;
+            --accent: #00C853;
+            --bg: #FAFBFC;
+            --card: #FFFFFF;
+            --text: #1A1A2E;
+            --text-secondary: #586069;
+            --border: #E1E4E8;
+            --gradient: linear-gradient(135deg, #0066FF 0%, #00C853 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        .hero {
+            background: var(--gradient);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        
+        .hero h1 { font-size: 3rem; margin-bottom: 16px; position: relative; z-index: 1; }
+        .hero .subtitle { font-size: 1.3rem; opacity: 0.9; max-width: 700px; margin: 0 auto 30px; position: relative; z-index: 1; }
+        .hero .stats { display: flex; justify-content: center; gap: 40px; margin-top: 40px; position: relative; z-index: 1; }
+        .hero .stat { text-align: center; }
+        .hero .stat .number { font-size: 2.5rem; font-weight: 700; }
+        .hero .stat .label { font-size: 0.9rem; opacity: 0.8; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
+        
+        .section-title { font-size: 2rem; text-align: center; margin-bottom: 40px; }
+        
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 60px; }
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .feature-card .icon { font-size: 2.5rem; margin-bottom: 16px; }
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+        .feature-card p { color: var(--text-secondary); }
+        
+        .agents-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 60px; }
+        .agent-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+        }
+        .agent-card .avatar { font-size: 2rem; margin-bottom: 8px; }
+        .agent-card .name { font-weight: 600; margin-bottom: 4px; }
+        .agent-card .desc { font-size: 0.85rem; color: var(--text-secondary); }
+        
+        .simulation-demo {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+        .simulation-demo h3 { margin-bottom: 20px; }
+        .chart-placeholder {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f5e9 100%);
+            border-radius: 8px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .result-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        .result-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+        .result-item .value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .result-item .label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; }
+        
+        .cta {
+            text-align: center;
+            padding: 60px;
+            background: var(--gradient);
+            border-radius: 12px;
+            color: white;
+        }
+        .cta h2 { font-size: 2rem; margin-bottom: 16px; }
+        .cta p { margin-bottom: 24px; opacity: 0.9; }
+        .cta-btn {
+            display: inline-block;
+            padding: 14px 40px;
+            background: white;
+            color: var(--primary);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .cta-btn:hover { transform: scale(1.05); }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>💊 PharmaSim</h1>
+        <p class="subtitle">基于多智能体AI仿真的药品上市表现预测平台<br>专注医药医疗垂直领域 · 模拟真实世界决策行为</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="number">1天</div>
+                <div class="label">完成预测</div>
+            </div>
+            <div class="stat">
+                <div class="number">85%+</div>
+                <div class="label">预测准确率</div>
+            </div>
+            <div class="stat">
+                <div class="number">8</div>
+                <div class="label">专业AI Agent</div>
+            </div>
+            <div class="stat">
+                <div class="number">90%</div>
+                <div class="label">成本节省</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">核心功能</h2>
+        <div class="features">
+            <div class="feature-card">
+                <div class="icon">🔬</div>
+                <h3>药品上市模拟器</h3>
+                <p>配置药品属性，500+医生Agent和5000+患者Agent模拟上市后24个月的市场表现</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">💰</div>
+                <h3>定价策略实验室</h3>
+                <p>对比不同定价方案的市场反应，找到收入最大化的价格区间</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚔️</div>
+                <h3>竞品冲击模拟</h3>
+                <p>模拟竞品降价/上市新适应症等行为对你药品的冲击影响</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🏛️</div>
+                <h3>医保准入预测</h3>
+                <p>基于药物经济学和政策分析，预测医保谈判结果和放量曲线</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🗺️</div>
+                <h3>区域差异分析</h3>
+                <p>不同省份/城市的医保政策、经济水平和用药习惯差异化模拟</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🤖</div>
+                <h3>Second Me 集成</h3>
+                <p>A2A协议接入Second Me数字分身，让用户的AI助手参与模拟决策</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">AI Agent 矩阵</h2>
+        <div class="agents-grid">
+            <div class="agent-card">
+                <div class="avatar">📊</div>
+                <div class="name">市场分析专家</div>
+                <div class="desc">市场容量、竞争格局、定价策略</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">👨‍⚕️</div>
+                <div class="name">临床医学专家</div>
+                <div class="desc">疗效评估、安全性分析、处方意愿</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">💰</div>
+                <div class="name">药物经济学专家</div>
+                <div class="desc">成本效果、医保准入、支付策略</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">🏥</div>
+                <div class="name">患者行为分析师</div>
+                <div class="desc">就医决策、用药偏好、依从性</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">🏭</div>
+                <div class="name">渠道策略师</div>
+                <div class="desc">药房、医院、电商渠道分析</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">📋</div>
+                <div class="name">政策法规分析师</div>
+                <div class="desc">监管政策、DRG/DIP影响分析</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">🔧</div>
+                <div class="name">数据校准专家</div>
+                <div class="desc">真实数据校准、回测验证</div>
+            </div>
+            <div class="agent-card">
+                <div class="avatar">🎯</div>
+                <div class="name">模拟编排师</div>
+                <div class="desc">多Agent协调、报告生成</div>
+            </div>
+        </div>
+
+        <div class="simulation-demo">
+            <h3>📈 模拟演示 - PD-1单抗上市预测</h3>
+            <div class="chart-placeholder">
+                [处方量曲线图 - 模拟24个月月度数据]
+            </div>
+            <div class="result-summary">
+                <div class="result-item">
+                    <div class="value">第9月</div>
+                    <div class="label">峰值月份</div>
+                </div>
+                <div class="result-item">
+                    <div class="value">12,450</div>
+                    <div class="label">峰值处方量/月</div>
+                </div>
+                <div class="result-item">
+                    <div class="value">18.3亿</div>
+                    <div class="label">两年总收入</div>
+                </div>
+                <div class="result-item">
+                    <div class="value">73.2%</div>
+                    <div class="label">最终采纳率</div>
+                </div>
+                <div class="result-item">
+                    <div class="value">✅ 通过</div>
+                    <div class="label">医保准入</div>
+                </div>
+                <div class="result-item">
+                    <div class="value">¥9,750</div>
+                    <div class="label">谈判价格</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta">
+            <h2>开始你的药品上市预测</h2>
+            <p>从传统6个月缩短到1天，用AI重新定义市场预测</p>
+            <a href="https://github.com/MoKangMedical/PharmaSim" class="cta-btn">查看 GitHub 项目 →</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>PharmaSim © 2026 MoKangMedical · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a></p>
+        <p>Powered by Multi-Agent AI · Integrated with <a href="https://second.me">Second Me</a></p>
+    </footer>
+</body>
+</html>

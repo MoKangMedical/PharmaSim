@@ -1,0 +1,49 @@
+# PharmaSim 配置文件
+
+project:
+  name: PharmaSim
+  version: 1.0.0
+  description: "AI驱动的药品上市表现预测平台"
+
+# 模拟参数
+simulation:
+  default_doctors: 500
+  default_patients: 5000
+  default_months: 24
+  random_seed: 42
+
+# A2A 协议
+a2a:
+  protocol_version: "1.0"
+  base_url: "/api/a2a"
+  agents:
+    - market-analyst
+    - clinical-expert
+    - health-economist
+    - patient-advocate
+    - channel-strategist
+    - regulatory-analyst
+    - data-calibrator
+    - simulation-orchestrator
+
+# Second Me 集成
+secondme:
+  api_base: "https://api.mindverse.com/gate/lab"
+  oauth_endpoint: "https://go.second.me/oauth/authorize"
+  developer_portal: "https://develop.second.me/skill"
+  scopes:
+    - profile
+    - email
+    - shades:read
+
+# 小米 MiMo API (推理引擎)
+mimo:
+  endpoint: "https://api.xiaomimimo.com/v1"
+  model: "mimo-v2-pro"
+  reasoning_effort: high
+
+# GitHub Pages
+github_pages:
+  enabled: true
+  branch: "gh-pages"
+  source_dir: "docs"

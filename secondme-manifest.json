@@ -1,0 +1,175 @@
+{
+  "manifest_version": "2.0",
+  "app_name": "PharmaSim",
+  "app_name_zh": "药品上市预测仿真平台",
+  "app_description": "基于多智能体AI模拟的药品上市表现预测系统，专注医药医疗垂直领域，模拟医生、患者、医保、渠道行为，预测处方量、渗透率、收入等核心指标",
+  "version": "1.0.0",
+  "author": "MoKangMedical",
+  "website": "https://mokangmedical.github.io/PharmaSim",
+  
+  "a2a_protocol": {
+    "version": "1.0",
+    "discovery_endpoint": "/api/a2a/discovery",
+    "messaging_endpoint": "/api/a2a/message",
+    "task_endpoint": "/api/a2a/task",
+    "status_endpoint": "/api/a2a/status"
+  },
+
+  "agents": [
+    {
+      "id": "market-analyst",
+      "name": "市场分析专家",
+      "name_en": "Market Analyst",
+      "description": "分析药品市场容量、竞争格局、定价策略，预测上市后市场表现",
+      "avatar": "📊",
+      "skills": ["market_analysis", "competitive_intelligence", "pricing_strategy", "market_sizing"],
+      "category": "analysis",
+      "endpoint": "/api/a2a/agents/market-analyst"
+    },
+    {
+      "id": "clinical-expert",
+      "name": "临床医学专家",
+      "name_en": "Clinical Expert",
+      "description": "评估药品临床价值、疗效数据、安全性，预测医生处方意愿",
+      "avatar": "👨‍⚕️",
+      "skills": ["clinical_assessment", "efficacy_evaluation", "safety_profiling", "prescription_behavior"],
+      "category": "clinical",
+      "endpoint": "/api/a2a/agents/clinical-expert"
+    },
+    {
+      "id": "health-economist",
+      "name": "药物经济学专家",
+      "name_en": "Health Economist",
+      "description": "评估药品经济学价值、医保准入概率、支付策略",
+      "avatar": "💰",
+      "skills": ["health_economics", "reimbursement_analysis", "hta_evaluation", "cost_effectiveness"],
+      "category": "economics",
+      "endpoint": "/api/a2a/agents/health-economist"
+    },
+    {
+      "id": "patient-advocate",
+      "name": "患者行为分析师",
+      "name_en": "Patient Advocate",
+      "description": "模拟患者就医决策、用药偏好、依从性和自费意愿",
+      "avatar": "🏥",
+      "skills": ["patient_behavior", "adherence_modeling", "access_analysis", "patient_journey"],
+      "category": "behavioral",
+      "endpoint": "/api/a2a/agents/patient-advocate"
+    },
+    {
+      "id": "channel-strategist",
+      "name": "渠道策略师",
+      "name_en": "Channel Strategist",
+      "description": "模拟药房、医院、电商平台的进货和推荐行为",
+      "avatar": "🏭",
+      "skills": ["channel_strategy", "distribution_modeling", "supply_chain", "retail_analysis"],
+      "category": "commercial",
+      "endpoint": "/api/a2a/agents/channel-strategist"
+    },
+    {
+      "id": "regulatory-analyst",
+      "name": "政策法规分析师",
+      "name_en": "Regulatory Analyst",
+      "description": "分析药品监管政策、医保目录动态、DRG/DIP影响",
+      "avatar": "📋",
+      "skills": ["regulatory_analysis", "policy_monitoring", "drp_dip_impact", "compliance"],
+      "category": "policy",
+      "endpoint": "/api/a2a/agents/regulatory-analyst"
+    },
+    {
+      "id": "data-calibrator",
+      "name": "数据校准专家",
+      "name_en": "Data Calibrator",
+      "description": "用真实世界数据校准模拟参数，持续提升预测准确度",
+      "avatar": "🔧",
+      "skills": ["data_calibration", "model_validation", "backtesting", "statistical_analysis"],
+      "category": "data",
+      "endpoint": "/api/a2a/agents/data-calibrator"
+    },
+    {
+      "id": "simulation-orchestrator",
+      "name": "模拟编排师",
+      "name_en": "Simulation Orchestrator",
+      "description": "协调多Agent协作，管理模拟流程，生成综合预测报告",
+      "avatar": "🎯",
+      "skills": ["orchestration", "workflow_management", "report_generation", "scenario_planning"],
+      "category": "core",
+      "endpoint": "/api/a2a/agents/simulation-orchestrator"
+    }
+  ],
+
+  "workflows": [
+    {
+      "id": "drug-launch-simulation",
+      "name": "药品上市预测",
+      "description": "从药品属性配置到上市表现预测的完整流程",
+      "stages": ["drug_profiling", "market_analysis", "agent_simulation", "calibration", "report_generation"],
+      "estimated_duration": "1-24小时"
+    },
+    {
+      "id": "pricing-optimization",
+      "name": "定价策略优化",
+      "description": "多定价方案对比模拟",
+      "stages": ["pricing_scenarios", "market_response_simulation", "revenue_optimization"],
+      "estimated_duration": "2-4小时"
+    }
+  ],
+
+  "oauth2": {
+    "client_id": "TODO_REGISTER_IN_SECONDME",
+    "authorization_endpoint": "https://go.second.me/oauth/authorize",
+    "scopes": ["profile", "email", "shades:read"],
+    "redirect_uris": [
+      "https://mokangmedical.github.io/PharmaSim/api/auth/callback"
+    ]
+  },
+
+  "webhooks": {
+    "events": ["task.completed", "message.received", "agent.assigned", "workflow.completed"],
+    "endpoint": "/api/a2a/webhook/secondme"
+  },
+
+  "pricing": {
+    "currency": "CNY",
+    "plans": [
+      {
+        "id": "free",
+        "name": "免费体验",
+        "name_en": "Free Trial",
+        "price": 0,
+        "description": "3次/月基础模拟",
+        "features": ["基础Agent协作", "标准报告", "社区支持"]
+      },
+      {
+        "id": "pro",
+        "name": "专业版",
+        "name_en": "Pro",
+        "price": 19999,
+        "period": "month",
+        "description": "无限次模拟 + 深度报告",
+        "features": ["8个Agent无限使用", "深度报告", "API访问", "邮件支持"]
+      },
+      {
+        "id": "enterprise",
+        "name": "企业版",
+        "name_en": "Enterprise",
+        "price": 50000,
+        "period": "month",
+        "description": "私有部署 + Second Me分身",
+        "features": ["私有部署", "Second Me分身集成", "专属Agent训练", "7x24支持"]
+      }
+    ]
+  },
+
+  "stats": {
+    "total_agents": 8,
+    "total_skills": 32,
+    "supported_therapeutic_areas": ["肿瘤", "心血管", "内分泌", "免疫", "神经", "呼吸", "消化"],
+    "supported_languages": ["zh-CN", "en"]
+  },
+
+  "links": {
+    "github": "https://github.com/MoKangMedical/PharmaSim",
+    "docs": "https://mokangmedical.github.io/PharmaSim/docs"
+  }
+}
