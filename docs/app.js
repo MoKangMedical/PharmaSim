@@ -1,4 +1,9 @@
-function showPanel(a){var w=a.willingness||.5;document.getElementById("pHead").innerHTML="<b>"+a.name+"</b>";document.getElementById("pBody").innerHTML="意愿:"+(w*100).toFixed(1)+"%";document.getElementById("panel").classList.add("open")}
+/* ═══════════════════════════════════════
+   PharmaSim v3.0 — app.js
+   Complete interactive simulation engine
+   ═══════════════════════════════════════ */
+
+// ── Drug page ──
 function renderDrugs(){
   var q=document.getElementById('drugSearch').value.toLowerCase();
   var list=DRUGS;
@@ -26,12 +31,23 @@ function selectDrug(idx){
   info.innerHTML='<div style="display:flex;align-items:center;gap:1rem"><div style="font-size:2rem">💊</div><div><div style="font-size:1.1rem;font-weight:700">'+selectedDrug.name+' ('+selectedDrug.generic+')</div><div style="font-size:.85rem;color:var(--dim)">'+selectedDrug.company+' · '+selectedDrug.cat+'</div></div></div>';
   go('config');
 }
+
+// ── Navigation ──
+function go(page){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.p===page)});
+  if(page==='agents'&&!window._particlesInit)initParticles();
+}
+
+// ── Simulation ──
 function runSimulation(){
   if(!selectedDrug){alert('请先选择药品');return}
   var btn=document.querySelector('.sim-btn');
   btn.textContent='⏳ 1801 Agent仿真中...';btn.disabled=true;
   setTimeout(function(){generateResults();btn.textContent='🚀 启动1801 Agent仿真';btn.disabled=false;go('results')},1200);
 }
+
 function generateResults(){
   var d=selectedDrug;var comp=parseInt(document.getElementById('cfgCompetitors').value)||4;
   var dims=[
@@ -56,6 +72,7 @@ function generateResults(){
   document.getElementById('clusterRow').innerHTML=cl.map(function(c){var pct=((c.c/tot)*100).toFixed(1);var r=42,circ=2*Math.PI*r,off=circ*(1-c.c/tot);return '<div class="cluster-item"><div class="ci-ring" style="color:'+c.color+'"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="'+r+'" stroke="'+c.color+'20" fill="none" stroke-width="5"/><circle cx="45" cy="45" r="'+r+'" stroke="'+c.color+'" fill="none" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" style="transition:stroke-dashoffset 2s"/></svg>'+pct+'%</div><div style="color:'+c.color+';font-weight:600;font-size:.9rem">'+c.n+'</div><div style="color:var(--dim);font-size:.8rem">'+c.c+'人</div></div>'}).join('');
   drawChart(peak);
 }
+
 function showDim(i){
   var d=window._dims[i];
   document.getElementById('mHead').innerHTML='<div style="font-size:2.5rem">'+d.emoji+'</div><div><h2 style="color:'+d.color+'">'+d.name+'评估</h2><div style="color:var(--dim)">'+d.score.toFixed(3)+'</div></div>';
@@ -64,6 +81,7 @@ function showDim(i){
   b+='</div>';document.getElementById('mBody').innerHTML=b;document.getElementById('modalBg').classList.add('open');
 }
 function closeModal(){document.getElementById('modalBg').classList.remove('open')}
+
 function drawChart(peak){
   var c=document.getElementById('chartC'),ctx=c.getContext('2d'),W=c.width,H=c.height;
   var p={t:35,r:35,b:45,l:65},pw=W-p.l-p.r,ph=H-p.t-p.b;
@@ -82,72 +100,386 @@ function drawChart(peak){
   ctx.stroke();
   ms.forEach(function(d,i){var x=p.l+(i/(ms.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;ctx.beginPath();ctx.arc(x,y,3,0,6.28);ctx.fillStyle='#10b981';ctx.fill()});
 }
+
+// ═══════════════════════════════════════
+// AGENT PARTICLE SYSTEM — with connections
+// ═══════════════════════════════════════
 function initParticles(){
   window._particlesInit=true;
   var c=document.getElementById('pCanvas'),ctx=c.getContext('2d'),W,H;
   function rs(){W=c.width=c.parentElement.clientWidth;H=c.height=c.parentElement.clientHeight}rs();window.addEventListener('resize',rs);
+
+  // Seeded RNG
   var rng=function(s){return function(){s=(s*16807)%2147483647;return(s-1)/2147483646}}(42);
+
   var agents=[],N=400;
-  var sn=['王','李','张','刘','陈','赵','周','吴'],gn=['明','华','丽','伟','芳','强','静','磊'];
-  var sps=['肿瘤科','呼吸科','胸外科','消化科'],tiers=['三甲','三甲','二甲'];
-  var atts=['早期采纳者','早期多数','晚期多数'];
-  var ins=['城镇职工','城镇居民','新农合','自费'],econs=['高收入','中等收入','低收入'];
+  var sn=['王','李','张','刘','陈','赵','周','吴','孙','黄','林','杨'];
+  var gn=['明','华','丽','伟','芳','强','静','磊','红','敏','建国','秀英','志强','海燕'];
+  var sps=['肿瘤科','呼吸科','胸外科','消化科','血液科','乳腺外科','放疗科'];
+  var hosps=['协和医院','华西医院','瑞金医院','中山医院','301医院','湘雅医院','齐鲁医院','省人民医院','市第一医院','肿瘤医院'];
+  var tiers=['三甲','三甲','三甲','二甲','二甲','三乙'];
+  var atts=['早期采纳者','早期多数','晚期多数','创新者'];
+  var ins=['城镇职工','城镇职工','城镇居民','新农合','新农合','自费'];
+  var econs=['高收入','中等收入','中等收入','低收入'];
   var eN=['流行病学','临床','市场','定价','药物学','药物经济','医保'];
   var eC=['#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#eab308','#ec4899'];
+  var stances=[
+    '基于现有临床数据，该药物在疗效和安全性方面表现良好，建议纳入处方考虑范围',
+    '需要更多中国人群的RWE数据来支持临床决策，目前持观望态度',
+    '该药物的定价策略需要与医保谈判结果综合评估，疗效确切但价格偏高',
+    '从循证医学角度，推荐在特定亚组患者中优先使用',
+    '关注长期安全性数据，特别是罕见不良事件的监测结果',
+    '药物经济学分析显示ICER值在可接受范围内，支持纳入医保',
+    '考虑到仿制药竞争和带量采购政策，需要更精准的市场定位'
+  ];
+
+  // Cluster centers for agent types (for social network grouping)
+  var clusterCenters=[
+    {x:0.3,y:0.3},  // doctors
+    {x:0.5,y:0.5},  // patients
+    {x:0.7,y:0.4}   // experts
+  ];
+
   for(var i=0;i<N;i++){
-    var r=rng(),type,color,w,name,info;
+    var r=rng(),type,color,name,info,cluster;
     if(i<80){
-      type='doctor';color='#3b82f6';
+      type='doctor';color='#3b82f6';cluster=0;
       name=sn[Math.floor(rng()*sn.length)]+gn[Math.floor(rng()*gn.length)];
+      var sp=sps[Math.floor(rng()*sps.length)];
+      var hosp=hosps[Math.floor(rng()*hosps.length)];
+      var tier=tiers[Math.floor(rng()*tiers.length)];
       var att=atts[Math.floor(rng()*atts.length)];
-      w=att==='早期采纳者'?rng()*.2+.75:rng()*.2+.45;
-      info={type:'doctor',name,specialty:sps[Math.floor(rng()*sps.length)],tier:tiers[Math.floor(rng()*tiers.length)],exp:Math.floor(rng()*25)+5,attitude:att,willingness:w};
+      var w=att==='创新者'?rng()*.15+.82:att==='早期采纳者'?rng()*.2+.7:att==='早期多数'?rng()*.2+.45:rng()*.15+.25;
+      var exp=Math.floor(rng()*30)+3;
+      var patients=Math.floor(rng()*200)+20;
+      info={type:'doctor',name:name,specialty:sp,hospital:hosp,tier:tier,exp:exp,patients:patients,attitude:att,willingness:w,
+        stance:stances[Math.floor(rng()*stances.length)],
+        publications:Math.floor(rng()*50),
+        clinicalTrials:Math.floor(rng()*8)};
     }else if(i<320){
-      w=Math.max(.1,Math.min(.9,.45+rng()*.3-.1));
-      var tp=w>.65?'enthusiast':w>.4?'cautious':'skeptic';
+      cluster=1;
+      var w=Math.max(.1,Math.min(.92,.45+rng()*.3-.1));
+      var tp=w>.68?'enthusiast':w>.42?'cautious':'skeptic';
       color=tp==='enthusiast'?'#10b981':tp==='cautious'?'#f59e0b':'#ef4444';
+      type=tp==='enthusiast'?'patient_pos':tp==='cautious'?'patient_mid':'patient_neg';
       name=sn[Math.floor(rng()*sn.length)]+(rng()>.5?'先生':'女士');
-      info={type:'patient',name,age:Math.floor(rng()*50)+25,gender:rng()>.5?'男':'女',insurance:ins[Math.floor(rng()*ins.length)],econ:econs[Math.floor(rng()*econs.length)],willingness:w};
-      type=tp;
+      var age=Math.floor(rng()*50)+25;
+      var gender=rng()>.5?'男':'女';
+      var insurance=ins[Math.floor(rng()*ins.length)];
+      var econ=econs[Math.floor(rng()*econs.length)];
+      var city=['北京','上海','广州','深圳','成都','杭州','武汉','南京','重庆','西安'][Math.floor(rng()*10)];
+      var disease=selectedDrug?selectedDrug.indications[Math.floor(rng()*selectedDrug.indications.length)]:'慢性疾病';
+      info={type:'patient',name:name,age:age,gender:gender,insurance:insurance,econ:econ,city:city,
+        disease:disease,willingness:w,
+        stance:w>.68?'非常期待新药上市，愿意积极配合医生治疗方案':w>.42?'会参考医生建议和医保报销情况后再决定':'对新药持保守态度，更信任现有治疗方案',
+        monthlyIncome:econ==='高收入'?(15+Math.floor(rng()*30))+'K':econ==='中等收入'?(5+Math.floor(rng()*10))+'K':(2+Math.floor(rng()*3))+'K'};
     }else{
+      cluster=2;
       var ei=Math.floor(rng()*7);
       type='expert';color=eC[ei];
-      name=sn[Math.floor(rng()*sn.length)]+['教授','博士','研究员'][Math.floor(rng()*3)];
-      w=.5+rng()*.35;
-      info={type:'expert',expertType:eN[ei]+'专家',name,dimScore:w.toFixed(3),color:eC[ei]};
+      name=sn[Math.floor(rng()*sn.length)]+['教授','博士','研究员','主任'][Math.floor(rng()*4)];
+      var w=.5+rng()*.35;
+      var uni=['北京大学','清华大学','复旦大学','上海交大','浙江大学','中山大学','中国药科大学'][Math.floor(rng()*7)];
+      info={type:'expert',expertType:eN[ei]+'专家',name:name,dimScore:w.toFixed(3),color:eC[ei],
+        university:uni,publications:Math.floor(rng()*200)+10,hIndex:Math.floor(rng()*40)+8,
+        stance:stances[Math.floor(rng()*stances.length)],
+        grants:Math.floor(rng()*5)+1,
+        influence:['高','中','低'][Math.floor(rng()*3)]};
     }
-    var angle=rng()*Math.PI*2,dist=rng()*Math.min(W,H)*.38;
-    agents.push({x:W/2+Math.cos(angle)*dist,y:H/2+Math.sin(angle)*dist,vx:(rng()-.5)*.18,vy:(rng()-.5)*.18,r:type==='expert'?2.5:type==='doctor'?2:rng()+1,color:color,info:info,alpha:rng()*.3+.5});
+
+    // Position near cluster center with spread
+    var cc=clusterCenters[cluster];
+    var angle=rng()*Math.PI*2;
+    var dist=rng()*Math.min(W,H)*.22;
+    var cx=W*cc.x+Math.cos(angle)*dist;
+    var cy=H*cc.y+Math.sin(angle)*dist;
+    // Clamp to bounds
+    cx=Math.max(20,Math.min(W-20,cx));
+    cy=Math.max(20,Math.min(H-20,cy));
+
+    agents.push({x:cx,y:cy,vx:(rng()-.5)*.12,vy:(rng()-.5)*.12,
+      r:type==='expert'?3:type==='doctor'?2.5:rng()*1.2+1.2,
+      color:color,info:info,alpha:rng()*.3+.5,cluster:cluster,
+      connections:[]});
   }
-  var hov=null;
+
+  // Build Watts-Strogatz social network connections
+  // Each agent connects to k nearest neighbors with rewiring probability p
+  var K=4; // mean degree
+  var P_REWIRE=0.3;
+  var MAX_CONN_DIST=Math.min(W,H)*0.12; // max connection distance
+
+  for(var i=0;i<agents.length;i++){
+    // Find nearest neighbors
+    var dists=[];
+    for(var j=0;j<agents.length;j++){
+      if(i===j)continue;
+      var dx=agents[i].x-agents[j].x,dy=agents[i].y-agents[j].y;
+      var dd=Math.sqrt(dx*dx+dy*dy);
+      // Prefer same-cluster connections (stronger social ties)
+      if(agents[i].cluster===agents[j].cluster)dd*=0.6;
+      dists.push({idx:j,d:dd});
+    }
+    dists.sort(function(a,b){return a.d-b.d});
+    for(var k=0;k<K&&k<dists.length;k++){
+      var target=dists[k].idx;
+      // Rewire with probability P
+      if(rng()<P_REWIRE){
+        target=Math.floor(rng()*agents.length);
+        if(target===i)continue;
+      }
+      // Check if connection already exists
+      if(agents[i].connections.indexOf(target)<0&&agents[target].connections.indexOf(i)<0){
+        var cdx=agents[i].x-agents[target].x,cdy=agents[i].y-agents[target].y;
+        if(Math.sqrt(cdx*cdx+cdy*cdy)<MAX_CONN_DIST){
+          agents[i].connections.push(target);
+        }
+      }
+    }
+  }
+
+  // Tooltip element
+  var tooltip=document.createElement('div');
+  tooltip.style.cssText='position:fixed;pointer-events:none;background:rgba(15,23,42,.95);border:1px solid #334155;border-radius:10px;padding:.6rem .8rem;font-size:.78rem;color:#e2e8f0;z-index:300;max-width:260px;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);line-height:1.4';
+  document.body.appendChild(tooltip);
+
+  var hov=null,mouseX=0,mouseY=0;
+
+  function getAgentTooltip(a){
+    var i=a.info;
+    if(i.type==='doctor'){
+      return '<b style="color:#3b82f6">👨‍⚕️ '+i.name+'</b><br>'
+        +'<span style="color:#94a3b8">'+i.hospital+' · '+i.tier+'</span><br>'
+        +'<span style="color:#94a3b8">'+i.specialty+' · '+i.exp+'年经验</span><br>'
+        +'<span>处方意愿: <b style="color:'+(i.willingness>.65?'#10b981':i.willingness>.4?'#f59e0b':'#ef4444')+'">'+(i.willingness*100).toFixed(0)+'%</b></span>';
+    }else if(i.type==='expert'){
+      return '<b style="color:'+i.color+'">'+i.expertType+' '+i.name+'</b><br>'
+        +'<span style="color:#94a3b8">'+i.university+'</span><br>'
+        +'<span>影响力: <b>'+i.influence+'</b> · H-index: <b>'+i.hIndex+'</b></span><br>'
+        +'<span>维度评分: <b style="color:'+i.color+'">'+i.dimScore+'</b></span>';
+    }else{
+      var tc=i.willingness>.68?'#10b981':i.willingness>.42?'#f59e0b':'#ef4444';
+      return '<b style="color:'+tc+'">👤 '+i.name+'</b><br>'
+        +'<span style="color:#94a3b8">'+i.city+' · '+i.age+'岁 · '+i.gender+'</span><br>'
+        +'<span style="color:#94a3b8">'+i.insurance+' · '+i.econ+'</span><br>'
+        +'<span>采纳意愿: <b style="color:'+tc+'">'+(i.willingness*100).toFixed(0)+'%</b></span>';
+    }
+  }
+
   function draw(){
     ctx.clearRect(0,0,W,H);
-    agents.forEach(function(p,i){
-      p.x+=p.vx+Math.sin(Date.now()*.0008+p.x*.004)*.06;
-      p.y+=p.vy+Math.cos(Date.now()*.0008+p.y*.004)*.06;
-      var cx=W/2,cy=H/2,mr=Math.min(W,H)*.4;
+
+    // Draw connections first (behind dots)
+    for(var i=0;i<agents.length;i++){
+      var a=agents[i];
+      for(var ci=0;ci<a.connections.length;ci++){
+        var j=a.connections[ci];
+        var b=agents[j];
+        var dx=a.x-b.x,dy=a.y-b.y;
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        var maxD=MAX_CONN_DIST;
+        if(dist>maxD)continue;
+
+        // Opacity based on distance — closer = brighter
+        var alpha=Math.max(0.04,0.25*(1-dist/maxD));
+        // Highlight connections of hovered agent
+        if(hov===i||hov===j)alpha=Math.min(1,alpha*4);
+
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
+
+        if(hov===i||hov===j){
+          // Active connection — gradient
+          var grad=ctx.createLinearGradient(a.x,a.y,b.x,b.y);
+          grad.addColorStop(0,a.color);
+          grad.addColorStop(1,b.color);
+          ctx.strokeStyle=grad;
+          ctx.lineWidth=1.5;
+          ctx.globalAlpha=alpha;
+        }else{
+          // Dim connection
+          ctx.strokeStyle='#64748b';
+          ctx.lineWidth=0.5;
+          ctx.globalAlpha=alpha;
+        }
+        ctx.stroke();
+        ctx.globalAlpha=1;
+      }
+    }
+
+    // Draw agents
+    for(var i=0;i<agents.length;i++){
+      var p=agents[i];
+
+      // Physics: gentle movement + boundary bounce
+      p.x+=p.vx+Math.sin(Date.now()*.0006+p.x*.003+p.cluster*2)*.05;
+      p.y+=p.vy+Math.cos(Date.now()*.0006+p.y*.003+p.cluster*2)*.05;
+
+      // Soft clustering force
+      var cc=clusterCenters[p.cluster];
+      var tcx=W*cc.x,tcy=H*cc.y;
+      p.vx+=(tcx-p.x)*0.00003;
+      p.vy+=(tcy-p.y)*0.00003;
+
+      // Damping
+      p.vx*=0.998;p.vy*=0.998;
+
+      // Boundary
+      var cx=W/2,cy=H/2,mr=Math.min(W,H)*.42;
       var dx=p.x-cx,dy=p.y-cy,d=Math.sqrt(dx*dx+dy*dy);
       if(d>mr){p.x=cx+dx/d*mr;p.y=cy+dy/d*mr;p.vx*=-.3;p.vy*=-.3}
+
+      // Edge boundary
+      if(p.x<10){p.x=10;p.vx*=-.5}
+      if(p.x>W-10){p.x=W-10;p.vx*=-.5}
+      if(p.y<10){p.y=10;p.vy*=-.5}
+      if(p.y>H-10){p.y=H-10;p.vy*=-.5}
+
       var isH=hov===i;
+
+      // Glow effect for hovered
+      if(isH){
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r*6,0,6.28);
+        var glow=ctx.createRadialGradient(p.x,p.y,p.r,p.x,p.y,p.r*6);
+        glow.addColorStop(0,p.color+'40');
+        glow.addColorStop(1,p.color+'00');
+        ctx.fillStyle=glow;ctx.fill();
+      }
+
+      // Pulse ring for high-willness agents
+      if(p.info.willingness>0.75&&!isH){
+        var pulse=Math.sin(Date.now()*.003+p.x)*.5+.5;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r+2+pulse*2,0,6.28);
+        ctx.strokeStyle=p.color;ctx.globalAlpha=0.15*pulse;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;
+      }
+
+      // Main dot
       ctx.beginPath();ctx.arc(p.x,p.y,isH?p.r*3:p.r,0,6.28);
-      ctx.fillStyle=p.color;ctx.globalAlpha=isH?1:p.alpha;ctx.fill();
-      if(isH){ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.globalAlpha=.6;ctx.stroke()}
-    });
-    ctx.globalAlpha=1;requestAnimationFrame(draw);
+      ctx.fillStyle=p.color;
+      ctx.globalAlpha=isH?1:p.alpha;
+      ctx.fill();
+
+      if(isH){
+        ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.globalAlpha=.8;ctx.stroke();
+        // Label
+        ctx.globalAlpha=1;
+        ctx.font='bold 11px Inter';ctx.fillStyle='#fff';ctx.textAlign='center';
+        ctx.fillText(p.info.name,p.x,p.y-p.r*3-6);
+      }
+      ctx.globalAlpha=1;
+    }
+
+    // Stats overlay
+    ctx.font='10px Inter';ctx.fillStyle='#64748b';ctx.textAlign='right';
+    ctx.fillText('400 Agents · 华兹-斯托格茨社交网络',W-12,H-8);
+
+    requestAnimationFrame(draw);
   }
   draw();
+
+  // Mouse tracking
   c.addEventListener('mousemove',function(e){
     var rect=c.getBoundingClientRect();
-    var mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
+    mouseX=(e.clientX-rect.left)*(W/rect.width);
+    mouseY=(e.clientY-rect.top)*(H/rect.height);
     hov=null;
     for(var i=0;i<agents.length;i++){
-      var dx=agents[i].x-mx,dy=agents[i].y-my;
-      if(dx*dx+dy*dy<(agents[i].r+5)*(agents[i].r+5)){hov=i;break}
+      var dx=agents[i].x-mouseX,dy=agents[i].y-mouseY;
+      if(dx*dx+dy*dy<(agents[i].r+8)*(agents[i].r+8)){hov=i;break}
     }
     c.style.cursor=hov!==null?'pointer':'crosshair';
+
+    // Update tooltip
+    if(hov!==null){
+      tooltip.innerHTML=getAgentTooltip(agents[hov]);
+      tooltip.style.display='block';
+      // Position near cursor
+      var tx=e.clientX+15,ty=e.clientY+15;
+      if(tx+260>window.innerWidth)tx=e.clientX-270;
+      if(ty+120>window.innerHeight)ty=e.clientY-125;
+      tooltip.style.left=tx+'px';tooltip.style.top=ty+'px';
+    }else{
+      tooltip.style.display='none';
+    }
   });
+
+  c.addEventListener('mouseleave',function(){hov=null;tooltip.style.display='none'});
+
   c.addEventListener('click',function(){
-    if(hov!==null)showPanel(agents[hov].info);
+    if(hov!==null)showAgentPanel(agents[hov].info);
   });
 }
-function closePanel(){document.getElementById("panel").classList.remove("open")}initDrugPage();
+
+// ── Enhanced Agent Panel ──
+function showAgentPanel(a){
+  var head='',body='';
+  var tc=a.type==='doctor'?'#3b82f6':a.type==='expert'?a.color:(a.willingness>.68?'#10b981':a.willingness>.42?'#f59e0b':'#ef4444');
+  var icon=a.type==='doctor'?'👨‍⚕️':a.type==='expert'?'🔬':'👤';
+
+  head='<div class="ph-av" style="background:'+tc+'22;color:'+tc+'">'+icon+'</div>'
+    +'<div><div style="font-weight:700;font-size:1rem">'+a.name+'</div>'
+    +'<div style="font-size:.8rem;color:#94a3b8">'+(a.type==='doctor'?a.hospital:a.type==='expert'?a.expertType:a.city)+'</div></div>';
+
+  if(a.type==='doctor'){
+    body='<div style="margin-bottom:1rem">'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">医院</span><span>'+a.hospital+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">等级</span><span>'+a.tier+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">科室</span><span>'+a.specialty+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">从业年限</span><span>'+a.exp+'年</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">年患者量</span><span>'+a.patients+'人</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">论文发表</span><span>'+a.publications+'篇</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">临床试验</span><span>'+a.clinicalTrials+'项</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0"><span style="color:#94a3b8">创新采纳类型</span><span>'+a.attitude+'</span></div>'
+      +'</div>'
+      +'<div style="margin-bottom:1rem">'
+      +'<div style="font-size:.8rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem">📊 处方意愿</div>'
+      +'<div style="height:8px;background:#1e293b;border-radius:4px;overflow:hidden"><div style="width:'+Math.round(a.willingness*100)+'%;height:100%;background:linear-gradient(90deg,#06b6d4,#10b981);border-radius:4px;transition:width .8s"></div></div>'
+      +'<div style="text-align:right;font-size:.85rem;margin-top:.3rem;font-weight:700;color:'+tc+'">'+(a.willingness*100).toFixed(1)+'%</div>'
+      +'</div>'
+      +'<div style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);border-radius:10px;padding:.8rem;font-size:.82rem;line-height:1.6;color:#cbd5e1">'
+      +'<div style="font-size:.75rem;color:#06b6d4;margin-bottom:.3rem">💬 专家观点</div>'
+      +a.stance+'</div>';
+  }else if(a.type==='expert'){
+    body='<div style="margin-bottom:1rem">'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">专业领域</span><span>'+a.expertType+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">所属院校</span><span>'+a.university+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">论文发表</span><span>'+a.publications+'篇</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">H-index</span><span>'+a.hIndex+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">科研项目</span><span>'+a.grants+'项</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0"><span style="color:#94a3b8">行业影响力</span><span>'+a.influence+'</span></div>'
+      +'</div>'
+      +'<div style="margin-bottom:1rem">'
+      +'<div style="font-size:.8rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem">📊 维度评分</div>'
+      +'<div style="height:8px;background:#1e293b;border-radius:4px;overflow:hidden"><div style="width:'+Math.round(parseFloat(a.dimScore)*100)+'%;height:100%;background:'+a.color+';border-radius:4px;transition:width .8s"></div></div>'
+      +'<div style="text-align:right;font-size:.85rem;margin-top:.3rem;font-weight:700;color:'+a.color+'">'+a.dimScore+'</div>'
+      +'</div>'
+      +'<div style="background:'+a.color+'12;border:1px solid '+a.color+'25;border-radius:10px;padding:.8rem;font-size:.82rem;line-height:1.6;color:#cbd5e1">'
+      +'<div style="font-size:.75rem;color:'+a.color+';margin-bottom:.3rem">💬 评估观点</div>'
+      +a.stance+'</div>';
+  }else{
+    var tc2=a.willingness>.68?'#10b981':a.willingness>.42?'#f59e0b':'#ef4444';
+    body='<div style="margin-bottom:1rem">'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">年龄</span><span>'+a.age+'岁</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">性别</span><span>'+a.gender+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">城市</span><span>'+a.city+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">医保类型</span><span>'+a.insurance+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">经济水平</span><span>'+a.econ+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:#94a3b8">月收入</span><span>'+a.monthlyIncome+'</span></div>'
+      +'<div style="display:flex;justify-content:space-between;padding:.4rem 0"><span style="color:#94a3b8">适应症</span><span>'+a.disease+'</span></div>'
+      +'</div>'
+      +'<div style="margin-bottom:1rem">'
+      +'<div style="font-size:.8rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem">📊 采纳意愿</div>'
+      +'<div style="height:8px;background:#1e293b;border-radius:4px;overflow:hidden"><div style="width:'+Math.round(a.willingness*100)+'%;height:100%;background:linear-gradient(90deg,'+tc2+','+tc2+'cc);border-radius:4px;transition:width .8s"></div></div>'
+      +'<div style="text-align:right;font-size:.85rem;margin-top:.3rem;font-weight:700;color:'+tc2+'">'+(a.willingness*100).toFixed(1)+'%</div>'
+      +'</div>'
+      +'<div style="background:'+tc2+'12;border:1px solid '+tc2+'25;border-radius:10px;padding:.8rem;font-size:.82rem;line-height:1.6;color:#cbd5e1">'
+      +'<div style="font-size:.75rem;color:'+tc2+';margin-bottom:.3rem">💬 患者态度</div>'
+      +a.stance+'</div>';
+  }
+
+  document.getElementById('pHead').innerHTML=head;
+  document.getElementById('pBody').innerHTML=body;
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){document.getElementById('panel').classList.remove('open')}
