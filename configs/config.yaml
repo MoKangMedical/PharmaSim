@@ -1,29 +1,53 @@
-# PharmaSim 配置文件
+# PharmaSim 配置文件 (v2.0)
 
 project:
   name: PharmaSim
-  version: 1.0.0
-  description: "AI驱动的药品上市表现预测平台"
+  version: 2.0.0
+  description: "AI驱动的药品上市表现预测平台 - 1000 Agent多维度仿真"
 
 # 模拟参数
 simulation:
-  default_doctors: 500
-  default_patients: 5000
+  total_agents: 1000
   default_months: 24
   random_seed: 42
+  parallel_evaluation: true
+  max_workers: 8
+
+# Agent分配比例
+agent_allocation:
+  doctors: 400          # 医生Agent - 处方决策
+  patients: 200         # 患者Agent - 用药决策
+  pharmacology: 80      # 药物学专家 - 药理/毒理/药代
+  epidemiology: 80      # 流行病学专家 - 疾病负担/人群
+  pharmacoeconomics: 80 # 药物经济学专家 - ICER/成本效果
+  insurance: 40         # 医保专家 - 准入/报销/DRG
+  clinical: 40          # 临床专家 - 疗效/安全/指南
+  pricing: 40           # 定价专家 - 价格策略/价值定价
+  market: 40            # 市场专家 - 竞争/渠道/商业化
+  payer: 1              # 医保支付方
+
+# 评估维度权重
+dimension_weights:
+  临床评估: 0.25
+  药物学评估: 0.15
+  流行病学评估: 0.10
+  药物经济学评估: 0.15
+  医保评估: 0.15
+  定价评估: 0.10
+  市场评估: 0.10
 
 # A2A 协议
 a2a:
-  protocol_version: "1.0"
+  protocol_version: "2.0"
   base_url: "/api/a2a"
   agents:
-    - market-analyst
+    - pharmacology-expert
+    - epidemiology-expert
+    - pharmacoeconomics-expert
+    - insurance-expert
     - clinical-expert
-    - health-economist
-    - patient-advocate
-    - channel-strategist
-    - regulatory-analyst
-    - data-calibrator
+    - pricing-expert
+    - market-expert
     - simulation-orchestrator
 
 # Second Me 集成

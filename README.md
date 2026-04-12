@@ -1,53 +1,84 @@
-# 💊 PharmaSim
+# 💊 PharmaSim v3.0
 
-> AI驱动的药品上市表现预测仿真平台 | 专注医药医疗垂直领域
+> AI驱动的药品上市表现预测仿真平台 | 1000用户Agent社交网络交互 | 仿Aaru多智能体仿真
 
 [![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://mokangmedical.github.io/PharmaSim)
 [![A2A Protocol](https://img.shields.io/badge/Protocol-A2A-green)](https://github.com/MoKangMedical/PharmaSim)
-[![Second Me](https://img.shields.io/badge/Integration-Second%20Me-purple)](https://second.me)
+[![Agents](https://img.shields.io/badge/Agents-1801-brightgreen)](https://github.com/MoKangMedical/PharmaSim)
 
 ## 🎯 核心价值
 
 传统药品上市预测需要 **3-6个月**、花费 **50-200万**，准确率仅60-70%。
 
-PharmaSim 通过多智能体AI仿真，将预测时间缩短至 **1天**，成本降低 **90%**，准确率提升至 **85%+**。
+PharmaSim 通过 **1801个多维度AI Agent** 仿真，将预测时间缩短至 **1天**，成本降低 **90%**，准确率提升至 **85%+**。
 
-## 🤖 AI Agent 矩阵
+## 🤖 Agent矩阵 (1801个)
 
-| Agent | 角色 | 能力 |
-|-------|------|------|
-| 📊 市场分析专家 | 市场容量、竞争格局 | market_analysis, pricing_strategy |
-| 👨‍⚕️ 临床医学专家 | 疗效评估、处方行为 | clinical_assessment, efficacy_evaluation |
-| 💰 药物经济学专家 | 医保准入、成本效果 | health_economics, hta_evaluation |
-| 🏥 患者行为分析师 | 就医决策、依从性 | patient_behavior, adherence_modeling |
-| 🏭 渠道策略师 | 药房、医院、电商 | channel_strategy, distribution_modeling |
-| 📋 政策法规分析师 | DRG/DIP、监管影响 | regulatory_analysis, policy_monitoring |
-| 🔧 数据校准专家 | 真实数据校准、回测 | data_calibration, backtesting |
-| 🎯 模拟编排师 | 多Agent协调、报告 | orchestration, report_generation |
+| Agent类型 | 数量 | 职责维度 |
+|-----------|------|----------|
+| 👨‍⚕️ 医生Agent | 400 | 处方决策行为模拟 |
+| 🧑 患者Agent | 1000 | 用药决策+社交网络交互 |
+| 💊 药物学专家 | 80 | 药理/毒理/药代动力学评估 |
+| 📊 流行病学专家 | 80 | 疾病负担/人群分析 |
+| 💰 药物经济学专家 | 80 | ICER/成本效果/预算影响 |
+| 🏥 医保专家 | 40 | 准入/报销/DRG-DIP策略 |
+| 🔬 临床专家 | 40 | 疗效/安全性/指南依从 |
+| 💲 定价专家 | 40 | 价值定价/竞争定价/国际参考 |
+| 📈 市场专家 | 40 | 竞争格局/渠道/商业化策略 |
+| 🏛️ 医保支付方 | 1 | 医保局准入决策 |
+
+## 🔬 Aaru式社交网络交互
+
+仿照 [Aaru](https://aaru.com) 的多智能体仿真方法：
+
+### 社交网络拓扑
+- **Watts-Strogatz小世界网络**: 患者间通过社交关系连接
+- **KOL枢纽节点**: 医生作为意见领袖影响患者群体
+- **病友社区**: 同疾病患者形成信息社区
+- **弱连接**: 专家信息通过社交网络传播
+
+### 决策交互引擎
+1. **意见初始化**: 基于个体属性(经济/信息源/疾病阶段)产生差异化意见
+2. **影响力传播**: `影响强度 = 社交权重 × 信心差距 × 意见相似度 × 时间衰减`
+3. **外部事件冲击**: 媒体报道、KOL推荐、病友反馈、医保谈判结果
+4. **多轮协商**: 8轮迭代直至收敛
+5. **涌现行为**: 群体决策从个体交互中涌现
+
+### 权重匹配机制
+```
+个体决策 = 基础意愿 + 经济敏感度 × 价格因素 + 信息权重 × 疗效感知 
+         + 疾病阶段加成 + 依从性影响 + 品牌偏好 + 随机噪声
+
+社交协商后: 意愿 = 原意愿 × (1 - 学习率) + 邻居加权平均 × 学习率
+学习率 = max(0.08, 0.35 - 信心度 × 0.4) × 异质冲击系数
+```
 
 ## 🏗️ 项目结构
 
 ```
 PharmaSim/
-├── docs/                          # GitHub Pages 站点
-│   └── index.html                 # 项目主页
 ├── src/
-│   ├── agents/                    # AI Agent 模块
-│   │   ├── doctor_agent.py        # 医生Agent - 处方决策
-│   │   ├── patient_agent.py       # 患者Agent - 用药决策
-│   │   └── payer_agent.py         # 医保Agent - 准入评估
-│   ├── simulation/                # 模拟引擎
-│   │   └── simulation_engine.py   # 核心模拟引擎
-│   ├── a2a/                       # A2A 协议
-│   │   └── secondme_integration.py # Second Me 集成
+│   ├── agents/                    # Agent模块 (10种专业Agent)
+│   │   ├── agent_factory.py       # 1800 Agent工厂
+│   │   ├── doctor_agent.py        # 医生Agent
+│   │   ├── patient_agent.py       # 患者Agent
+│   │   ├── payer_agent.py         # 医保支付方
+│   │   ├── pharmacology_agent.py  # 药物学专家
+│   │   ├── epidemiology_agent.py  # 流行病学专家
+│   │   ├── pharmacoeconomics_agent.py  # 药物经济学专家
+│   │   ├── insurance_expert_agent.py   # 医保专家
+│   │   ├── clinical_expert_agent.py    # 临床专家
+│   │   ├── pricing_expert_agent.py     # 定价专家
+│   │   └── market_expert_agent.py      # 市场专家
+│   ├── simulation/                # 仿真引擎
+│   │   ├── simulation_engine.py   # 核心仿真引擎 v3.0
+│   │   ├── social_network.py      # 社交网络拓扑
+│   │   └── interaction_engine.py  # 决策交互引擎
 │   └── main.py                    # 主入口
+├── docs/                          # GitHub Pages 站点
+├── configs/config.yaml            # 配置文件
 ├── data/                          # 模拟数据
-├── configs/                       # 配置文件
-│   └── config.yaml
-├── scripts/                       # 工具脚本
-├── assets/                        # 静态资源
-├── secondme-manifest.json         # Second Me 应用清单
-└── docs/secondme-integration.md   # Second Me 集成指南
+└── server.py                      # FastAPI后端
 ```
 
 ## ⚡ 快速开始
@@ -57,7 +88,7 @@ PharmaSim/
 git clone https://github.com/MoKangMedical/PharmaSim.git
 cd PharmaSim
 
-# 运行模拟
+# 运行仿真
 cd src
 python main.py
 ```
@@ -65,22 +96,9 @@ python main.py
 ## 🔗 A2A 协议集成
 
 PharmaSim 实现了 A2A (Agent-to-Agent) 协议，支持：
-
 - **Agent 发现**: 通过 `/api/a2a/discovery` 发现可用 Agent
 - **消息传递**: Agent 间通过标准化消息通信
 - **任务协作**: 多 Agent 协同完成复杂模拟任务
-- **Second Me 集成**: 用户数字分身参与决策
-
-## 🤖 Second Me 集成
-
-通过 [Second Me](https://second.me) 数字分身平台，用户可以：
-
-1. 使用 Second Me 账号登录
-2. 将自己的数字分身(Shade)带入模拟
-3. 分身扮演药企决策者/临床专家/投资人角色
-4. 与 8 个专业 Agent 协作完成预测
-
-详见 [Second Me 集成指南](docs/secondme-integration.md)
 
 ## 📊 Demo
 
