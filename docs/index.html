@@ -96,6 +96,33 @@ section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
 .agent-sample .as-dims{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
 .agent-sample .as-dims span{font-size:.75rem;padding:.2rem .5rem;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
 
+/* ═══ PARTICLE VIZ ═══ */
+.particle-section{position:relative;height:550px;border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:2rem 0}
+.particle-section canvas{width:100%;height:100%;cursor:crosshair}
+.particle-legend{position:absolute;bottom:1rem;left:1rem;display:flex;gap:.8rem;flex-wrap:wrap;z-index:2}
+.particle-legend span{display:flex;align-items:center;gap:.3rem;font-size:.75rem;background:rgba(0,0,0,.6);padding:.25rem .6rem;border-radius:16px}
+.particle-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.particle-hint{position:absolute;top:1rem;left:1rem;font-size:.8rem;color:var(--dim);background:rgba(0,0,0,.5);padding:.3rem .8rem;border-radius:10px;z-index:2}
+
+/* ═══ AGENT PROFILE PANEL ═══ */
+.agent-panel{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .4s cubic-bezier(.25,.8,.25,1);overflow-y:auto;box-shadow:-8px 0 30px rgba(0,0,0,.3)}
+.agent-panel.open{right:0}
+.agent-panel .ap-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.2rem;cursor:pointer}
+.agent-panel .ap-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.agent-panel .ap-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+.agent-panel .ap-name{font-size:1.1rem;font-weight:700}
+.agent-panel .ap-type{font-size:.8rem;color:var(--dim);margin-top:.2rem}
+.agent-panel .ap-body{padding:1.2rem 1.5rem}
+.agent-panel .ap-section{margin-bottom:1.2rem}
+.agent-panel .ap-section h4{font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
+.agent-panel .ap-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.agent-panel .ap-row:last-child{border:none}
+.agent-panel .ap-row .k{color:var(--dim)}
+.agent-panel .ap-row .v{font-weight:600}
+.agent-panel .ap-stance{padding:.6rem .8rem;border-radius:8px;font-size:.82rem;line-height:1.5;margin:.5rem 0}
+.agent-panel .ap-dims{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.agent-panel .ap-dims span{font-size:.7rem;padding:.15rem .4rem;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+
 /* ═══ SCOREBOARD ═══ */
 .scoreboard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem}
 .scoreboard h3{margin-bottom:1rem;font-size:1.1rem}
@@ -126,10 +153,11 @@ footer a{color:#06b6d4;text-decoration:none}
 </style>
 </head>
 <body>
-
+<!-- NAV -->
 <nav>
   <div class="logo">💊 PharmaSim</div>
   <div class="links">
+    <a href="#particles">实时仿真</a>
     <a href="#experts">专家Agent</a>
     <a href="#scores">评分看板</a>
     <a href="#clusters">意见集群</a>
@@ -150,6 +178,23 @@ footer a{color:#06b6d4;text-decoration:none}
     <div class="box"><div class="n">7</div><div class="l">评估维度</div></div>
   </div>
 </div>
+
+<!-- PARTICLE VISUALIZATION -->
+<section id="particles">
+  <h2 class="stitle">✨ 1801 Agent 实时仿真</h2>
+  <p class="sdesc">每个光点代表一个Agent · 点击任意光点查看该Agent的完整画像</p>
+  <div class="particle-section">
+    <canvas id="particleCanvas"></canvas>
+    <div class="particle-hint">🖱️ 点击任意Agent光点查看画像</div>
+    <div class="particle-legend">
+      <span><span class="dot" style="background:#10b981"></span>积极采纳</span>
+      <span><span class="dot" style="background:#f59e0b"></span>谨慎观望</span>
+      <span><span class="dot" style="background:#ef4444"></span>怀疑犹豫</span>
+      <span><span class="dot" style="background:#3b82f6"></span>专家Agent</span>
+      <span><span class="dot" style="background:#ec4899"></span>KOL枢纽</span>
+    </div>
+  </div>
+</section>
 
 <section id="experts">
   <h2 class="stitle">🧪 7维专家Agent矩阵</h2>
@@ -183,12 +228,261 @@ footer a{color:#06b6d4;text-decoration:none}
   </div>
 </div>
 
+<!-- AGENT PROFILE PANEL (slide-in) -->
+<div class="agent-panel" id="agentPanel">
+  <button class="ap-close" onclick="closePanel()">✕</button>
+  <div class="ap-header" id="apHeader"></div>
+  <div class="ap-body" id="apBody"></div>
+</div>
+
 <footer>PharmaSim v3.0 · 1801 Agent · 细粒度决策交互 · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a></footer>
 
 <script>
 // ═══════════════════════════════════════════════════════
-// EXPERT DATA WITH FULL PROFILES
+// AGENT DATABASE (generated profiles)
 // ═══════════════════════════════════════════════════════
+const REGIONS=['北京','上海','广州','深圳','成都','武汉','杭州','南京','重庆','天津','西安','长沙','郑州','沈阳','青岛','济南'];
+const SPECIALTIES=['肿瘤科','呼吸科','胸外科','消化科','心内科','内分泌科','神经内科','血液科'];
+const HOSPITALS=['三甲','三甲','三甲','二甲','二甲','社区'];
+const STYLES=['保守型','激进型','跟风型','循证型'];
+const ATTITUDES=['早期采纳者','早期多数','晚期多数','滞后采纳者'];
+const INSURANCES=['城镇职工','城镇居民','新农合','商业保险','自费'];
+const ECONOMICS=['高收入','中等收入','低收入'];
+const INFO_SOURCES=['医生推荐','病友社区','网络搜索','家人决定'];
+
+function rng(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+const R=rng(42);
+
+function genDoctor(id){
+  const sp=SPECIALTIES[Math.floor(R()*SPECIALTIES.length)];
+  const tier=HOSPITALS[Math.floor(R()*HOSPITALS.length)];
+  const exp=Math.floor(R()*30)+3;
+  const style=STYLES[Math.floor(R()*STYLES.length)];
+  const att=ATTITUDES[Math.floor(R()*ATTITUDES.length)];
+  const region=REGIONS[Math.floor(R()*REGIONS.length)];
+  const influence=R()*0.8+0.1;
+  const volume=Math.floor(R()*250)+50;
+  const surnames=['王','李','张','刘','陈','杨','黄','赵','周','吴','徐','孙','马','朱','胡','郭','何','罗','高','林'];
+  const given=['明','华','丽','伟','芳','强','静','磊','敏','建国','秀英','志强','建国','丽华','海燕','小红'];
+  const name=surnames[Math.floor(R()*surnames.length)]+given[Math.floor(R()*given.length)];
+  return{id,type:'doctor',name,specialty:sp,hospitalTier:tier,yearsExp:exp,style,attitude:att,region,
+    academicInfluence:Math.round(influence*100)/100,monthlyVolume:volume,
+    stance:`作为一名${tier}${sp}医生，从业${exp}年，我的处方风格属于${style}。对于新药，我是${att}。${att==='早期采纳者'?'我会积极尝试有循证支持的新药。':att==='滞后采纳者'?'我通常等到新药成为标准疗法后才考虑。':'我会参考同行和KOL的意见后再做决定。'}`,
+    willingness:att==='早期采纳者'?R()*.2+.75:att==='早期多数'?R()*.2+.55:att==='晚期多数'?R()*.2+.35:R()*.2+.2,
+    color:'#3b82f6'};
+}
+function genPatient(id){
+  const age=Math.floor(R()*62)+18;
+  const gender=R()>.5?'男':'女';
+  const stage=['早期','中期','晚期'][Math.floor(R()*3)];
+  const ins=INSURANCES[Math.floor(R()*INSURANCES.length)];
+  const econ=ECONOMICS[Math.floor(R()*ECONOMICS.length)];
+  const info=INFO_SOURCES[Math.floor(R()*INFO_SOURCES.length)];
+  const adherence=Math.round((R()*.6+.3)*100)/100;
+  const region=REGIONS[Math.floor(R()*REGIONS.length)];
+  const brands=['原研药偏好','仿制药偏好','无所谓'];
+  const brand=brands[Math.floor(R()*brands.length)];
+  const surnames=['张','王','李','赵','刘','陈','杨','黄','周','吴'];
+  const given=['先生','女士','大爷','阿姨','小哥','大姐'];
+  const name=surnames[Math.floor(R()*surnames.length)]+(age>50?given[Math.floor(R()*2+2)]:given[Math.floor(R()*2+4)]);
+  let w=0.4;
+  if(econ==='高收入')w+=.15;else if(econ==='低收入')w-=.1;
+  if(ins==='商业保险'||ins==='城镇职工')w+=.12;
+  if(stage==='晚期')w+=.15;
+  if(info==='医生推荐')w+=.1;
+  w+=R()*.15-.075;
+  w=Math.max(.05,Math.min(.95,w));
+  const type=w>.65?'enthusiast':w>.4?'cautious':'skeptic';
+  return{id,type:'patient',name,age,gender,diseaseStage:stage,insurance:ins,economicLevel:econ,
+    infoSource:info,adherence,brandPref:brand,region,
+    stance:`我是一名${age}岁的${gender}性患者，${stage}非小细胞肺癌，${ins}。经济水平${econ}，信息主要来自${info}。${w>.65?'我对新药持积极态度，只要疗效确切愿意尝试。':w>.4?'我比较谨慎，需要看到充分的证据和医生推荐才会考虑。':'我比较犹豫，主要担心副作用和经济负担。'}`,
+    willingness:Math.round(w*1000)/1000,
+    color:type==='enthusiast'?'#10b981':type==='cautious'?'#f59e0b':'#ef4444'};
+}
+function genExpert(id,dimIdx){
+  const e=EXPERTS[dimIdx];
+  const exp=Math.floor(R()*25)+5;
+  const insts=e.profile.institutions.map(i=>i.split('%')[1]?.trim()||i);
+  const inst=insts[Math.floor(R()*insts.length)];
+  const subDim=e.profile.sub_dims[Math.floor(R()*e.profile.sub_dims.length)];
+  const region=REGIONS[Math.floor(R()*REGIONS.length)];
+  const surnames=['陈','林','黄','赵','吴','周','徐','孙','马','朱'];
+  const given=['教授','博士','研究员','总监','专家','老师'];
+  const name=surnames[Math.floor(R()*surnames.length)]+given[Math.floor(R()*given.length)];
+  const focus=subDim.name;
+  const score=subDim.score+R()*.15-.075;
+  return{id,type:'expert',expertType:e.name,emoji:e.emoji,name,institution:inst,yearsExp:exp,
+    focus,region,dimScore:Math.round(score*1000)/1000,
+    stance:`我是${e.name}，专长${focus}。在${inst}工作${exp}年。${subDim.items[0]}。综合评分${score.toFixed(3)}。`,
+    color:e.color};
+}
+
+// Generate all 1801 agents
+const ALL_AGENTS=[];
+for(let i=0;i<400;i++)ALL_AGENTS.push(genDoctor('doc-'+i));
+for(let i=0;i<1000;i++)ALL_AGENTS.push(genPatient('pt-'+i));
+for(let d=0;d<7;d++)for(let i=0;i<EXPERTS[d].count;i++)ALL_AGENTS.push(genExpert('exp-'+d+'-'+i,d));
+
+// ═══════════════════════════════════════════════════════
+// PARTICLE VISUALIZATION (clickable)
+// ═══════════════════════════════════════════════════════
+(function(){
+  const c=document.getElementById('particleCanvas'),ctx=c.getContext('2d');
+  let W,H;
+  function rs(){W=c.width=c.parentElement.clientWidth;H=c.height=c.parentElement.clientHeight}
+  rs();window.addEventListener('resize',rs);
+
+  // Map agents to particles (show 600 for performance)
+  const SHOW=600,particles=[];
+  for(let i=0;i<SHOW;i++){
+    const a=ALL_AGENTS[i];
+    const angle=Math.random()*Math.PI*2,dist=Math.random()*Math.min(W,H)*.42;
+    particles.push({
+      x:W/2+Math.cos(angle)*dist, y:H/2+Math.sin(angle)*dist,
+      vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25,
+      r:a.type==='expert'?2.8:a.type==='doctor'?2.2:Math.random()*1.2+1.2,
+      agent:a, baseColor:a.color, alpha:Math.random()*.3+.5
+    });
+  }
+  // edges
+  const edges=[];
+  for(let i=0;i<2000;i++){const a=Math.floor(Math.random()*SHOW),b=Math.floor(Math.random()*SHOW);if(a!==b)edges.push([a,b])}
+
+  let hovered=null,t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);t++;
+    // edges
+    ctx.globalAlpha=.025;ctx.strokeStyle='#3b82f6';ctx.lineWidth=.4;
+    edges.forEach(([a,b])=>{
+      const dx=particles[a].x-particles[b].x,dy=particles[a].y-particles[b].y;
+      if(dx*dx+dy*dy<70*70){ctx.beginPath();ctx.moveTo(particles[a].x,particles[a].y);ctx.lineTo(particles[b].x,particles[b].y);ctx.stroke()}
+    });
+    // particles
+    particles.forEach((p,i)=>{
+      p.x+=p.vx+Math.sin(t*.008+p.x*.005)*.12;
+      p.y+=p.vy+Math.cos(t*.008+p.y*.005)*.12;
+      const cx=W/2,cy=H/2,mr=Math.min(W,H)*.44;
+      const dx=p.x-cx,dy=p.y-cy,d=Math.sqrt(dx*dx+dy*dy);
+      if(d>mr){p.x=cx+dx/d*mr;p.y=cy+dy/d*mr;p.vx*=-.4;p.vy*=-.4}
+      const isHov=hovered===i;
+      const r=isHov?p.r*2.5:p.r;
+      ctx.beginPath();ctx.arc(p.x,p.y,r,0,6.28);
+      ctx.fillStyle=p.baseColor;ctx.globalAlpha=isHov?1:p.alpha;
+      ctx.fill();
+      if(isHov){ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.globalAlpha=.6;ctx.stroke();
+        // tooltip
+        ctx.globalAlpha=.85;ctx.fillStyle='rgba(0,0,0,.8)';
+        const tw=180,th=50,tx=Math.min(p.x+15,W-tw-10),ty=Math.max(p.y-30,10);
+        ctx.beginPath();ctx.roundRect(tx,ty,tw,th,8);ctx.fill();
+        ctx.fillStyle='#fff';ctx.font='bold 12px Inter';ctx.textAlign='left';
+        ctx.fillText(p.agent.name||p.agent.id,tx+10,ty+20);
+        ctx.fillStyle='#94a3b8';ctx.font='11px Inter';
+        ctx.fillText(`${p.agent.type==='doctor'?'👨‍⚕️医生':p.agent.type==='patient'?'🧑患者':'🔬专家'} · 点击查看详情`,tx+10,ty+38);
+      }
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // hover detection
+  c.addEventListener('mousemove',e=>{
+    const rect=c.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
+    hovered=null;
+    for(let i=0;i<particles.length;i++){
+      const dx=particles[i].x-mx,dy=particles[i].y-my;
+      if(dx*dx+dy*dy<(particles[i].r+6)*(particles[i].r+6)){hovered=i;break}
+    }
+    c.style.cursor=hovered!==null?'pointer':'crosshair';
+  });
+  // click -> show profile
+  c.addEventListener('click',e=>{
+    if(hovered!==null)showAgentProfile(particles[hovered].agent);
+  });
+})();
+
+// ═══ AGENT PROFILE PANEL ═══
+function showAgentProfile(a){
+  const panel=document.getElementById('agentPanel');
+  const header=document.getElementById('apHeader');
+  const body=document.getElementById('apBody');
+  const emoji=a.type==='doctor'?'👨‍⚕️':a.type==='patient'?'🧑':(a.emoji||'🔬');
+  const bgColor=a.color||'#3b82f6';
+
+  header.innerHTML=`
+    <div class="ap-avatar" style="background:${bgColor}15;border:2px solid ${bgColor}30">${emoji}</div>
+    <div><div class="ap-name">${a.name}</div>
+    <div class="ap-type">${a.type==='doctor'?'医生Agent':a.type==='patient'?'患者Agent':a.expertType+' · 专家Agent'}</div></div>`;
+
+  let html='';
+  if(a.type==='doctor'){
+    html=`
+      <div class="ap-section"><h4>📋 基本信息</h4>
+        <div class="ap-row"><span class="k">科室</span><span class="v">${a.specialty}</span></div>
+        <div class="ap-row"><span class="k">医院等级</span><span class="v">${a.hospitalTier}</span></div>
+        <div class="ap-row"><span class="k">从业年数</span><span class="v">${a.yearsExp}年</span></div>
+        <div class="ap-row"><span class="k">地区</span><span class="v">${a.region}</span></div>
+        <div class="ap-row"><span class="k">处方风格</span><span class="v">${a.style}</span></div>
+        <div class="ap-row"><span class="k">创新采纳</span><span class="v">${a.attitude}</span></div>
+        <div class="ap-row"><span class="k">学术影响力</span><span class="v">${a.academicInfluence}</span></div>
+        <div class="ap-row"><span class="k">月均患者量</span><span class="v">${a.monthlyVolume}人</span></div>
+      </div>
+      <div class="ap-section"><h4>💬 立场陈述</h4>
+        <div class="ap-stance" style="background:${bgColor}08;border-left:3px solid ${bgColor}">${a.stance}</div>
+      </div>
+      <div class="ap-section"><h4>📊 用药意愿</h4>
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+            <div style="width:${Math.round(a.willingness*100)}%;height:100%;background:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'};border-radius:4px"></div>
+          </div>
+          <span style="font-weight:800;font-size:1.1rem;color:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'}">${(a.willingness*100).toFixed(1)}%</span>
+        </div>
+      </div>`;
+  }else if(a.type==='patient'){
+    html=`
+      <div class="ap-section"><h4>📋 基本信息</h4>
+        <div class="ap-row"><span class="k">年龄</span><span class="v">${a.age}岁</span></div>
+        <div class="ap-row"><span class="k">性别</span><span class="v">${a.gender}</span></div>
+        <div class="ap-row"><span class="k">疾病分期</span><span class="v">${a.diseaseStage}</span></div>
+        <div class="ap-row"><span class="k">医保类型</span><span class="v">${a.insurance}</span></div>
+        <div class="ap-row"><span class="k">经济水平</span><span class="v">${a.economicLevel}</span></div>
+        <div class="ap-row"><span class="k">信息来源</span><span class="v">${a.infoSource}</span></div>
+        <div class="ap-row"><span class="k">依从性</span><span class="v">${a.adherence}</span></div>
+        <div class="ap-row"><span class="k">品牌偏好</span><span class="v">${a.brandPref}</span></div>
+        <div class="ap-row"><span class="k">地区</span><span class="v">${a.region}</span></div>
+      </div>
+      <div class="ap-section"><h4>💬 立场陈述</h4>
+        <div class="ap-stance" style="background:${bgColor}08;border-left:3px solid ${bgColor}">${a.stance}</div>
+      </div>
+      <div class="ap-section"><h4>📊 用药意愿</h4>
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+            <div style="width:${Math.round(a.willingness*100)}%;height:100%;background:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'};border-radius:4px"></div>
+          </div>
+          <span style="font-weight:800;font-size:1.1rem;color:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'}">${(a.willingness*100).toFixed(1)}%</span>
+        </div>
+      </div>`;
+  }else{
+    html=`
+      <div class="ap-section"><h4>📋 基本信息</h4>
+        <div class="ap-row"><span class="k">专家类型</span><span class="v" style="color:${bgColor}">${a.expertType}</span></div>
+        <div class="ap-row"><span class="k">机构</span><span class="v">${a.institution}</span></div>
+        <div class="ap-row"><span class="k">从业年数</span><span class="v">${a.yearsExp}年</span></div>
+        <div class="ap-row"><span class="k">专长方向</span><span class="v">${a.focus}</span></div>
+        <div class="ap-row"><span class="k">地区</span><span class="v">${a.region}</span></div>
+        <div class="ap-row"><span class="k">子维度评分</span><span class="v" style="color:${a.dimScore>.7?'#10b981':a.dimScore>.6?'#f59e0b':'#ef4444'}">${a.dimScore.toFixed(3)}</span></div>
+      </div>
+      <div class="ap-section"><h4>💬 评估意见</h4>
+        <div class="ap-stance" style="background:${bgColor}08;border-left:3px solid ${bgColor}">${a.stance}</div>
+      </div>`;
+  }
+  body.innerHTML=html;
+  panel.classList.add('open');
+}
+function closePanel(){document.getElementById('agentPanel').classList.remove('open')}
+
+// ═══ EXPERT DATA WITH FULL PROFILES ═══
 const EXPERTS=[
 {
   id:'epi',emoji:'🧬',name:'流行病学专家',count:80,score:0.771,color:'#06b6d4',color2:'#22d3ee',grade:'A',
