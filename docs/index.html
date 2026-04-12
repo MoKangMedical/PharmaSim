@@ -6,15 +6,16 @@
 <title>PharmaSim - AI药品上市预测仿真平台</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--dim:#94a3b8;--border:#334155}
+:root{--bg:#0f172a;--card:#1e293b;--card2:#162032;--text:#e2e8f0;--dim:#94a3b8;--border:#334155}
 body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;overflow-x:hidden}
-
-/* ═══ NAV ═══ */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.7rem 2rem;display:flex;align-items:center}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.7rem 2rem;display:flex;align-items:center}
 nav .logo{font-weight:800;font-size:1.3rem;background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 nav .links{margin-left:auto;display:flex;gap:1.5rem}
-nav .links a{color:var(--dim);text-decoration:none;font-size:.9rem;transition:color .3s}
+nav .links a{color:var(--dim);text-decoration:none;font-size:.9rem}
 nav .links a:hover{color:#fff}
+section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
+.stitle{font-size:2rem;font-weight:800;margin-bottom:.3rem}
+.sdesc{color:var(--dim);margin-bottom:2rem;font-size:1rem}
 
 /* ═══ HERO ═══ */
 .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;text-align:center;padding:2rem}
@@ -23,91 +24,123 @@ nav .links a:hover{color:#fff}
 .hero h1{font-size:clamp(3rem,7vw,5rem);font-weight:900;background:linear-gradient(135deg,#06b6d4,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero .sub{font-size:1.2rem;color:var(--dim);margin:.5rem 0 2rem}
 .hero .big-num{font-size:6rem;font-weight:900;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
-.hero .big-label{color:var(--dim);margin-top:.3rem;font-size:1rem}
+.hero .big-label{color:var(--dim);margin-top:.3rem}
 .hero-stats{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap;justify-content:center}
 .hero-stats .box{background:rgba(30,41,59,.8);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:12px;padding:1rem 1.8rem;text-align:center}
 .hero-stats .box .n{font-size:1.8rem;font-weight:700;color:#06b6d4}
 .hero-stats .box .l{font-size:.8rem;color:var(--dim)}
 
-/* ═══ SECTION ═══ */
-section{padding:5rem 2rem;max-width:1300px;margin:0 auto}
-.stitle{font-size:2.2rem;font-weight:800;margin-bottom:.3rem}
-.sdesc{color:var(--dim);margin-bottom:2.5rem;font-size:1.05rem}
+/* ═══ EXPERT CARDS ═══ */
+.expert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1.2rem}
+.expert-card{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .4s;position:relative}
+.expert-card:hover{transform:translateY(-6px);border-color:var(--ec);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.expert-card .av{width:80px;height:80px;margin:0 auto .8rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.expert-card .av::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--ec);opacity:.4;animation:ring 2s infinite}
+@keyframes ring{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:.6;transform:scale(1.06)}}
+.expert-card h3{font-size:.95rem;color:var(--ec)}
+.expert-card .cnt{font-size:.75rem;color:var(--dim);margin:.2rem 0 .6rem}
+.expert-card .sc{font-size:2.2rem;font-weight:900;color:var(--ec)}
+.expert-card .bar{height:6px;background:var(--border);border-radius:3px;margin:.5rem 0;overflow:hidden}
+.expert-card .bar div{height:100%;border-radius:3px;transition:width 2s ease}
+.expert-card .tag{font-size:.7rem;color:var(--dim);margin-top:.4rem}
+.expert-card .click-hint{font-size:.65rem;color:var(--ec);margin-top:.6rem;opacity:.6}
 
-/* ═══ EXPERT CARDS (CARTOON) ═══ */
-.expert-stage{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.5rem;margin-bottom:3rem}
-.expert-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.5rem 1rem;text-align:center;transition:all .4s;position:relative;overflow:hidden;cursor:pointer}
-.expert-card:hover{transform:translateY(-8px) scale(1.03);border-color:var(--ecolor);box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.expert-card .avatar{width:90px;height:90px;margin:0 auto 1rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.expert-card .avatar::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:3px solid var(--ecolor);opacity:.5;animation:pulse-ring 2s infinite}
-@keyframes pulse-ring{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.08)}}
-.expert-card h3{font-size:1rem;margin-bottom:.3rem;color:var(--ecolor)}
-.expert-card .expert-count{font-size:.75rem;color:var(--dim);margin-bottom:.8rem}
-.expert-card .score{font-size:2.5rem;font-weight:900;color:var(--ecolor);margin:.3rem 0}
-.expert-card .score-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:.5rem 0}
-.expert-card .score-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--ecolor),var(--ecolor2,var(--ecolor)));transition:width 2s cubic-bezier(.25,.8,.25,1)}
-.expert-card .tag{display:inline-block;font-size:.7rem;padding:.2rem .6rem;border-radius:20px;background:rgba(255,255,255,.06);color:var(--dim);margin-top:.5rem}
-.expert-card .sparkle{position:absolute;top:8px;right:10px;font-size:1rem;animation:sparkle-anim 1.5s ease-in-out infinite}
-@keyframes sparkle-anim{0%,100%{opacity:.3;transform:scale(.8) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(15deg)}}
+/* ═══ MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;z-index:10}
+.modal-close:hover{color:#fff}
+.modal-header{padding:2rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.5rem}
+.modal-header .mh-icon{font-size:3rem}
+.modal-header .mh-info h2{font-size:1.5rem;font-weight:700}
+.modal-header .mh-info .mh-sub{color:var(--dim);font-size:.9rem;margin-top:.2rem}
+.modal-header .mh-score{margin-left:auto;text-align:center}
+.modal-header .mh-score .mh-val{font-size:2.5rem;font-weight:900}
+.modal-header .mh-score .mh-grade{font-size:.8rem;padding:.2rem .6rem;border-radius:8px;margin-top:.3rem;display:inline-block}
+.modal-body{padding:1.5rem 2rem 2rem}
 
-/* ═══ SCORE BOARD ═══ */
-.scoreboard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-top:2rem}
-.scoreboard h3{font-size:1.3rem;margin-bottom:1.5rem;text-align:center}
-.dim-row{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding:.8rem;border-radius:12px;background:rgba(255,255,255,.02);transition:background .3s}
+/* ═══ PROFILE SECTION ═══ */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+@media(max-width:700px){.profile-grid{grid-template-columns:1fr}}
+.profile-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+.profile-card h4{font-size:.85rem;color:var(--dim);margin-bottom:.8rem;text-transform:uppercase;letter-spacing:.5px}
+.profile-card .row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem}
+.profile-card .row:last-child{border:none}
+.profile-card .row .label{color:var(--dim)}
+.profile-card .row .val{font-weight:600}
+
+/* ═══ DECISION DETAIL ═══ */
+.decision-section{margin-top:1.5rem}
+.decision-section h4{font-size:1rem;margin-bottom:1rem;color:var(--ec)}
+.decision-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.8rem}
+.decision-item .di-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.decision-item .di-name{font-weight:600;font-size:.95rem}
+.decision-item .di-score{font-weight:800;font-size:1.1rem}
+.decision-item .di-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:.4rem 0}
+.decision-item .di-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.decision-item .di-detail{font-size:.8rem;color:var(--dim);line-height:1.6;margin-top:.5rem}
+.decision-item .di-finding{display:flex;align-items:flex-start;gap:.4rem;margin-top:.3rem;font-size:.8rem}
+.decision-item .di-finding .dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+
+/* ═══ SAMPLE AGENTS ═══ */
+.sample-section{margin-top:2rem}
+.sample-section h4{font-size:1rem;margin-bottom:1rem}
+.agent-sample{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1rem}
+.agent-sample .as-head{display:flex;align-items:center;gap:1rem;margin-bottom:.8rem}
+.agent-sample .as-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.agent-sample .as-name{font-weight:700;font-size:1rem}
+.agent-sample .as-meta{font-size:.8rem;color:var(--dim)}
+.agent-sample .as-stance{padding:.6rem .8rem;border-radius:8px;font-size:.85rem;margin:.5rem 0;line-height:1.5}
+.agent-sample .as-dims{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+.agent-sample .as-dims span{font-size:.75rem;padding:.2rem .5rem;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+
+/* ═══ SCOREBOARD ═══ */
+.scoreboard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem}
+.scoreboard h3{margin-bottom:1rem;font-size:1.1rem}
+.dim-row{display:flex;align-items:center;gap:1rem;margin-bottom:.8rem;padding:.6rem;border-radius:10px;background:rgba(255,255,255,.02);cursor:pointer;transition:background .3s}
 .dim-row:hover{background:rgba(255,255,255,.05)}
-.dim-row .dim-icon{font-size:1.5rem;width:40px;text-align:center}
-.dim-row .dim-name{width:120px;font-weight:600;font-size:.95rem}
-.dim-row .dim-bar{flex:1;height:12px;background:var(--border);border-radius:6px;overflow:hidden;position:relative}
-.dim-row .dim-fill{height:100%;border-radius:6px;transition:width 2s cubic-bezier(.25,.8,.25,1);position:relative}
-.dim-row .dim-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2));border-radius:0 6px 6px 0}
-.dim-row .dim-score{width:60px;text-align:right;font-weight:800;font-size:1.1rem}
-.dim-row .dim-badge{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700}
+.dim-row .di{width:40px;text-align:center;font-size:1.3rem}
+.dim-row .dn{width:100px;font-weight:600;font-size:.9rem}
+.dim-row .db{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.dim-row .df{height:100%;border-radius:5px;transition:width 2s ease}
+.dim-row .ds{width:55px;text-align:right;font-weight:800;font-size:1rem}
+.dim-row .dg{width:30px;text-align:center;font-size:.7rem;font-weight:700;padding:.2rem;border-radius:6px}
+.comp{text-align:center;padding:2rem;background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(139,92,246,.08));border:1px solid var(--border);border-radius:18px;margin-top:1.5rem}
+.comp .cv{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.comp .cr{font-size:1.1rem;margin-top:.5rem;padding:.4rem 1.2rem;border-radius:20px;display:inline-block;font-weight:600}
 
-/* ═══ COMPREHENSIVE ═══ */
-.comprehensive{text-align:center;padding:2.5rem;background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(139,92,246,.1));border:1px solid var(--border);border-radius:20px;margin-top:2rem}
-.comprehensive .comp-score{font-size:4rem;font-weight:900;background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.comprehensive .comp-rec{font-size:1.3rem;margin-top:.5rem;padding:.5rem 1.5rem;border-radius:30px;display:inline-block;font-weight:600}
-
-/* ═══ CLUSTER ═══ */
-.cluster-viz{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap;justify-content:center}
-.cluster-box{text-align:center;flex:1;min-width:200px}
-.cluster-box .c-ring{width:120px;height:120px;margin:0 auto 1rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;position:relative}
-.cluster-box .c-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
-.cluster-box .c-ring svg circle{fill:none;stroke-width:6;stroke-linecap:round}
-.cluster-box .c-label{font-size:1rem;font-weight:600}
-.cluster-box .c-count{font-size:.85rem;color:var(--dim)}
-
-/* ═══ ANIMATE ═══ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeUp .6s ease forwards}
+/* ═══ CLUSTERS ═══ */
+.cluster-viz{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center}
+.cluster-box{text-align:center;flex:1;min-width:180px}
+.cluster-box .cring{width:110px;height:110px;margin:0 auto .8rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800}
+.cluster-box .cring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.cluster-box .cring svg circle{fill:none;stroke-width:5;stroke-linecap:round}
 
 /* ═══ CHART ═══ */
-.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin:2rem 0}
-
-/* ═══ FOOTER ═══ */
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
 footer{text-align:center;padding:3rem;color:var(--dim);font-size:.85rem;border-top:1px solid var(--border)}
 footer a{color:#06b6d4;text-decoration:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="logo">💊 PharmaSim</div>
   <div class="links">
-    <a href="#experts">7维专家</a>
+    <a href="#experts">专家Agent</a>
     <a href="#scores">评分看板</a>
     <a href="#clusters">意见集群</a>
     <a href="#simulation">仿真结果</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <canvas id="heroBg"></canvas>
   <h1>PharmaSim</h1>
-  <p class="sub">AI药品上市预测 · 7维专家 × 1000用户Agent 多维度仿真</p>
+  <p class="sub">AI药品上市预测 · 7维专家 × 1000用户Agent · 细粒度决策交互</p>
   <div class="big-num" id="counter">0</div>
   <div class="big-label">个AI Agent正在协同仿真</div>
   <div class="hero-stats">
@@ -118,174 +151,314 @@ footer a{color:#06b6d4;text-decoration:none}
   </div>
 </div>
 
-<!-- 7 EXPERT DIMENSIONS (CARTOON) -->
 <section id="experts">
-  <h2 class="stitle">🧪 7维专家评估矩阵</h2>
-  <p class="sdesc">400位专业Agent从7个维度独立评估，每个维度都是一个"卡通专家"为你把关</p>
-  <div class="expert-stage" id="expertStage"></div>
+  <h2 class="stitle">🧪 7维专家Agent矩阵</h2>
+  <p class="sdesc">点击任意专家卡片，查看Agent画像、子维度评分、决策逻辑和样本Agent</p>
+  <div class="expert-grid" id="expertGrid"></div>
 </section>
 
-<!-- SCORE BOARD -->
 <section id="scores">
   <h2 class="stitle">📊 评分看板</h2>
-  <p class="sdesc">7个维度得分排名，一目了然</p>
   <div class="scoreboard" id="scoreboard"></div>
-  <div class="comprehensive" id="compBox"></div>
+  <div class="comp" id="compBox"></div>
 </section>
 
-<!-- OPINION CLUSTERS -->
 <section id="clusters">
   <h2 class="stitle">👥 1000用户Agent意见分布</h2>
-  <p class="sdesc">经过8轮社交网络协商后，1000个患者Agent的最终意见集群</p>
+  <p class="sdesc">8轮社交网络协商后的群体决策涌现</p>
   <div class="cluster-viz" id="clusterViz"></div>
 </section>
 
-<!-- SIMULATION -->
 <section id="simulation">
   <h2 class="stitle">📈 24个月市场仿真</h2>
-  <p class="sdesc">融合多维评估+社交协商的月度预测曲线</p>
-  <div class="chart-wrap"><canvas id="chartCanvas" width="1200" height="350" style="width:100%"></canvas></div>
+  <div class="chart-wrap"><canvas id="chartCanvas" width="1200" height="320" style="width:100%"></canvas></div>
 </section>
 
-<footer>
-  PharmaSim v3.0 · 1801 Agent · 7维专家评估 · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a>
-</footer>
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header" id="modalHeader"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>PharmaSim v3.0 · 1801 Agent · 细粒度决策交互 · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a></footer>
 
 <script>
-// ═══ DATA ═══
-const EXPERTS = [
-  {icon:'🏥',emoji:'🧬',name:'流行病学',count:80,score:0.771,color:'#06b6d4',color2:'#22d3ee',tag:'疾病负担 · 人群分析',finding:'肿瘤疾病负担高，患病率560/10万',grade:'A'},
-  {icon:'🔬',emoji:'🩺',name:'临床评估',count:40,score:0.712,color:'#10b981',color2:'#34d399',tag:'疗效 · 安全性 · 指南',finding:'ORR 45.2%，优于标准治疗',grade:'A'},
-  {icon:'📈',emoji:'📊',name:'市场评估',count:40,score:0.685,color:'#f59e0b',color2:'#fbbf24',tag:'竞争格局 · 渠道 · 商业化',finding:'最优同类药物，专利充足12年',grade:'B+'},
-  {icon:'💲',emoji:'💰',name:'定价评估',count:40,score:0.663,color:'#ef4444',color2:'#f87171',tag:'价值定价 · 竞争定价',finding:'价格与竞品基本持平',grade:'B'},
-  {icon:'💊',emoji:'⚗️',name:'药物学',count:80,score:0.646,color:'#8b5cf6',color2:'#a78bfa',tag:'药理 · 毒理 · 药代动力学',finding:'生物利用度85%，半衰期18h',grade:'B'},
-  {icon:'💰',emoji:'📐',name:'药物经济学',count:80,score:0.639,color:'#eab308',color2:'#facc15',tag:'ICER · 成本效果 · HTA',finding:'可减少住院费用，Markov模型',grade:'B-'},
-  {icon:'🏛️',emoji:'📋',name:'医保评估',count:40,score:0.556,color:'#ec4899',color2:'#f472b6',tag:'准入 · 报销 · DRG-DIP',finding:'肿瘤优先领域，可门诊报销',grade:'C+'},
+// ═══════════════════════════════════════════════════════
+// EXPERT DATA WITH FULL PROFILES
+// ═══════════════════════════════════════════════════════
+const EXPERTS=[
+{
+  id:'epi',emoji:'🧬',name:'流行病学专家',count:80,score:0.771,color:'#06b6d4',color2:'#22d3ee',grade:'A',
+  tag:'疾病负担 · 人群分析 · RWE',
+  profile:{
+    title:'流行病学评估专家',
+    desc:'从疾病负担、人群特征、真实世界证据角度评估新药市场潜力',
+    sub_dims:[
+      {name:'疾病负担',score:0.82,items:['肿瘤疾病负担高(DALY权重0.9)','未满足需求大','属于医保优先领域']},
+      {name:'人群分析',score:0.75,items:['患病率560/10万，市场容量大','目标患者超82万','老年用药市场，老龄化利好']},
+      {name:'真实世界证据',score:0.73,items:['RWE样本5000例','RWE与RCT结果一致','有疾病登记研究数据']},
+      {name:'结局研究',score:0.78,items:['PFS显著延长(+4.8月)','总生存期改善(+3.2月)','生活质量显著改善']},
+    ],
+    expertise:['疾病监测','登记研究','生存分析','疾病负担评估','人群分层'],
+    institutions:['学术机构45%','疾控中心25%','药企15%','WHO/国际组织15%'],
+  },
+  samples:[
+    {name:'张明远',title:'流行病学教授',inst:'北京大学公共卫生学院',exp:22,focus:'疾病负担',region:'北京',
+     stance:'该药物针对的非小细胞肺癌是中国发病率最高的恶性肿瘤之一，患病率高达560/10万。从流行病学角度，目标患者池充足，市场容量大。RWE数据显示5000例样本与RCT结果高度一致，证据充分。',
+     dims:{burden:0.85,population:0.78,rwe:0.72,outcome:0.80}},
+    {name:'李慧琳',title:'疾控中心研究员',inst:'中国疾控中心慢性病所',exp:15,focus:'人群分析',region:'上海',
+     stance:'从人群分析角度看，非小细胞肺癌患者以中老年为主，随着人口老龄化趋势，患病人群将持续增长。诊断率65%意味着仍有大量潜在患者未被发现。伴随诊断可及性良好(60%)，不会成为用药瓶颈。',
+     dims:{burden:0.75,population:0.82,rwe:0.68,outcome:0.72}},
+    {name:'王建国',title:'药企流行病学总监',inst:'恒瑞医药医学部',exp:18,focus:'RWE',region:'南京',
+     stance:'作为药企背景的流行病学专家，我关注的是上市后的真实世界表现。RWE样本量5000例虽然不是最大，但与RCT一致性好，说明疗效可复制。需要注意的是登记研究数据的长期随访结果。',
+     dims:{burden:0.70,population:0.72,rwe:0.80,outcome:0.76}},
+  ]
+},
+{
+  id:'clin',emoji:'🩺',name:'临床评估专家',count:40,score:0.712,color:'#10b981',color2:'#34d399',grade:'A',
+  tag:'疗效 · 安全性 · 指南',
+  profile:{
+    title:'临床评估专家',
+    desc:'从疗效、安全性、指南依从、临床可操作性角度评估新药',
+    sub_dims:[
+      {name:'疗效评估',score:0.78,items:['ORR 45.2%，疗效良好','优于标准治疗','主要终点达到统计学显著']},
+      {name:'安全性评估',score:0.65,items:['SAE率12.5%，中等水平','停药率8.3%，耐受性尚可','无黑框警告']},
+      {name:'指南与循证',score:0.72,items:['证据等级：RCT','获指南2A类推荐','已获15个国家批准']},
+      {name:'临床可操作性',score:0.68,items:['静脉给药，需医疗人员','需要伴随诊断(biomarker)','需特殊设备']},
+    ],
+    expertise:['临床终点评估','安全性评价','循证医学','指南解读','临床实践'],
+    institutions:['三甲医院45%','学术机构30%','二甲医院15%','药企10%'],
+  },
+  samples:[
+    {name:'陈志远',title:'肿瘤科主任医师',inst:'中山大学肿瘤防治中心',exp:25,focus:'疗效评估',region:'广州',
+     stance:'从临床疗效角度看，ORR 45.2%在PD-1单抗中属于中上水平。PFS改善4.8个月，OS改善3.2个月，这些都是有临床意义的获益。最重要的是主要终点达到了统计学显著性，这是循证医学的基础。',
+     dims:{efficacy:0.82,safety:0.62,guideline:0.75,practice:0.65}},
+    {name:'赵晓燕',title:'呼吸科副主任',inst:'复旦大学附属中山医院',exp:18,focus:'安全性',region:'上海',
+     stance:'作为一线临床医生，我最关注安全性。SAE率12.5%在免疫治疗中是可以接受的，但停药率8.3%需要关注。免疫相关不良反应需要长期监测。好消息是没有黑框警告，QT延长风险也未见信号。',
+     dims:{efficacy:0.72,safety:0.72,guideline:0.70,practice:0.68}},
+    {name:'刘伟',title:'临床药理学教授',inst:'北京协和医院',exp:20,focus:'指南',region:'北京',
+     stance:'该药获得了指南2A类推荐，虽然不是最高级别(1类)，但已经是非常积极的信号。15个国家批准说明全球监管认可。作为KOL，我认为随着更多数据积累，有望升级为1类推荐。',
+     dims:{efficacy:0.75,safety:0.65,guideline:0.80,practice:0.70}},
+  ]
+},
+{
+  id:'mkt',emoji:'📊',name:'市场评估专家',count:40,score:0.685,color:'#f59e0b',color2:'#fbbf24',grade:'B+',
+  tag:'竞争格局 · 渠道 · 商业化',
+  profile:{
+    title:'市场评估专家',
+    desc:'从竞争格局、渠道策略、商业化能力、市场容量角度评估',
+    sub_dims:[
+      {name:'竞争格局',score:0.65,items:['4个竞品，竞争中等','最优同类药物(Best-in-class)','专利保护充足(12年)']},
+      {name:'渠道策略',score:0.70,items:['DTP药房可及','医院准入中等','冷链要求增加成本']},
+      {name:'商业化能力',score:0.72,items:['高级别证据支撑学术推广','KOL支持','MNC商业化能力强']},
+      {name:'市场容量',score:0.68,items:['TAM约280亿','CAGR 18%，增速高','目标患者82万']},
+    ],
+    expertise:['竞争分析','渠道策略','商业化规划','市场准入','品牌管理'],
+    institutions:['药企40%','咨询公司30%','投资机构20%','学术10%'],
+  },
+  samples:[
+    {name:'黄明辉',title:'市场总监',inst:'百时美施贵宝(BMS)中国',exp:16,focus:'竞争格局',region:'上海',
+     stance:'PD-1市场已经进入红海，4个竞品意味着需要差异化竞争。好消息是该药是Best-in-class，有明确的疗效优势。专利保护12年给了足够的商业化窗口。关键是在前3年建立品牌壁垒。',
+     dims:{competitive:0.68,channel:0.65,commercial:0.75,sizing:0.70}},
+    {name:'周静',title:'医药咨询合伙人',inst:'IQVIA艾昆纬',exp:14,focus:'市场容量',region:'北京',
+     stance:'TAM 280亿，CAGR 18%，这是一个高速增长的市场。目标患者82万人，按15%渗透率估算峰值销售约42亿。但需要考虑医保谈判后的价格下降和竞品分流。',
+     dims:{competitive:0.62,channel:0.68,commercial:0.70,sizing:0.75}},
+  ]
+},
+{
+  id:'price',emoji:'💰',name:'定价评估专家',count:40,score:0.663,color:'#ef4444',color2:'#f87171',grade:'B',
+  tag:'价值定价 · 竞争定价 · 国际参考',
+  profile:{
+    title:'定价评估专家',
+    desc:'从价值定价、竞争定价、市场准入定价、国际参考定价角度评估',
+    sub_dims:[
+      {name:'价值定价',score:0.68,items:['最优同类药物，有定价优势','疗效数据支撑溢价','突破性疗法认定加分']},
+      {name:'竞争定价',score:0.65,items:['价格与竞品均价基本持平','Best-in-class支撑溢价','略高于均值10-20%']},
+      {name:'市场准入定价',score:0.62,items:['ICER 2.8万/QALY略高','医保WTP阈值内','患者自付可及性中等']},
+      {name:'国际参考定价',score:0.68,items:['中国价为美国的10%','3国定价参考','有提价空间']},
+    ],
+    expertise:['价值定价','竞争定价','医保谈判定价','国际参考定价','P&R策略'],
+    institutions:['药企40%','咨询30%','学术20%','独立10%'],
+  },
+  samples:[
+    {name:'孙立峰',title:'定价策略总监',inst:'罗氏制药',exp:18,focus:'价值定价',region:'上海',
+     stance:'作为Best-in-class PD-1，该药有明确的临床价值支撑溢价。价格15000元/月在PD-1市场中处于中等偏上水平。国际参考显示中国价格仅为美国的10%，从全球价格一致性角度有提价空间。',
+     dims:{value:0.72,competitive:0.65,access:0.60,intl:0.70}},
+    {name:'钱芳',title:'药物经济学顾问',inst:'IQVIA定价团队',exp:12,focus:'市场准入',region:'北京',
+     stance:'ICER 2.8万/QALY虽然略高于典型WTP阈值(3万)，但考虑到肿瘤领域的特殊性和创新药溢价，仍在可谈判范围。关键是在医保谈判中用真实世界数据补充经济学证据。',
+     dims:{value:0.65,competitive:0.62,access:0.68,intl:0.65}},
+  ]
+},
+{
+  id:'pharm',emoji:'⚗️',name:'药物学专家',count:80,score:0.646,color:'#8b5cf6',color2:'#a78bfa',grade:'B',
+  tag:'药理 · 毒理 · 药代动力学',
+  profile:{
+    title:'药物学评估专家',
+    desc:'从药代动力学、药效动力学、毒理学、制剂学角度评估',
+    sub_dims:[
+      {name:'药代动力学',score:0.72,items:['生物利用度85%，优秀','半衰期18h，日一次给药','2种药物相互作用']},
+      {name:'药效动力学',score:0.70,items:['靶点已获临床验证','选择性0.85，高选择性','剂量-效应关系明确']},
+      {name:'毒理学',score:0.58,items:['SAE率12.5%，中等','无黑框警告','无QT延长风险']},
+      {name:'制剂学',score:0.55,items:['静脉给药，需医疗人员','需冷链储运','非口服，依从性受限']},
+    ],
+    expertise:['药理学','毒理学','药代动力学','制剂学','药物相互作用'],
+    institutions:['学术40%','药企25%','CRO 20%','监管15%'],
+  },
+  samples:[
+    {name:'郑晓东',title:'药理学教授',inst:'中国药科大学',exp:20,focus:'药代动力学',region:'南京',
+     stance:'从药代动力学角度，85%的生物利用度在单抗类药物中属于优秀水平。18小时的半衰期支持日一次给药方案。需要注意的是2种CYP3A4相关的药物相互作用，在合并用药时需谨慎。',
+     dims:{pk:0.80,pd:0.70,tox:0.55,form:0.52}},
+    {name:'吴敏',title:'毒理学总监',inst:'药明康德安全性评价',exp:15,focus:'毒理学',region:'上海',
+     stance:'毒理学方面，SAE率12.5%在免疫检查点抑制剂中属于中等水平。没有黑框警告是积极信号。免疫相关不良反应(irAE)是这类药物的共性风险，需要上市后持续监测。',
+     dims:{pk:0.65,pd:0.68,tox:0.68,form:0.50}},
+  ]
+},
+{
+  id:'heor',emoji:'📐',name:'药物经济学专家',count:80,score:0.639,color:'#eab308',color2:'#facc15',grade:'B-',
+  tag:'ICER · 成本效果 · HTA',
+  profile:{
+    title:'药物经济学评估专家',
+    desc:'从成本效果、预算影响、经济学建模、HTA准备度角度评估',
+    sub_dims:[
+      {name:'成本效果',score:0.60,items:['ICER 2.8万/QALY，略高于阈值','增量QALY=0.85','成本效果比中等']},
+      {name:'预算影响',score:0.55,items:['年销售50亿，预算影响较大','可减少住院费用','人均治疗费18.3万/年']},
+      {name:'证据质量',score:0.72,items:['Markov模型，方法学规范','效用值来自RCT实测','已完成敏感性分析']},
+      {name:'HTA准备度',score:0.68,items:['HTA资料已就绪','2国HTA通过','专利剩余12年']},
+    ],
+    expertise:['ICER分析','预算影响','Markov建模','HTA申报','卫生政策'],
+    institutions:['学术35%','药企30%','HTA机构20%','咨询15%'],
+  },
+  samples:[
+    {name:'林志华',title:'卫生经济学教授',inst:'复旦大学公共卫生学院',exp:18,focus:'成本效果',region:'上海',
+     stance:'ICER 2.8万/QALY略高于国内典型WTP阈值(1-3万)，但考虑到肿瘤领域的特殊性和患者获益(增量QALY=0.85)，在谈判中仍有空间。Markov模型方法学规范，敏感性分析已完成，证据质量良好。',
+     dims:{ce:0.62,budget:0.52,model:0.75,hta:0.70}},
+    {name:'杨丽萍',title:'HTA分析师',inst:'IQVIA HEOR团队',exp:10,focus:'HTA',region:'北京',
+     stance:'HTA资料已准备就绪是加分项。英国和德国的HTA通过为国内提供了参考。但需要注意的是，国内HTA标准与国际不完全一致，需要补充中国人群的经济学数据。',
+     dims:{ce:0.58,budget:0.55,model:0.70,hta:0.72}},
+  ]
+},
+{
+  id:'ins',emoji:'📋',name:'医保评估专家',count:40,score:0.556,color:'#ec4899',color2:'#f472b6',grade:'C+',
+  tag:'准入 · 报销 · DRG-DIP',
+  profile:{
+    title:'医保评估专家',
+    desc:'从准入政策、报销策略、基金影响、DRG-DIP支付角度评估',
+    sub_dims:[
+      {name:'准入政策',score:0.65,items:['肿瘤属于医保优先领域','创新药快速通道','2个竞品已纳入医保']},
+      {name:'报销策略',score:0.50,items:['价格15000较高，可能需限定支付','可门诊报销','患者自付负担重']},
+      {name:'基金影响',score:0.48,items:['年销售50亿，基金影响较大','占基金0.002%','未显示节省效应']},
+      {name:'DRG/DIP',score:0.55,items:['非DRG豁免','未获创新药除外支付','费用可能超出病组标准']},
+    ],
+    expertise:['医保准入','报销政策','基金评估','DRG/DIP','谈判策略'],
+    institutions:['医保局25%','学术25%','药企30%','咨询20%'],
+  },
+  samples:[
+    {name:'马国强',title:'前医保局专家',inst:'某省级医保局(已退休)',exp:22,focus:'准入政策',region:'北京',
+     stance:'肿瘤是医保优先领域，这是最大的利好。但价格15000元/月确实偏高，医保基金压力大。建议药企主动降价20-30%以换取快速准入。创新药快速通道可以利用，但最终还是要看药物经济学证据。',
+     dims:{access:0.68,reimb:0.45,fund:0.42,drg:0.52}},
+    {name:'韩梅',title:'医保政策研究员',inst:'中国药科大学医药政策研究所',exp:14,focus:'DRG/DIP',region:'南京',
+     stance:'DRG/DIP支付下，该药可能面临挑战。15000元/月的费用在很多病组中会超出支付标准。建议申请创新药除外支付或DRG豁免，这需要与医保部门提前沟通。',
+     dims:{access:0.62,reimb:0.52,fund:0.50,drg:0.60}},
+  ]
+},
 ];
 
-const CLUSTERS = [
-  {name:'积极采纳',count:750,color:'#10b981',emoji:'🟢'},
-  {name:'谨慎观望',count:243,color:'#f59e0b',emoji:'🟡'},
-  {name:'中立',count:7,color:'#64748b',emoji:'⚪'},
-  {name:'怀疑犹豫',count:0,color:'#ef4444',emoji:'🔴'},
-];
-
-const MONTHS = [{m:1,pv:127},{m:3,pv:380},{m:6,pv:757},{m:9,pv:1400},{m:12,pv:2145},{m:15,pv:2700},{m:18,pv:3111},{m:21,pv:3450},{m:24,pv:3732}];
+const CLUSTERS=[{name:'积极采纳',count:750,color:'#10b981'},{name:'谨慎观望',count:243,color:'#f59e0b'},{name:'中立',count:7,color:'#64748b'},{name:'怀疑犹豫',count:0,color:'#ef4444'}];
+const MONTHS=[{m:1,pv:127},{m:3,pv:380},{m:6,pv:757},{m:9,pv:1400},{m:12,pv:2145},{m:15,pv:2700},{m:18,pv:3111},{m:21,pv:3450},{m:24,pv:3732}];
 
 // ═══ HERO BG ═══
-(function(){
-  const c=document.getElementById('heroBg'),ctx=c.getContext('2d');
-  let W,H,pts=[];
-  function rs(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
-  rs();window.addEventListener('resize',rs);
-  const cols=['#06b6d4','#3b82f6','#8b5cf6','#10b981','#f59e0b'];
-  for(let i=0;i<150;i++)pts.push({x:Math.random()*2000,y:Math.random()*1200,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+.5,c:cols[i%5],a:Math.random()*.4+.2});
-  function d(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.28);ctx.fillStyle=p.c;ctx.globalAlpha=p.a;ctx.fill()});ctx.globalAlpha=.05;ctx.strokeStyle='#3b82f6';ctx.lineWidth=.5;for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;if(dx*dx+dy*dy<8000){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke()}}ctx.globalAlpha=1;requestAnimationFrame(d)}d();
-})();
+(function(){const c=document.getElementById('heroBg'),ctx=c.getContext('2d');let W,H,p=[];function rs(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}rs();window.addEventListener('resize',rs);const cs=['#06b6d4','#3b82f6','#8b5cf6','#10b981','#f59e0b'];for(let i=0;i<120;i++)p.push({x:Math.random()*2e3,y:Math.random()*1e3,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,c:cs[i%5],a:Math.random()*.3+.15});function d(){ctx.clearRect(0,0,W,H);p.forEach(q=>{q.x+=q.vx;q.y+=q.vy;if(q.x<0)q.x=W;if(q.x>W)q.x=0;if(q.y<0)q.y=H;if(q.y>H)q.y=0;ctx.beginPath();ctx.arc(q.x,q.y,q.r,0,6.28);ctx.fillStyle=q.c;ctx.globalAlpha=q.a;ctx.fill()});ctx.globalAlpha=.04;ctx.strokeStyle='#3b82f6';ctx.lineWidth=.5;for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const dx=p[i].x-p[j].x,dy=p[i].y-p[j].y;if(dx*dx+dy*dy<6e3){ctx.beginPath();ctx.moveTo(p[i].x,p[i].y);ctx.lineTo(p[j].x,p[j].y);ctx.stroke()}}ctx.globalAlpha=1;requestAnimationFrame(d)}d()})();
 
 // ═══ COUNTER ═══
-function anim(el,tgt,dur=2000){let s=0;const st=tgt/(dur/16);const tmr=setInterval(()=>{s+=st;if(s>=tgt){s=tgt;clearInterval(tmr)}el.textContent=Math.floor(s).toLocaleString()},16)}
-const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){anim(document.getElementById('counter'),1801);anim(document.getElementById('s1'),400);anim(document.getElementById('s2'),1000);anim(document.getElementById('s3'),400);obs.disconnect()}})},{threshold:.3});
+function anim(el,t,d=2e3){let s=0;const st=t/(d/16);const tm=setInterval(()=>{s+=st;if(s>=t){s=t;clearInterval(tm)}el.textContent=Math.floor(s).toLocaleString()},16)}
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){anim(document.getElementById('counter'),1801);anim(document.getElementById('s1'),400);anim(document.getElementById('s2'),1e3);anim(document.getElementById('s3'),400);obs.disconnect()}})},{threshold:.3});
 obs.observe(document.querySelector('.hero'));
 
-// ═══ EXPERT CARDS ═══
-const stage=document.getElementById('expertStage');
+// ═══ EXPERT GRID ═══
+const grid=document.getElementById('expertGrid');
 EXPERTS.forEach((e,i)=>{
-  const card=document.createElement('div');card.className='expert-card';card.style.setProperty('--ecolor',e.color);card.style.setProperty('--ecolor2',e.color2);card.style.animationDelay=i*120+'ms';
+  const c=document.createElement('div');c.className='expert-card';c.style.setProperty('--ec',e.color);c.style.animationDelay=i*100+'ms';
+  c.onclick=()=>openModal(e);
   const pct=Math.round(e.score*100);
-  card.innerHTML=`
-    <div class="sparkle" style="color:${e.color}">✦</div>
-    <div class="avatar" style="background:${e.color}15;border:2px solid ${e.color}30;animation-delay:${i*.2}s">
-      ${e.emoji}
-    </div>
-    <h3>${e.name}</h3>
-    <div class="expert-count">${e.count}位专家</div>
-    <div class="score">${e.score.toFixed(3)}</div>
-    <div class="score-bar"><div class="score-fill" data-w="${pct}%" style="width:0;background:linear-gradient(90deg,${e.color},${e.color2})"></div></div>
-    <div class="tag">${e.tag}</div>
-  `;
-  stage.appendChild(card);
+  c.innerHTML=`<div class="av" style="background:${e.color}12;border:2px solid ${e.color}25;animation-delay:${i*.15}s">${e.emoji}</div>
+    <h3 style="color:${e.color}">${e.name}</h3><div class="cnt">${e.count}位专家 · ${e.grade}</div>
+    <div class="sc" style="color:${e.color}">${e.score.toFixed(3)}</div>
+    <div class="bar"><div data-w="${pct}%" style="width:0;background:linear-gradient(90deg,${e.color},${e.color2})"></div></div>
+    <div class="tag">${e.tag}</div><div class="click-hint">点击查看详细画像 →</div>`;
+  grid.appendChild(c);
 });
-// animate fills
-setTimeout(()=>{document.querySelectorAll('.score-fill').forEach(el=>{el.style.width=el.dataset.w})},500);
+setTimeout(()=>{document.querySelectorAll('.bar div[data-w]').forEach(el=>{el.style.width=el.dataset.w})},500);
+
+// ═══ MODAL ═══
+function openModal(e){
+  const o=document.getElementById('modalOverlay');o.classList.add('active');
+  // header
+  document.getElementById('modalHeader').innerHTML=`
+    <div class="mh-icon" style="font-size:3.5rem">${e.emoji}</div>
+    <div class="mh-info"><h2 style="color:${e.color}">${e.profile.title}</h2><div class="mh-sub">${e.profile.desc}</div><div class="mh-sub" style="margin-top:.3rem">${e.count}位专家参与评估</div></div>
+    <div class="mh-score"><div class="mh-val" style="color:${e.color}">${e.score.toFixed(3)}</div><div class="mh-grade" style="background:${e.color}20;color:${e.color}">${e.grade}</div></div>`;
+  // body
+  let html='<div class="profile-grid">';
+  // sub-dimensions
+  html+=`<div class="profile-card"><h4>📋 子维度评分</h4>`;
+  e.profile.sub_dims.forEach(d=>{
+    html+=`<div style="margin-bottom:.8rem">
+      <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.3rem"><span style="font-weight:600">${d.name}</span><span style="color:${e.color};font-weight:700">${d.score.toFixed(2)}</span></div>
+      <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:${Math.round(d.score*100)}%;height:100%;background:${e.color};border-radius:3px;transition:width 1s"></div></div>
+      <div style="margin-top:.3rem">${d.items.map(it=>`<div style="font-size:.75rem;color:var(--dim);padding:.15rem 0">• ${it}</div>`).join('')}</div>
+    </div>`;
+  });
+  html+='</div>';
+  // expertise & institutions
+  html+=`<div class="profile-card"><h4>🎓 专业能力</h4><div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem">${e.profile.expertise.map(x=>`<span style="font-size:.75rem;padding:.2rem .5rem;border-radius:6px;background:${e.color}15;color:${e.color};border:1px solid ${e.color}30">${x}</span>`).join('')}</div>`;
+  html+=`<h4 style="margin-top:.5rem">🏢 机构分布</h4>${e.profile.institutions.map(x=>`<div style="font-size:.8rem;padding:.2rem 0;color:var(--dim)">• ${x}</div>`).join('')}</div>`;
+  html+='</div>';
+  // sample agents
+  html+=`<div class="sample-section"><h4 style="color:${e.color};font-size:1.1rem;margin-bottom:1rem">👤 样本Agent画像 (${e.samples.length}个)</h4>`;
+  e.samples.forEach(s=>{
+    html+=`<div class="agent-sample">
+      <div class="as-head">
+        <div class="as-avatar" style="background:${e.color}15;border:2px solid ${e.color}30">${e.emoji}</div>
+        <div><div class="as-name">${s.name}</div><div class="as-meta">${s.title} · ${s.inst} · ${s.exp}年经验 · ${s.region} · 专长：${s.focus}</div></div>
+      </div>
+      <div class="as-stance" style="background:${e.color}08;border-left:3px solid ${e.color}">${s.stance}</div>
+      <div class="as-dims">${Object.entries(s.dims).map(([k,v])=>`<span style="color:${v>.75?'#10b981':v>.6?'#f59e0b':'#ef4444'}">${k}: ${v.toFixed(2)}</span>`).join('')}</div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('modalBody').innerHTML=html;
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('active')}
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 
 // ═══ SCOREBOARD ═══
-const sb=document.getElementById('scoreboard');
-sb.innerHTML='<h3>📋 7维度得分排名</h3>';
+const sb=document.getElementById('scoreboard');sb.innerHTML='<h3>📋 7维度得分排名（点击查看详情）</h3>';
 EXPERTS.forEach(e=>{
-  const pct=Math.round(e.score*100);
-  const badge=e.score>.7?'🟢':e.score>.6?'🟡':'🟠';
-  const row=document.createElement('div');row.className='dim-row';
-  row.innerHTML=`
-    <div class="dim-icon">${e.icon}</div>
-    <div class="dim-name" style="color:${e.color}">${e.name}</div>
-    <div class="dim-bar"><div class="dim-fill" data-w="${pct}%" style="width:0;background:linear-gradient(90deg,${e.color},${e.color2})"></div></div>
-    <div class="dim-score" style="color:${e.color}">${e.score.toFixed(3)}</div>
-    <div class="dim-badge" style="background:${e.color}20;color:${e.color}">${e.grade}</div>
-  `;
-  sb.appendChild(row);
+  const pct=Math.round(e.score*100);const g=e.score>.7?'🟢':e.score>.6?'🟡':'🟠';
+  const r=document.createElement('div');r.className='dim-row';r.onclick=()=>openModal(e);
+  r.innerHTML=`<div class="di">${e.emoji}</div><div class="dn" style="color:${e.color}">${e.name}</div><div class="db"><div class="df" data-w="${pct}%" style="width:0;background:linear-gradient(90deg,${e.color},${e.color2})"></div></div><div class="ds" style="color:${e.color}">${e.score.toFixed(3)}</div><div class="dg" style="background:${e.color}15;color:${e.color}">${e.grade}</div>`;
+  sb.appendChild(r);
 });
-setTimeout(()=>{document.querySelectorAll('.dim-fill').forEach(el=>{el.style.width=el.dataset.w})},800);
-
-// comprehensive
-const comp=document.getElementById('compBox');
+setTimeout(()=>{document.querySelectorAll('.df[data-w]').forEach(el=>{el.style.width=el.dataset.w})},800);
+// comp
 const avg=(EXPERTS.reduce((s,e)=>s+e.score,0)/EXPERTS.length).toFixed(3);
-comp.innerHTML=`
-  <div style="font-size:1rem;color:var(--dim);margin-bottom:.5rem">7维度综合评估</div>
-  <div class="comp-score">${avg}</div>
-  <div class="comp-rec" style="background:rgba(16,185,129,.15);color:#10b981;border:1px solid #10b98140">✅ 推荐上市</div>
-  <div style="margin-top:1rem;color:var(--dim);font-size:.85rem">400位专家 · 7维度 · 综合得分 ${avg}</div>
-`;
+document.getElementById('compBox').innerHTML=`<div style="font-size:.9rem;color:var(--dim);margin-bottom:.3rem">7维度综合评估</div><div class="cv">${avg}</div><div class="cr" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid #10b98140">✅ 推荐上市</div><div style="margin-top:.8rem;color:var(--dim);font-size:.8rem">400位专家 · 7维度 · 21个子维度 · 细粒度决策</div>`;
 
 // ═══ CLUSTERS ═══
-const cv=document.getElementById('clusterViz');
-const total=CLUSTERS.reduce((s,c)=>s+c.count,0);
-CLUSTERS.forEach(c=>{
-  const pct=((c.count/total)*100).toFixed(1);
-  const r=50,circ=2*Math.PI*r,offset=circ*(1-c.count/total);
-  const box=document.createElement('div');box.className='cluster-box';
-  box.innerHTML=`
-    <div class="c-ring" style="color:${c.color}">
-      <svg width="120" height="120" viewBox="0 0 120 120">
-        <circle cx="60" cy="60" r="${r}" stroke="${c.color}20"/>
-        <circle cx="60" cy="60" r="${r}" stroke="${c.color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 2s ease"/>
-      </svg>
-      ${pct}%
-    </div>
-    <div class="c-label" style="color:${c.color}">${c.emoji} ${c.name}</div>
-    <div class="c-count">${c.count}人</div>
-  `;
-  cv.appendChild(box);
+const cv=document.getElementById('clusterViz');const tot=CLUSTERS.reduce((s,c)=>s+c.count,0);
+CLUSTERS.forEach(c=>{const pct=((c.count/tot)*100).toFixed(1);const r=48,circ=2*Math.PI*r,off=circ*(1-c.count/tot);
+  const b=document.createElement('div');b.className='cluster-box';
+  b.innerHTML=`<div class="cring" style="color:${c.color}"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${r}" stroke="${c.color}20"/><circle cx="55" cy="55" r="${r}" stroke="${c.color}" stroke-dasharray="${circ}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset 2s"/></svg>${pct}%</div><div style="color:${c.color};font-weight:600">${c.name}</div><div style="color:var(--dim);font-size:.8rem">${c.count}人</div>`;
+  cv.appendChild(b);
 });
 
 // ═══ CHART ═══
-(function(){
-  const c=document.getElementById('chartCanvas'),ctx=c.getContext('2d');
-  const W=c.width,H=c.height,p={t:40,r:40,b:50,l:70},pw=W-p.l-p.r,ph=H-p.t-p.b;
-  ctx.clearRect(0,0,W,H);
-  // grid
-  ctx.strokeStyle='rgba(148,163,184,.1)';ctx.lineWidth=1;
-  for(let i=0;i<=5;i++){const y=p.t+ph*i/5;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke()}
-  // bars
-  const mx=4000;
-  MONTHS.forEach((d,i)=>{
-    const x=p.l+(i/(MONTHS.length-1))*pw,bh=(d.pv/mx)*ph,y=p.t+ph-bh;
-    const g=ctx.createLinearGradient(x,y,x,p.t+ph);g.addColorStop(0,'#06b6d4');g.addColorStop(1,'rgba(6,182,212,.15)');
-    ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(x-20,y,40,bh,6);ctx.fill();
-    ctx.fillStyle='#e2e8f0';ctx.font='bold 12px Inter';ctx.textAlign='center';ctx.fillText(d.pv.toLocaleString(),x,y-8);
-    ctx.fillStyle='#64748b';ctx.font='11px Inter';ctx.fillText('M'+d.m,x,H-p.b+20);
-  });
-  // line
-  ctx.beginPath();ctx.strokeStyle='#10b981';ctx.lineWidth=2.5;
-  MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
-  ctx.stroke();
-  MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;ctx.beginPath();ctx.arc(x,y,4,0,6.28);ctx.fillStyle='#10b981';ctx.fill()});
-  // legend
-  ctx.fillStyle='#06b6d4';ctx.fillRect(W-170,12,12,12);ctx.fillStyle='#94a3b8';ctx.font='11px Inter';ctx.textAlign='left';ctx.fillText('处方量',W-153,22);
-  ctx.fillStyle='#10b981';ctx.beginPath();ctx.arc(W-90,18,5,0,6.28);ctx.fill();ctx.fillStyle='#94a3b8';ctx.fillText('趋势',W-80,22);
-})();
+(function(){const c=document.getElementById('chartCanvas'),ctx=c.getContext('2d');const W=c.width,H=c.height,p={t:35,r:35,b:45,l:65},pw=W-p.l-p.r,ph=H-p.t-p.b;ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(148,163,184,.08)';for(let i=0;i<=5;i++){const y=p.t+ph*i/5;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke()}const mx=4e3;MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,bh=(d.pv/mx)*ph,y=p.t+ph-bh;const g=ctx.createLinearGradient(x,y,x,p.t+ph);g.addColorStop(0,'#06b6d4');g.addColorStop(1,'rgba(6,182,212,.1)');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(x-18,y,36,bh,5);ctx.fill();ctx.fillStyle='#e2e8f0';ctx.font='bold 11px Inter';ctx.textAlign='center';ctx.fillText(d.pv.toLocaleString(),x,y-6);ctx.fillStyle='#64748b';ctx.font='10px Inter';ctx.fillText('M'+d.m,x,H-p.b+18)});ctx.beginPath();ctx.strokeStyle='#10b981';ctx.lineWidth=2;MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;ctx.beginPath();ctx.arc(x,y,3.5,0,6.28);ctx.fillStyle='#10b981';ctx.fill()})})();
 
-// ═══ SCROLL NAV ═══
+// ═══ NAV SCROLL ═══
 document.querySelectorAll('nav a').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'})})});
 </script>
 </body>
