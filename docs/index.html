@@ -242,7 +242,7 @@ const DRUGS=[
 // ── 代谢/糖尿病 ──
 {name:"Ozempic",generic:"司美格鲁肽",company:"诺和诺德(Novo Nordisk)",cat:"代谢/糖尿病",fda:"2017",china:"2021",indications:["2型糖尿病","肥胖"],mechanism:"GLP-1受体激动剂",price_us:12000,efficacy:{hba1c:1.8,weight:6.2}},
 {name:"Mounjaro",generic:"替尔泊肽",company:"礼来(Eli Lilly)",cat:"代谢/糖尿病",fda:"2022",china:"申请中",indications:["2型糖尿病","肥胖"],mechanism:"GLP-1/GIP双靶点",price_us:15000,efficacy:{hba1c:2.4,weight:9.5}},
-{name:"Jardiance",generic:"恩格列净",公司:"勃林格殷格翰/礼来",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:8000,efficacy:{hba1c:0.8,weight:2.0}},
+{name:"Jardiance",generic:"恩格列净",company:"勃林格殷格翰/礼来",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:8000,efficacy:{hba1c:0.8,weight:2.0}},
 {name:"Farxiga",generic:"达格列净",company:"阿斯利康(AZ)",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:7500,efficacy:{hba1c:0.7,weight:1.8}},
 {name:"Trulicity",generic:"度拉糖肽",company:"礼来(Eli Lilly)",cat:"代谢/糖尿病",fda:"2014",china:"2019",indications:["2型糖尿病"],mechanism:"GLP-1受体激动剂",price_us:10000,efficacy:{hba1c:1.4,weight:3.5}},
 {name:"Rybelsus",generic:"口服司美格鲁肽",company:"诺和诺德(Novo Nordisk)",cat:"代谢/糖尿病",fda:"2019",china:"2023",indications:["2型糖尿病"],mechanism:"GLP-1受体激动剂(口服)",price_us:11000,efficacy:{hba1c:1.5,weight:4.5}},
@@ -251,7 +251,6 @@ const DRUGS=[
 {name:"Xarelto",generic:"利伐沙班",company:"拜耳/强生",cat:"心血管",fda:"2011",china:"2014",indications:["房颤卒中预防","DVT/PE","ACS"],mechanism:"Xa因子抑制剂",price_us:5500,efficacy:{stroke_reduction:0.52,bleeding:0.45}},
 {name:"Entresto",generic:"沙库巴曲缬沙坦",company:"诺华(Novartis)",cat:"心血管",fda:"2015",china:"2017",indications:["心衰(HFrEF)"],mechanism:"ARNI",price_us:7000,efficacy:{hospital_reduction:0.21,mortality:0.20}},
 {name:"Repatha",generic:"依洛尤单抗",company:"安进(Amgen)",cat:"心血管",fda:"2015",china:"2018",indications:["高胆固醇血症","ASCVD"],mechanism:"PCSK9抑制剂",price_us:14000,efficacy:{ldl_reduction:0.60}},
-{name:"Repatha",generic:"依洛尤单抗",company:"安进(Amgen)",cat:"心血管",fda:"2015",china:"2018",indications:["高胆固醇血症"],mechanism:"PCSK9抑制剂",price_us:14000,efficacy:{ldl_reduction:0.60}},
 {name:"Leqvio",generic:"Inclisiran",company:"诺华(Novartis)",cat:"心血管",fda:"2021",china:"申请中",indications:["高胆固醇血症"],mechanism:"siRNA-PCSK9",price_us:10000,efficacy:{ldl_reduction:0.52}},
 // ── 自身免疫 ──
 {name:"Humira",generic:"阿达木单抗",company:"艾伯维(AbbVie)",cat:"自身免疫",fda:"2002",china:"2010",indications:["类风湿关节炎","银屑病","克罗恩病","溃疡性结肠炎"],mechanism:"TNF-α抑制剂",price_us:70000,efficacy:{response_rate:0.70,remission:0.40}},
@@ -280,13 +279,9 @@ const DRUGS=[
 const CATEGORIES=[...new Set(DRUGS.map(d=>d.cat))];
 let selectedDrug=null,currentCat='全部';
 
-// ═══ NAVIGATION ═══
-function go(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.p===page)});
-  if(page==='agents'&&!window._particlesInit)initParticles();
-}
 // Drug filtering
-function initDrugPage(){var f=document.getElementById(\"catFilters\");f.innerHTML=\"<button class=\\\"active\\\" onclick=\\\"filterCat(\\x27全部\\x27,this)\\\">全部 (\"+DRUGS.length+\")</button>\";CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+=\"<button onclick=\\\"filterCat(\\x27\"+c+\"\\x27,this)\\\">\"+c+\" (\"+n+\")</button>\"});renderDrugs()}
-initDrugPage();</script></body></html>
+function initDrugPage(){var f=document.getElementById("catFilters");f.innerHTML="<button class=\"active\" onclick=\"filterCat('\u5168\u90e8',this)\">\u5168\u90e8 ("+DRUGS.length+")</button>";CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+="<button onclick=\"filterCat('"+c+"',this)\">"+c+" ("+n+")</button>"});renderDrugs()}
+initDrugPage();
+</script>
+</body>
+</html>
