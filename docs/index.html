@@ -6,754 +6,287 @@
 <title>PharmaSim - AI药品上市预测仿真平台</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f172a;--card:#1e293b;--card2:#162032;--text:#e2e8f0;--dim:#94a3b8;--border:#334155}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;overflow-x:hidden}
+:root{--bg:#0f172a;--card:#1e293b;--card2:#162032;--text:#e2e8f0;--dim:#94a3b8;--border:#334155;--cyan:#06b6d4;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--orange:#f59e0b;--red:#ef4444;--pink:#ec4899;--yellow:#eab308}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh}
+a{color:var(--cyan);text-decoration:none}
+
+/* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.7rem 2rem;display:flex;align-items:center}
-nav .logo{font-weight:800;font-size:1.3rem;background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-nav .links{margin-left:auto;display:flex;gap:1.5rem}
-nav .links a{color:var(--dim);text-decoration:none;font-size:.9rem}
-nav .links a:hover{color:#fff}
-section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
-.stitle{font-size:2rem;font-weight:800;margin-bottom:.3rem}
-.sdesc{color:var(--dim);margin-bottom:2rem;font-size:1rem}
+nav .logo{font-weight:800;font-size:1.2rem;cursor:pointer}
+nav .logo span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav .tabs{margin-left:2rem;display:flex;gap:.3rem}
+nav .tab{padding:.4rem 1rem;border-radius:8px;font-size:.85rem;cursor:pointer;color:var(--dim);transition:all .3s;border:none;background:none}
+nav .tab:hover{color:var(--text);background:rgba(255,255,255,.05)}
+nav .tab.active{color:var(--cyan);background:rgba(6,182,212,.1)}
 
-/* ═══ HERO ═══ */
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;text-align:center;padding:2rem}
-.hero canvas{position:absolute;inset:0;width:100%;height:100%}
-.hero>*{position:relative;z-index:1}
-.hero h1{font-size:clamp(3rem,7vw,5rem);font-weight:900;background:linear-gradient(135deg,#06b6d4,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero .sub{font-size:1.2rem;color:var(--dim);margin:.5rem 0 2rem}
-.hero .big-num{font-size:6rem;font-weight:900;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
-.hero .big-label{color:var(--dim);margin-top:.3rem}
-.hero-stats{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap;justify-content:center}
-.hero-stats .box{background:rgba(30,41,59,.8);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:12px;padding:1rem 1.8rem;text-align:center}
-.hero-stats .box .n{font-size:1.8rem;font-weight:700;color:#06b6d4}
-.hero-stats .box .l{font-size:.8rem;color:var(--dim)}
+/* PAGES */
+.page{display:none;padding:5rem 2rem 3rem;max-width:1400px;margin:0 auto;animation:fadeIn .4s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:2rem;font-weight:800;margin-bottom:.3rem}
+h2{font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
+.desc{color:var(--dim);margin-bottom:1.5rem;font-size:.95rem}
 
-/* ═══ EXPERT CARDS ═══ */
-.expert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1.2rem}
-.expert-card{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .4s;position:relative}
-.expert-card:hover{transform:translateY(-6px);border-color:var(--ec);box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.expert-card .av{width:80px;height:80px;margin:0 auto .8rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.expert-card .av::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--ec);opacity:.4;animation:ring 2s infinite}
-@keyframes ring{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:.6;transform:scale(1.06)}}
-.expert-card h3{font-size:.95rem;color:var(--ec)}
-.expert-card .cnt{font-size:.75rem;color:var(--dim);margin:.2rem 0 .6rem}
-.expert-card .sc{font-size:2.2rem;font-weight:900;color:var(--ec)}
-.expert-card .bar{height:6px;background:var(--border);border-radius:3px;margin:.5rem 0;overflow:hidden}
-.expert-card .bar div{height:100%;border-radius:3px;transition:width 2s ease}
-.expert-card .tag{font-size:.7rem;color:var(--dim);margin-top:.4rem}
-.expert-card .click-hint{font-size:.65rem;color:var(--ec);margin-top:.6rem;opacity:.6}
+/* DRUG GRID */
+.drug-filters{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.drug-filters button{padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.85rem;transition:all .3s}
+.drug-filters button:hover,.drug-filters button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+.search-box{width:100%;padding:.7rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;margin-bottom:1.5rem;outline:none}
+.search-box:focus{border-color:var(--cyan)}
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.drug-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.drug-card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+.drug-card .dc-category{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.drug-card .dc-name{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
+.drug-card .dc-generic{font-size:.85rem;color:var(--dim);margin-bottom:.6rem}
+.drug-card .dc-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.drug-card .dc-tag{font-size:.7rem;padding:.15rem .4rem;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.drug-card .dc-status{position:absolute;top:1rem;right:1rem;font-size:.7rem;padding:.2rem .5rem;border-radius:6px;font-weight:600}
+.drug-card .dc-fda{background:rgba(16,185,129,.15);color:#10b981}
+.drug-card .dc-china{background:rgba(245,158,11,.15);color:#f59e0b}
+.drug-card .dc-select{margin-top:.8rem;padding:.4rem 0;border-radius:6px;background:var(--cyan);color:#fff;border:none;width:100%;font-size:.85rem;font-weight:600;cursor:pointer;opacity:0;transition:opacity .3s}
+.drug-card:hover .dc-select{opacity:1}
 
-/* ═══ MODAL ═══ */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
-.modal-overlay.active{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:900px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
-.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.5rem;cursor:pointer;z-index:10}
-.modal-close:hover{color:#fff}
-.modal-header{padding:2rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.5rem}
-.modal-header .mh-icon{font-size:3rem}
-.modal-header .mh-info h2{font-size:1.5rem;font-weight:700}
-.modal-header .mh-info .mh-sub{color:var(--dim);font-size:.9rem;margin-top:.2rem}
-.modal-header .mh-score{margin-left:auto;text-align:center}
-.modal-header .mh-score .mh-val{font-size:2.5rem;font-weight:900}
-.modal-header .mh-score .mh-grade{font-size:.8rem;padding:.2rem .6rem;border-radius:8px;margin-top:.3rem;display:inline-block}
+/* CONFIG PAGE */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:800px){.config-grid{grid-template-columns:1fr}}
+.config-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.config-card h3{font-size:1rem;margin-bottom:1rem;color:var(--cyan)}
+.config-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.config-row label{font-size:.9rem;color:var(--dim)}
+.config-row input,.config-row select{padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:.85rem;width:180px}
+.config-row select{cursor:pointer}
+.sim-btn{display:block;width:100%;padding:1rem;border-radius:12px;border:none;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;margin-top:2rem;transition:all .3s}
+.sim-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(6,182,212,.3)}
+.sim-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* RESULTS */
+.results-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.rs-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center}
+.rs-card .rs-val{font-size:1.8rem;font-weight:800;margin:.3rem 0}
+.rs-card .rs-lbl{font-size:.8rem;color:var(--dim)}
+
+/* EXPERT CARDS */
+.expert-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.expert-chip{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;transition:all .3s}
+.expert-chip:hover{transform:translateY(-4px);border-color:var(--ec)}
+.expert-chip .ec-emoji{font-size:2rem;margin-bottom:.5rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.expert-chip .ec-name{font-size:.85rem;font-weight:600;margin-bottom:.2rem}
+.expert-chip .ec-score{font-size:1.8rem;font-weight:900}
+.expert-chip .ec-bar{height:4px;background:var(--border);border-radius:2px;margin:.4rem 0;overflow:hidden}
+.expert-chip .ec-bar div{height:100%;border-radius:2px;transition:width 1.5s}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;max-width:850px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
+.modal .mx{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer;z-index:5}
+.modal-head{padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.modal-head .mh-icon{font-size:2.5rem}
 .modal-body{padding:1.5rem 2rem 2rem}
+.m-section{margin-bottom:1.5rem}
+.m-section h4{font-size:.85rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
+.m-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.m-stance{padding:.6rem .8rem;border-radius:8px;font-size:.82rem;line-height:1.5;margin:.4rem 0}
+.m-dims{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
+.m-dims span{font-size:.7rem;padding:.15rem .4rem;border-radius:5px;border:1px solid var(--border)}
 
-/* ═══ PROFILE SECTION ═══ */
-.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
-@media(max-width:700px){.profile-grid{grid-template-columns:1fr}}
-.profile-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
-.profile-card h4{font-size:.85rem;color:var(--dim);margin-bottom:.8rem;text-transform:uppercase;letter-spacing:.5px}
-.profile-card .row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.9rem}
-.profile-card .row:last-child{border:none}
-.profile-card .row .label{color:var(--dim)}
-.profile-card .row .val{font-weight:600}
+/* PARTICLE */
+.particle-wrap{position:relative;height:500px;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:1.5rem 0}
+.particle-wrap canvas{width:100%;height:100%;cursor:crosshair}
+.p-legend{position:absolute;bottom:.8rem;left:.8rem;display:flex;gap:.6rem;flex-wrap:wrap;z-index:2}
+.p-legend span{display:flex;align-items:center;gap:.3rem;font-size:.7rem;background:rgba(0,0,0,.5);padding:.2rem .5rem;border-radius:12px}
+.p-legend .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.p-hint{position:absolute;top:.8rem;left:.8rem;font-size:.75rem;color:var(--dim);background:rgba(0,0,0,.4);padding:.2rem .6rem;border-radius:8px;z-index:2}
 
-/* ═══ DECISION DETAIL ═══ */
-.decision-section{margin-top:1.5rem}
-.decision-section h4{font-size:1rem;margin-bottom:1rem;color:var(--ec)}
-.decision-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.8rem}
-.decision-item .di-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
-.decision-item .di-name{font-weight:600;font-size:.95rem}
-.decision-item .di-score{font-weight:800;font-size:1.1rem}
-.decision-item .di-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:.4rem 0}
-.decision-item .di-fill{height:100%;border-radius:3px;transition:width 1s ease}
-.decision-item .di-detail{font-size:.8rem;color:var(--dim);line-height:1.6;margin-top:.5rem}
-.decision-item .di-finding{display:flex;align-items:flex-start;gap:.4rem;margin-top:.3rem;font-size:.8rem}
-.decision-item .di-finding .dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+/* PANEL */
+.panel{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .35s ease;overflow-y:auto;box-shadow:-6px 0 25px rgba(0,0,0,.3)}
+.panel.open{right:0}
+.panel .px{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.1rem;cursor:pointer}
+.panel-head{padding:1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem}
+.panel-head .ph-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.panel-body{padding:1rem 1.2rem}
 
-/* ═══ SAMPLE AGENTS ═══ */
-.sample-section{margin-top:2rem}
-.sample-section h4{font-size:1rem;margin-bottom:1rem}
-.agent-sample{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1rem}
-.agent-sample .as-head{display:flex;align-items:center;gap:1rem;margin-bottom:.8rem}
-.agent-sample .as-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
-.agent-sample .as-name{font-weight:700;font-size:1rem}
-.agent-sample .as-meta{font-size:.8rem;color:var(--dim)}
-.agent-sample .as-stance{padding:.6rem .8rem;border-radius:8px;font-size:.85rem;margin:.5rem 0;line-height:1.5}
-.agent-sample .as-dims{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
-.agent-sample .as-dims span{font-size:.75rem;padding:.2rem .5rem;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+/* CHART */
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin:1.5rem 0}
 
-/* ═══ PARTICLE VIZ ═══ */
-.particle-section{position:relative;height:550px;border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:2rem 0}
-.particle-section canvas{width:100%;height:100%;cursor:crosshair}
-.particle-legend{position:absolute;bottom:1rem;left:1rem;display:flex;gap:.8rem;flex-wrap:wrap;z-index:2}
-.particle-legend span{display:flex;align-items:center;gap:.3rem;font-size:.75rem;background:rgba(0,0,0,.6);padding:.25rem .6rem;border-radius:16px}
-.particle-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.particle-hint{position:absolute;top:1rem;left:1rem;font-size:.8rem;color:var(--dim);background:rgba(0,0,0,.5);padding:.3rem .8rem;border-radius:10px;z-index:2}
+/* CLUSTER */
+.cluster-row{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
+.cluster-item{text-align:center;flex:1;min-width:140px}
+.cluster-item .ci-ring{width:90px;height:90px;margin:0 auto .5rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800}
+.cluster-item .ci-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.cluster-item .ci-ring svg circle{fill:none;stroke-width:5;stroke-linecap:round}
 
-/* ═══ AGENT PROFILE PANEL ═══ */
-.agent-panel{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .4s cubic-bezier(.25,.8,.25,1);overflow-y:auto;box-shadow:-8px 0 30px rgba(0,0,0,.3)}
-.agent-panel.open{right:0}
-.agent-panel .ap-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.2rem;cursor:pointer}
-.agent-panel .ap-header{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
-.agent-panel .ap-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
-.agent-panel .ap-name{font-size:1.1rem;font-weight:700}
-.agent-panel .ap-type{font-size:.8rem;color:var(--dim);margin-top:.2rem}
-.agent-panel .ap-body{padding:1.2rem 1.5rem}
-.agent-panel .ap-section{margin-bottom:1.2rem}
-.agent-panel .ap-section h4{font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
-.agent-panel .ap-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
-.agent-panel .ap-row:last-child{border:none}
-.agent-panel .ap-row .k{color:var(--dim)}
-.agent-panel .ap-row .v{font-weight:600}
-.agent-panel .ap-stance{padding:.6rem .8rem;border-radius:8px;font-size:.82rem;line-height:1.5;margin:.5rem 0}
-.agent-panel .ap-dims{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
-.agent-panel .ap-dims span{font-size:.7rem;padding:.15rem .4rem;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
-
-/* ═══ SCOREBOARD ═══ */
-.scoreboard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem}
-.scoreboard h3{margin-bottom:1rem;font-size:1.1rem}
-.dim-row{display:flex;align-items:center;gap:1rem;margin-bottom:.8rem;padding:.6rem;border-radius:10px;background:rgba(255,255,255,.02);cursor:pointer;transition:background .3s}
-.dim-row:hover{background:rgba(255,255,255,.05)}
-.dim-row .di{width:40px;text-align:center;font-size:1.3rem}
-.dim-row .dn{width:100px;font-weight:600;font-size:.9rem}
-.dim-row .db{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden}
-.dim-row .df{height:100%;border-radius:5px;transition:width 2s ease}
-.dim-row .ds{width:55px;text-align:right;font-weight:800;font-size:1rem}
-.dim-row .dg{width:30px;text-align:center;font-size:.7rem;font-weight:700;padding:.2rem;border-radius:6px}
-.comp{text-align:center;padding:2rem;background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(139,92,246,.08));border:1px solid var(--border);border-radius:18px;margin-top:1.5rem}
-.comp .cv{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.comp .cr{font-size:1.1rem;margin-top:.5rem;padding:.4rem 1.2rem;border-radius:20px;display:inline-block;font-weight:600}
-
-/* ═══ CLUSTERS ═══ */
-.cluster-viz{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center}
-.cluster-box{text-align:center;flex:1;min-width:180px}
-.cluster-box .cring{width:110px;height:110px;margin:0 auto .8rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800}
-.cluster-box .cring svg{position:absolute;inset:0;transform:rotate(-90deg)}
-.cluster-box .cring svg circle{fill:none;stroke-width:5;stroke-linecap:round}
-
-/* ═══ CHART ═══ */
-.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
-footer{text-align:center;padding:3rem;color:var(--dim);font-size:.85rem;border-top:1px solid var(--border)}
-footer a{color:#06b6d4;text-decoration:none}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+footer{text-align:center;padding:2rem;color:var(--dim);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
 </style>
 </head>
 <body>
-<!-- NAV -->
+
 <nav>
-  <div class="logo">💊 PharmaSim</div>
-  <div class="links">
-    <a href="#particles">实时仿真</a>
-    <a href="#experts">专家Agent</a>
-    <a href="#scores">评分看板</a>
-    <a href="#clusters">意见集群</a>
-    <a href="#simulation">仿真结果</a>
+  <div class="logo" onclick="go('select')"><span>💊 PharmaSim</span></div>
+  <div class="tabs">
+    <button class="tab active" data-p="select" onclick="go('select')">选择药品</button>
+    <button class="tab" data-p="config" onclick="go('config')">市场配置</button>
+    <button class="tab" data-p="results" onclick="go('results')">仿真结果</button>
+    <button class="tab" data-p="agents" onclick="go('agents')">Agent探索</button>
   </div>
 </nav>
 
-<div class="hero">
-  <canvas id="heroBg"></canvas>
-  <h1>PharmaSim</h1>
-  <p class="sub">AI药品上市预测 · 7维专家 × 1000用户Agent · 细粒度决策交互</p>
-  <div class="big-num" id="counter">0</div>
-  <div class="big-label">个AI Agent正在协同仿真</div>
-  <div class="hero-stats">
-    <div class="box"><div class="n" id="s1">0</div><div class="l">医生Agent</div></div>
-    <div class="box"><div class="n" id="s2">0</div><div class="l">患者Agent</div></div>
-    <div class="box"><div class="n" id="s3">0</div><div class="l">专家Agent</div></div>
-    <div class="box"><div class="n">7</div><div class="l">评估维度</div></div>
-  </div>
+<!-- PAGE 1: DRUG SELECTION -->
+<div class="page active" id="page-select">
+  <h1>💊 选择目标药品</h1>
+  <p class="desc">从FDA已审批药品库中选择目标药品，模拟其进入中国市场的表现</p>
+  <input class="search-box" id="drugSearch" placeholder="🔍 搜索药品名称、通用名、适应症..." oninput="filterDrugs()">
+  <div class="drug-filters" id="catFilters"></div>
+  <div class="drug-grid" id="drugGrid"></div>
 </div>
 
-<!-- PARTICLE VISUALIZATION -->
-<section id="particles">
-  <h2 class="stitle">✨ 1801 Agent 实时仿真</h2>
-  <p class="sdesc">每个光点代表一个Agent · 点击任意光点查看该Agent的完整画像</p>
-  <div class="particle-section">
-    <canvas id="particleCanvas"></canvas>
-    <div class="particle-hint">🖱️ 点击任意Agent光点查看画像</div>
-    <div class="particle-legend">
+<!-- PAGE 2: MARKET CONFIG -->
+<div class="page" id="page-config">
+  <h1>⚙️ 中国市场配置</h1>
+  <p class="desc">配置药品进入中国市场的关键参数</p>
+  <div id="selectedDrugInfo" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem;display:none"></div>
+  <div class="config-grid">
+    <div class="config-card">
+      <h3>💰 定价策略</h3>
+      <div class="config-row"><label>中国定价 (元/月)</label><input type="number" id="cfgPrice" value="15000"></div>
+      <div class="config-row"><label>定价策略</label><select id="cfgPriceStrategy"><option>价值定价</option><option>竞争定价</option><option>渗透定价</option><option selected>国际参考定价</option></select></div>
+      <div class="config-row"><label>患者援助计划</label><select id="cfgPAP"><option>无</option><option selected>买3赠3</option><option>低收入减免</option></select></div>
+    </div>
+    <div class="config-card">
+      <h3>🏥 医保策略</h3>
+      <div class="config-row"><label>目标医保类型</label><select id="cfgInsurance"><option selected>国家医保目录</option><option>地方补充医保</option><option>商业保险</option><option>自费市场</option></select></div>
+      <div class="config-row"><label>预期谈判降幅</label><select id="cfgDiscount"><option>10-20%</option><option selected>20-30%</option><option>30-40%</option><option>40-50%</option></select></div>
+      <div class="config-row"><label>DRG豁免申请</label><select id="cfgDRG"><option>否</option><option selected>是</option></select></div>
+    </div>
+    <div class="config-card">
+      <h3>📊 市场环境</h3>
+      <div class="config-row"><label>竞品数量</label><input type="number" id="cfgCompetitors" value="4"></div>
+      <div class="config-row"><label>目标科室</label><input type="text" id="cfgSpecialties" value="肿瘤科,呼吸科"></div>
+      <div class="config-row"><label>上市时间</label><select id="cfgLaunch"><option>2025Q3</option><option selected>2025Q4</option><option>2026Q1</option><option>2026Q2</option></select></div>
+    </div>
+    <div class="config-card">
+      <h3>🔬 推广策略</h3>
+      <div class="config-row"><label>学术推广力度</label><select id="cfgPromo"><option>低</option><option>中</option><option selected>高</option></select></div>
+      <div class="config-row"><label>KOL合作</label><select id="cfgKOL"><option>无</option><option selected>区域KOL</option><option>全国KOL</option></select></div>
+      <div class="config-row"><label>渠道覆盖</label><select id="cfgChannel"><option>一线城市</option><option>二线+一线城市</option><option selected>全国覆盖</option></select></div>
+    </div>
+  </div>
+  <button class="sim-btn" onclick="runSimulation()">🚀 启动1801 Agent仿真</button>
+</div>
+
+<!-- PAGE 3: RESULTS -->
+<div class="page" id="page-results">
+  <h1>📈 仿真结果</h1>
+  <p class="desc" id="resultDrugDesc">基于1801个Agent的多维度社交仿真</p>
+  <div class="results-summary" id="resultsSummary"></div>
+  <h2>🧪 7维专家评估</h2>
+  <p class="desc">点击任意维度查看详细画像</p>
+  <div class="expert-row" id="expertRow"></div>
+  <div style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(139,92,246,.08));border:1px solid var(--border);border-radius:16px;margin:1.5rem 0" id="compScore"></div>
+  <h2 style="margin-top:2rem">👥 1000用户Agent意见分布</h2>
+  <div class="cluster-row" id="clusterRow"></div>
+  <h2 style="margin-top:2rem">📅 24个月市场预测</h2>
+  <div class="chart-box"><canvas id="chartC" width="1200" height="320" style="width:100%"></canvas></div>
+</div>
+
+<!-- PAGE 4: AGENTS -->
+<div class="page" id="page-agents">
+  <h1>🔬 Agent画像探索</h1>
+  <p class="desc">点击任意光点查看该Agent的完整背景、观点和立场</p>
+  <div class="particle-wrap">
+    <canvas id="pCanvas"></canvas>
+    <div class="p-hint">🖱️ 点击任意Agent光点查看画像</div>
+    <div class="p-legend">
       <span><span class="dot" style="background:#10b981"></span>积极采纳</span>
       <span><span class="dot" style="background:#f59e0b"></span>谨慎观望</span>
       <span><span class="dot" style="background:#ef4444"></span>怀疑犹豫</span>
-      <span><span class="dot" style="background:#3b82f6"></span>专家Agent</span>
-      <span><span class="dot" style="background:#ec4899"></span>KOL枢纽</span>
+      <span><span class="dot" style="background:#3b82f6"></span>医生Agent</span>
+      <span><span class="dot" style="background:var(--purple)"></span>专家Agent</span>
     </div>
   </div>
-</section>
-
-<section id="experts">
-  <h2 class="stitle">🧪 7维专家Agent矩阵</h2>
-  <p class="sdesc">点击任意专家卡片，查看Agent画像、子维度评分、决策逻辑和样本Agent</p>
-  <div class="expert-grid" id="expertGrid"></div>
-</section>
-
-<section id="scores">
-  <h2 class="stitle">📊 评分看板</h2>
-  <div class="scoreboard" id="scoreboard"></div>
-  <div class="comp" id="compBox"></div>
-</section>
-
-<section id="clusters">
-  <h2 class="stitle">👥 1000用户Agent意见分布</h2>
-  <p class="sdesc">8轮社交网络协商后的群体决策涌现</p>
-  <div class="cluster-viz" id="clusterViz"></div>
-</section>
-
-<section id="simulation">
-  <h2 class="stitle">📈 24个月市场仿真</h2>
-  <div class="chart-wrap"><canvas id="chartCanvas" width="1200" height="320" style="width:100%"></canvas></div>
-</section>
+</div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-header" id="modalHeader"></div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="mx" onclick="closeModal()">✕</button><div class="modal-head" id="mHead"></div><div class="modal-body" id="mBody"></div></div>
 </div>
 
-<!-- AGENT PROFILE PANEL (slide-in) -->
-<div class="agent-panel" id="agentPanel">
-  <button class="ap-close" onclick="closePanel()">✕</button>
-  <div class="ap-header" id="apHeader"></div>
-  <div class="ap-body" id="apBody"></div>
-</div>
+<!-- PANEL -->
+<div class="panel" id="panel"><button class="px" onclick="closePanel()">✕</button><div class="panel-head" id="pHead"></div><div class="panel-body" id="pBody"></div></div>
 
-<footer>PharmaSim v3.0 · 1801 Agent · 细粒度决策交互 · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a></footer>
+<footer>PharmaSim v3.0 · 1801 Agent · 7维专家 · FDA药品库 · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a></footer>
 
-<script>
-// ═══════════════════════════════════════════════════════
-// AGENT DATABASE (generated profiles)
-// ═══════════════════════════════════════════════════════
-const REGIONS=['北京','上海','广州','深圳','成都','武汉','杭州','南京','重庆','天津','西安','长沙','郑州','沈阳','青岛','济南'];
-const SPECIALTIES=['肿瘤科','呼吸科','胸外科','消化科','心内科','内分泌科','神经内科','血液科'];
-const HOSPITALS=['三甲','三甲','三甲','二甲','二甲','社区'];
-const STYLES=['保守型','激进型','跟风型','循证型'];
-const ATTITUDES=['早期采纳者','早期多数','晚期多数','滞后采纳者'];
-const INSURANCES=['城镇职工','城镇居民','新农合','商业保险','自费'];
-const ECONOMICS=['高收入','中等收入','低收入'];
-const INFO_SOURCES=['医生推荐','病友社区','网络搜索','家人决定'];
-
-function rng(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
-const R=rng(42);
-
-function genDoctor(id){
-  const sp=SPECIALTIES[Math.floor(R()*SPECIALTIES.length)];
-  const tier=HOSPITALS[Math.floor(R()*HOSPITALS.length)];
-  const exp=Math.floor(R()*30)+3;
-  const style=STYLES[Math.floor(R()*STYLES.length)];
-  const att=ATTITUDES[Math.floor(R()*ATTITUDES.length)];
-  const region=REGIONS[Math.floor(R()*REGIONS.length)];
-  const influence=R()*0.8+0.1;
-  const volume=Math.floor(R()*250)+50;
-  const surnames=['王','李','张','刘','陈','杨','黄','赵','周','吴','徐','孙','马','朱','胡','郭','何','罗','高','林'];
-  const given=['明','华','丽','伟','芳','强','静','磊','敏','建国','秀英','志强','建国','丽华','海燕','小红'];
-  const name=surnames[Math.floor(R()*surnames.length)]+given[Math.floor(R()*given.length)];
-  return{id,type:'doctor',name,specialty:sp,hospitalTier:tier,yearsExp:exp,style,attitude:att,region,
-    academicInfluence:Math.round(influence*100)/100,monthlyVolume:volume,
-    stance:`作为一名${tier}${sp}医生，从业${exp}年，我的处方风格属于${style}。对于新药，我是${att}。${att==='早期采纳者'?'我会积极尝试有循证支持的新药。':att==='滞后采纳者'?'我通常等到新药成为标准疗法后才考虑。':'我会参考同行和KOL的意见后再做决定。'}`,
-    willingness:att==='早期采纳者'?R()*.2+.75:att==='早期多数'?R()*.2+.55:att==='晚期多数'?R()*.2+.35:R()*.2+.2,
-    color:'#3b82f6'};
-}
-function genPatient(id){
-  const age=Math.floor(R()*62)+18;
-  const gender=R()>.5?'男':'女';
-  const stage=['早期','中期','晚期'][Math.floor(R()*3)];
-  const ins=INSURANCES[Math.floor(R()*INSURANCES.length)];
-  const econ=ECONOMICS[Math.floor(R()*ECONOMICS.length)];
-  const info=INFO_SOURCES[Math.floor(R()*INFO_SOURCES.length)];
-  const adherence=Math.round((R()*.6+.3)*100)/100;
-  const region=REGIONS[Math.floor(R()*REGIONS.length)];
-  const brands=['原研药偏好','仿制药偏好','无所谓'];
-  const brand=brands[Math.floor(R()*brands.length)];
-  const surnames=['张','王','李','赵','刘','陈','杨','黄','周','吴'];
-  const given=['先生','女士','大爷','阿姨','小哥','大姐'];
-  const name=surnames[Math.floor(R()*surnames.length)]+(age>50?given[Math.floor(R()*2+2)]:given[Math.floor(R()*2+4)]);
-  let w=0.4;
-  if(econ==='高收入')w+=.15;else if(econ==='低收入')w-=.1;
-  if(ins==='商业保险'||ins==='城镇职工')w+=.12;
-  if(stage==='晚期')w+=.15;
-  if(info==='医生推荐')w+=.1;
-  w+=R()*.15-.075;
-  w=Math.max(.05,Math.min(.95,w));
-  const type=w>.65?'enthusiast':w>.4?'cautious':'skeptic';
-  return{id,type:'patient',name,age,gender,diseaseStage:stage,insurance:ins,economicLevel:econ,
-    infoSource:info,adherence,brandPref:brand,region,
-    stance:`我是一名${age}岁的${gender}性患者，${stage}非小细胞肺癌，${ins}。经济水平${econ}，信息主要来自${info}。${w>.65?'我对新药持积极态度，只要疗效确切愿意尝试。':w>.4?'我比较谨慎，需要看到充分的证据和医生推荐才会考虑。':'我比较犹豫，主要担心副作用和经济负担。'}`,
-    willingness:Math.round(w*1000)/1000,
-    color:type==='enthusiast'?'#10b981':type==='cautious'?'#f59e0b':'#ef4444'};
-}
-function genExpert(id,dimIdx){
-  const e=EXPERTS[dimIdx];
-  const exp=Math.floor(R()*25)+5;
-  const insts=e.profile.institutions.map(i=>i.split('%')[1]?.trim()||i);
-  const inst=insts[Math.floor(R()*insts.length)];
-  const subDim=e.profile.sub_dims[Math.floor(R()*e.profile.sub_dims.length)];
-  const region=REGIONS[Math.floor(R()*REGIONS.length)];
-  const surnames=['陈','林','黄','赵','吴','周','徐','孙','马','朱'];
-  const given=['教授','博士','研究员','总监','专家','老师'];
-  const name=surnames[Math.floor(R()*surnames.length)]+given[Math.floor(R()*given.length)];
-  const focus=subDim.name;
-  const score=subDim.score+R()*.15-.075;
-  return{id,type:'expert',expertType:e.name,emoji:e.emoji,name,institution:inst,yearsExp:exp,
-    focus,region,dimScore:Math.round(score*1000)/1000,
-    stance:`我是${e.name}，专长${focus}。在${inst}工作${exp}年。${subDim.items[0]}。综合评分${score.toFixed(3)}。`,
-    color:e.color};
-}
-
-// Generate all 1801 agents
-const ALL_AGENTS=[];
-for(let i=0;i<400;i++)ALL_AGENTS.push(genDoctor('doc-'+i));
-for(let i=0;i<1000;i++)ALL_AGENTS.push(genPatient('pt-'+i));
-for(let d=0;d<7;d++)for(let i=0;i<EXPERTS[d].count;i++)ALL_AGENTS.push(genExpert('exp-'+d+'-'+i,d));
-
-// ═══════════════════════════════════════════════════════
-// PARTICLE VISUALIZATION (clickable)
-// ═══════════════════════════════════════════════════════
-(function(){
-  const c=document.getElementById('particleCanvas'),ctx=c.getContext('2d');
-  let W,H;
-  function rs(){W=c.width=c.parentElement.clientWidth;H=c.height=c.parentElement.clientHeight}
-  rs();window.addEventListener('resize',rs);
-
-  // Map agents to particles (show 600 for performance)
-  const SHOW=600,particles=[];
-  for(let i=0;i<SHOW;i++){
-    const a=ALL_AGENTS[i];
-    const angle=Math.random()*Math.PI*2,dist=Math.random()*Math.min(W,H)*.42;
-    particles.push({
-      x:W/2+Math.cos(angle)*dist, y:H/2+Math.sin(angle)*dist,
-      vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25,
-      r:a.type==='expert'?2.8:a.type==='doctor'?2.2:Math.random()*1.2+1.2,
-      agent:a, baseColor:a.color, alpha:Math.random()*.3+.5
-    });
-  }
-  // edges
-  const edges=[];
-  for(let i=0;i<2000;i++){const a=Math.floor(Math.random()*SHOW),b=Math.floor(Math.random()*SHOW);if(a!==b)edges.push([a,b])}
-
-  let hovered=null,t=0;
-  function draw(){
-    ctx.clearRect(0,0,W,H);t++;
-    // edges
-    ctx.globalAlpha=.025;ctx.strokeStyle='#3b82f6';ctx.lineWidth=.4;
-    edges.forEach(([a,b])=>{
-      const dx=particles[a].x-particles[b].x,dy=particles[a].y-particles[b].y;
-      if(dx*dx+dy*dy<70*70){ctx.beginPath();ctx.moveTo(particles[a].x,particles[a].y);ctx.lineTo(particles[b].x,particles[b].y);ctx.stroke()}
-    });
-    // particles
-    particles.forEach((p,i)=>{
-      p.x+=p.vx+Math.sin(t*.008+p.x*.005)*.12;
-      p.y+=p.vy+Math.cos(t*.008+p.y*.005)*.12;
-      const cx=W/2,cy=H/2,mr=Math.min(W,H)*.44;
-      const dx=p.x-cx,dy=p.y-cy,d=Math.sqrt(dx*dx+dy*dy);
-      if(d>mr){p.x=cx+dx/d*mr;p.y=cy+dy/d*mr;p.vx*=-.4;p.vy*=-.4}
-      const isHov=hovered===i;
-      const r=isHov?p.r*2.5:p.r;
-      ctx.beginPath();ctx.arc(p.x,p.y,r,0,6.28);
-      ctx.fillStyle=p.baseColor;ctx.globalAlpha=isHov?1:p.alpha;
-      ctx.fill();
-      if(isHov){ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.globalAlpha=.6;ctx.stroke();
-        // tooltip
-        ctx.globalAlpha=.85;ctx.fillStyle='rgba(0,0,0,.8)';
-        const tw=180,th=50,tx=Math.min(p.x+15,W-tw-10),ty=Math.max(p.y-30,10);
-        ctx.beginPath();ctx.roundRect(tx,ty,tw,th,8);ctx.fill();
-        ctx.fillStyle='#fff';ctx.font='bold 12px Inter';ctx.textAlign='left';
-        ctx.fillText(p.agent.name||p.agent.id,tx+10,ty+20);
-        ctx.fillStyle='#94a3b8';ctx.font='11px Inter';
-        ctx.fillText(`${p.agent.type==='doctor'?'👨‍⚕️医生':p.agent.type==='patient'?'🧑患者':'🔬专家'} · 点击查看详情`,tx+10,ty+38);
-      }
-    });
-    ctx.globalAlpha=1;
-    requestAnimationFrame(draw);
-  }
-  draw();
-
-  // hover detection
-  c.addEventListener('mousemove',e=>{
-    const rect=c.getBoundingClientRect();
-    const mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
-    hovered=null;
-    for(let i=0;i<particles.length;i++){
-      const dx=particles[i].x-mx,dy=particles[i].y-my;
-      if(dx*dx+dy*dy<(particles[i].r+6)*(particles[i].r+6)){hovered=i;break}
-    }
-    c.style.cursor=hovered!==null?'pointer':'crosshair';
-  });
-  // click -> show profile
-  c.addEventListener('click',e=>{
-    if(hovered!==null)showAgentProfile(particles[hovered].agent);
-  });
-})();
-
-// ═══ AGENT PROFILE PANEL ═══
-function showAgentProfile(a){
-  const panel=document.getElementById('agentPanel');
-  const header=document.getElementById('apHeader');
-  const body=document.getElementById('apBody');
-  const emoji=a.type==='doctor'?'👨‍⚕️':a.type==='patient'?'🧑':(a.emoji||'🔬');
-  const bgColor=a.color||'#3b82f6';
-
-  header.innerHTML=`
-    <div class="ap-avatar" style="background:${bgColor}15;border:2px solid ${bgColor}30">${emoji}</div>
-    <div><div class="ap-name">${a.name}</div>
-    <div class="ap-type">${a.type==='doctor'?'医生Agent':a.type==='patient'?'患者Agent':a.expertType+' · 专家Agent'}</div></div>`;
-
-  let html='';
-  if(a.type==='doctor'){
-    html=`
-      <div class="ap-section"><h4>📋 基本信息</h4>
-        <div class="ap-row"><span class="k">科室</span><span class="v">${a.specialty}</span></div>
-        <div class="ap-row"><span class="k">医院等级</span><span class="v">${a.hospitalTier}</span></div>
-        <div class="ap-row"><span class="k">从业年数</span><span class="v">${a.yearsExp}年</span></div>
-        <div class="ap-row"><span class="k">地区</span><span class="v">${a.region}</span></div>
-        <div class="ap-row"><span class="k">处方风格</span><span class="v">${a.style}</span></div>
-        <div class="ap-row"><span class="k">创新采纳</span><span class="v">${a.attitude}</span></div>
-        <div class="ap-row"><span class="k">学术影响力</span><span class="v">${a.academicInfluence}</span></div>
-        <div class="ap-row"><span class="k">月均患者量</span><span class="v">${a.monthlyVolume}人</span></div>
-      </div>
-      <div class="ap-section"><h4>💬 立场陈述</h4>
-        <div class="ap-stance" style="background:${bgColor}08;border-left:3px solid ${bgColor}">${a.stance}</div>
-      </div>
-      <div class="ap-section"><h4>📊 用药意愿</h4>
-        <div style="display:flex;align-items:center;gap:.8rem">
-          <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
-            <div style="width:${Math.round(a.willingness*100)}%;height:100%;background:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'};border-radius:4px"></div>
-          </div>
-          <span style="font-weight:800;font-size:1.1rem;color:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'}">${(a.willingness*100).toFixed(1)}%</span>
-        </div>
-      </div>`;
-  }else if(a.type==='patient'){
-    html=`
-      <div class="ap-section"><h4>📋 基本信息</h4>
-        <div class="ap-row"><span class="k">年龄</span><span class="v">${a.age}岁</span></div>
-        <div class="ap-row"><span class="k">性别</span><span class="v">${a.gender}</span></div>
-        <div class="ap-row"><span class="k">疾病分期</span><span class="v">${a.diseaseStage}</span></div>
-        <div class="ap-row"><span class="k">医保类型</span><span class="v">${a.insurance}</span></div>
-        <div class="ap-row"><span class="k">经济水平</span><span class="v">${a.economicLevel}</span></div>
-        <div class="ap-row"><span class="k">信息来源</span><span class="v">${a.infoSource}</span></div>
-        <div class="ap-row"><span class="k">依从性</span><span class="v">${a.adherence}</span></div>
-        <div class="ap-row"><span class="k">品牌偏好</span><span class="v">${a.brandPref}</span></div>
-        <div class="ap-row"><span class="k">地区</span><span class="v">${a.region}</span></div>
-      </div>
-      <div class="ap-section"><h4>💬 立场陈述</h4>
-        <div class="ap-stance" style="background:${bgColor}08;border-left:3px solid ${bgColor}">${a.stance}</div>
-      </div>
-      <div class="ap-section"><h4>📊 用药意愿</h4>
-        <div style="display:flex;align-items:center;gap:.8rem">
-          <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
-            <div style="width:${Math.round(a.willingness*100)}%;height:100%;background:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'};border-radius:4px"></div>
-          </div>
-          <span style="font-weight:800;font-size:1.1rem;color:${a.willingness>.65?'#10b981':a.willingness>.4?'#f59e0b':'#ef4444'}">${(a.willingness*100).toFixed(1)}%</span>
-        </div>
-      </div>`;
-  }else{
-    html=`
-      <div class="ap-section"><h4>📋 基本信息</h4>
-        <div class="ap-row"><span class="k">专家类型</span><span class="v" style="color:${bgColor}">${a.expertType}</span></div>
-        <div class="ap-row"><span class="k">机构</span><span class="v">${a.institution}</span></div>
-        <div class="ap-row"><span class="k">从业年数</span><span class="v">${a.yearsExp}年</span></div>
-        <div class="ap-row"><span class="k">专长方向</span><span class="v">${a.focus}</span></div>
-        <div class="ap-row"><span class="k">地区</span><span class="v">${a.region}</span></div>
-        <div class="ap-row"><span class="k">子维度评分</span><span class="v" style="color:${a.dimScore>.7?'#10b981':a.dimScore>.6?'#f59e0b':'#ef4444'}">${a.dimScore.toFixed(3)}</span></div>
-      </div>
-      <div class="ap-section"><h4>💬 评估意见</h4>
-        <div class="ap-stance" style="background:${bgColor}08;border-left:3px solid ${bgColor}">${a.stance}</div>
-      </div>`;
-  }
-  body.innerHTML=html;
-  panel.classList.add('open');
-}
-function closePanel(){document.getElementById('agentPanel').classList.remove('open')}
-
-// ═══ EXPERT DATA WITH FULL PROFILES ═══
-const EXPERTS=[
-{
-  id:'epi',emoji:'🧬',name:'流行病学专家',count:80,score:0.771,color:'#06b6d4',color2:'#22d3ee',grade:'A',
-  tag:'疾病负担 · 人群分析 · RWE',
-  profile:{
-    title:'流行病学评估专家',
-    desc:'从疾病负担、人群特征、真实世界证据角度评估新药市场潜力',
-    sub_dims:[
-      {name:'疾病负担',score:0.82,items:['肿瘤疾病负担高(DALY权重0.9)','未满足需求大','属于医保优先领域']},
-      {name:'人群分析',score:0.75,items:['患病率560/10万，市场容量大','目标患者超82万','老年用药市场，老龄化利好']},
-      {name:'真实世界证据',score:0.73,items:['RWE样本5000例','RWE与RCT结果一致','有疾病登记研究数据']},
-      {name:'结局研究',score:0.78,items:['PFS显著延长(+4.8月)','总生存期改善(+3.2月)','生活质量显著改善']},
-    ],
-    expertise:['疾病监测','登记研究','生存分析','疾病负担评估','人群分层'],
-    institutions:['学术机构45%','疾控中心25%','药企15%','WHO/国际组织15%'],
-  },
-  samples:[
-    {name:'张明远',title:'流行病学教授',inst:'北京大学公共卫生学院',exp:22,focus:'疾病负担',region:'北京',
-     stance:'该药物针对的非小细胞肺癌是中国发病率最高的恶性肿瘤之一，患病率高达560/10万。从流行病学角度，目标患者池充足，市场容量大。RWE数据显示5000例样本与RCT结果高度一致，证据充分。',
-     dims:{burden:0.85,population:0.78,rwe:0.72,outcome:0.80}},
-    {name:'李慧琳',title:'疾控中心研究员',inst:'中国疾控中心慢性病所',exp:15,focus:'人群分析',region:'上海',
-     stance:'从人群分析角度看，非小细胞肺癌患者以中老年为主，随着人口老龄化趋势，患病人群将持续增长。诊断率65%意味着仍有大量潜在患者未被发现。伴随诊断可及性良好(60%)，不会成为用药瓶颈。',
-     dims:{burden:0.75,population:0.82,rwe:0.68,outcome:0.72}},
-    {name:'王建国',title:'药企流行病学总监',inst:'恒瑞医药医学部',exp:18,focus:'RWE',region:'南京',
-     stance:'作为药企背景的流行病学专家，我关注的是上市后的真实世界表现。RWE样本量5000例虽然不是最大，但与RCT一致性好，说明疗效可复制。需要注意的是登记研究数据的长期随访结果。',
-     dims:{burden:0.70,population:0.72,rwe:0.80,outcome:0.76}},
-  ]
-},
-{
-  id:'clin',emoji:'🩺',name:'临床评估专家',count:40,score:0.712,color:'#10b981',color2:'#34d399',grade:'A',
-  tag:'疗效 · 安全性 · 指南',
-  profile:{
-    title:'临床评估专家',
-    desc:'从疗效、安全性、指南依从、临床可操作性角度评估新药',
-    sub_dims:[
-      {name:'疗效评估',score:0.78,items:['ORR 45.2%，疗效良好','优于标准治疗','主要终点达到统计学显著']},
-      {name:'安全性评估',score:0.65,items:['SAE率12.5%，中等水平','停药率8.3%，耐受性尚可','无黑框警告']},
-      {name:'指南与循证',score:0.72,items:['证据等级：RCT','获指南2A类推荐','已获15个国家批准']},
-      {name:'临床可操作性',score:0.68,items:['静脉给药，需医疗人员','需要伴随诊断(biomarker)','需特殊设备']},
-    ],
-    expertise:['临床终点评估','安全性评价','循证医学','指南解读','临床实践'],
-    institutions:['三甲医院45%','学术机构30%','二甲医院15%','药企10%'],
-  },
-  samples:[
-    {name:'陈志远',title:'肿瘤科主任医师',inst:'中山大学肿瘤防治中心',exp:25,focus:'疗效评估',region:'广州',
-     stance:'从临床疗效角度看，ORR 45.2%在PD-1单抗中属于中上水平。PFS改善4.8个月，OS改善3.2个月，这些都是有临床意义的获益。最重要的是主要终点达到了统计学显著性，这是循证医学的基础。',
-     dims:{efficacy:0.82,safety:0.62,guideline:0.75,practice:0.65}},
-    {name:'赵晓燕',title:'呼吸科副主任',inst:'复旦大学附属中山医院',exp:18,focus:'安全性',region:'上海',
-     stance:'作为一线临床医生，我最关注安全性。SAE率12.5%在免疫治疗中是可以接受的，但停药率8.3%需要关注。免疫相关不良反应需要长期监测。好消息是没有黑框警告，QT延长风险也未见信号。',
-     dims:{efficacy:0.72,safety:0.72,guideline:0.70,practice:0.68}},
-    {name:'刘伟',title:'临床药理学教授',inst:'北京协和医院',exp:20,focus:'指南',region:'北京',
-     stance:'该药获得了指南2A类推荐，虽然不是最高级别(1类)，但已经是非常积极的信号。15个国家批准说明全球监管认可。作为KOL，我认为随着更多数据积累，有望升级为1类推荐。',
-     dims:{efficacy:0.75,safety:0.65,guideline:0.80,practice:0.70}},
-  ]
-},
-{
-  id:'mkt',emoji:'📊',name:'市场评估专家',count:40,score:0.685,color:'#f59e0b',color2:'#fbbf24',grade:'B+',
-  tag:'竞争格局 · 渠道 · 商业化',
-  profile:{
-    title:'市场评估专家',
-    desc:'从竞争格局、渠道策略、商业化能力、市场容量角度评估',
-    sub_dims:[
-      {name:'竞争格局',score:0.65,items:['4个竞品，竞争中等','最优同类药物(Best-in-class)','专利保护充足(12年)']},
-      {name:'渠道策略',score:0.70,items:['DTP药房可及','医院准入中等','冷链要求增加成本']},
-      {name:'商业化能力',score:0.72,items:['高级别证据支撑学术推广','KOL支持','MNC商业化能力强']},
-      {name:'市场容量',score:0.68,items:['TAM约280亿','CAGR 18%，增速高','目标患者82万']},
-    ],
-    expertise:['竞争分析','渠道策略','商业化规划','市场准入','品牌管理'],
-    institutions:['药企40%','咨询公司30%','投资机构20%','学术10%'],
-  },
-  samples:[
-    {name:'黄明辉',title:'市场总监',inst:'百时美施贵宝(BMS)中国',exp:16,focus:'竞争格局',region:'上海',
-     stance:'PD-1市场已经进入红海，4个竞品意味着需要差异化竞争。好消息是该药是Best-in-class，有明确的疗效优势。专利保护12年给了足够的商业化窗口。关键是在前3年建立品牌壁垒。',
-     dims:{competitive:0.68,channel:0.65,commercial:0.75,sizing:0.70}},
-    {name:'周静',title:'医药咨询合伙人',inst:'IQVIA艾昆纬',exp:14,focus:'市场容量',region:'北京',
-     stance:'TAM 280亿，CAGR 18%，这是一个高速增长的市场。目标患者82万人，按15%渗透率估算峰值销售约42亿。但需要考虑医保谈判后的价格下降和竞品分流。',
-     dims:{competitive:0.62,channel:0.68,commercial:0.70,sizing:0.75}},
-  ]
-},
-{
-  id:'price',emoji:'💰',name:'定价评估专家',count:40,score:0.663,color:'#ef4444',color2:'#f87171',grade:'B',
-  tag:'价值定价 · 竞争定价 · 国际参考',
-  profile:{
-    title:'定价评估专家',
-    desc:'从价值定价、竞争定价、市场准入定价、国际参考定价角度评估',
-    sub_dims:[
-      {name:'价值定价',score:0.68,items:['最优同类药物，有定价优势','疗效数据支撑溢价','突破性疗法认定加分']},
-      {name:'竞争定价',score:0.65,items:['价格与竞品均价基本持平','Best-in-class支撑溢价','略高于均值10-20%']},
-      {name:'市场准入定价',score:0.62,items:['ICER 2.8万/QALY略高','医保WTP阈值内','患者自付可及性中等']},
-      {name:'国际参考定价',score:0.68,items:['中国价为美国的10%','3国定价参考','有提价空间']},
-    ],
-    expertise:['价值定价','竞争定价','医保谈判定价','国际参考定价','P&R策略'],
-    institutions:['药企40%','咨询30%','学术20%','独立10%'],
-  },
-  samples:[
-    {name:'孙立峰',title:'定价策略总监',inst:'罗氏制药',exp:18,focus:'价值定价',region:'上海',
-     stance:'作为Best-in-class PD-1，该药有明确的临床价值支撑溢价。价格15000元/月在PD-1市场中处于中等偏上水平。国际参考显示中国价格仅为美国的10%，从全球价格一致性角度有提价空间。',
-     dims:{value:0.72,competitive:0.65,access:0.60,intl:0.70}},
-    {name:'钱芳',title:'药物经济学顾问',inst:'IQVIA定价团队',exp:12,focus:'市场准入',region:'北京',
-     stance:'ICER 2.8万/QALY虽然略高于典型WTP阈值(3万)，但考虑到肿瘤领域的特殊性和创新药溢价，仍在可谈判范围。关键是在医保谈判中用真实世界数据补充经济学证据。',
-     dims:{value:0.65,competitive:0.62,access:0.68,intl:0.65}},
-  ]
-},
-{
-  id:'pharm',emoji:'⚗️',name:'药物学专家',count:80,score:0.646,color:'#8b5cf6',color2:'#a78bfa',grade:'B',
-  tag:'药理 · 毒理 · 药代动力学',
-  profile:{
-    title:'药物学评估专家',
-    desc:'从药代动力学、药效动力学、毒理学、制剂学角度评估',
-    sub_dims:[
-      {name:'药代动力学',score:0.72,items:['生物利用度85%，优秀','半衰期18h，日一次给药','2种药物相互作用']},
-      {name:'药效动力学',score:0.70,items:['靶点已获临床验证','选择性0.85，高选择性','剂量-效应关系明确']},
-      {name:'毒理学',score:0.58,items:['SAE率12.5%，中等','无黑框警告','无QT延长风险']},
-      {name:'制剂学',score:0.55,items:['静脉给药，需医疗人员','需冷链储运','非口服，依从性受限']},
-    ],
-    expertise:['药理学','毒理学','药代动力学','制剂学','药物相互作用'],
-    institutions:['学术40%','药企25%','CRO 20%','监管15%'],
-  },
-  samples:[
-    {name:'郑晓东',title:'药理学教授',inst:'中国药科大学',exp:20,focus:'药代动力学',region:'南京',
-     stance:'从药代动力学角度，85%的生物利用度在单抗类药物中属于优秀水平。18小时的半衰期支持日一次给药方案。需要注意的是2种CYP3A4相关的药物相互作用，在合并用药时需谨慎。',
-     dims:{pk:0.80,pd:0.70,tox:0.55,form:0.52}},
-    {name:'吴敏',title:'毒理学总监',inst:'药明康德安全性评价',exp:15,focus:'毒理学',region:'上海',
-     stance:'毒理学方面，SAE率12.5%在免疫检查点抑制剂中属于中等水平。没有黑框警告是积极信号。免疫相关不良反应(irAE)是这类药物的共性风险，需要上市后持续监测。',
-     dims:{pk:0.65,pd:0.68,tox:0.68,form:0.50}},
-  ]
-},
-{
-  id:'heor',emoji:'📐',name:'药物经济学专家',count:80,score:0.639,color:'#eab308',color2:'#facc15',grade:'B-',
-  tag:'ICER · 成本效果 · HTA',
-  profile:{
-    title:'药物经济学评估专家',
-    desc:'从成本效果、预算影响、经济学建模、HTA准备度角度评估',
-    sub_dims:[
-      {name:'成本效果',score:0.60,items:['ICER 2.8万/QALY，略高于阈值','增量QALY=0.85','成本效果比中等']},
-      {name:'预算影响',score:0.55,items:['年销售50亿，预算影响较大','可减少住院费用','人均治疗费18.3万/年']},
-      {name:'证据质量',score:0.72,items:['Markov模型，方法学规范','效用值来自RCT实测','已完成敏感性分析']},
-      {name:'HTA准备度',score:0.68,items:['HTA资料已就绪','2国HTA通过','专利剩余12年']},
-    ],
-    expertise:['ICER分析','预算影响','Markov建模','HTA申报','卫生政策'],
-    institutions:['学术35%','药企30%','HTA机构20%','咨询15%'],
-  },
-  samples:[
-    {name:'林志华',title:'卫生经济学教授',inst:'复旦大学公共卫生学院',exp:18,focus:'成本效果',region:'上海',
-     stance:'ICER 2.8万/QALY略高于国内典型WTP阈值(1-3万)，但考虑到肿瘤领域的特殊性和患者获益(增量QALY=0.85)，在谈判中仍有空间。Markov模型方法学规范，敏感性分析已完成，证据质量良好。',
-     dims:{ce:0.62,budget:0.52,model:0.75,hta:0.70}},
-    {name:'杨丽萍',title:'HTA分析师',inst:'IQVIA HEOR团队',exp:10,focus:'HTA',region:'北京',
-     stance:'HTA资料已准备就绪是加分项。英国和德国的HTA通过为国内提供了参考。但需要注意的是，国内HTA标准与国际不完全一致，需要补充中国人群的经济学数据。',
-     dims:{ce:0.58,budget:0.55,model:0.70,hta:0.72}},
-  ]
-},
-{
-  id:'ins',emoji:'📋',name:'医保评估专家',count:40,score:0.556,color:'#ec4899',color2:'#f472b6',grade:'C+',
-  tag:'准入 · 报销 · DRG-DIP',
-  profile:{
-    title:'医保评估专家',
-    desc:'从准入政策、报销策略、基金影响、DRG-DIP支付角度评估',
-    sub_dims:[
-      {name:'准入政策',score:0.65,items:['肿瘤属于医保优先领域','创新药快速通道','2个竞品已纳入医保']},
-      {name:'报销策略',score:0.50,items:['价格15000较高，可能需限定支付','可门诊报销','患者自付负担重']},
-      {name:'基金影响',score:0.48,items:['年销售50亿，基金影响较大','占基金0.002%','未显示节省效应']},
-      {name:'DRG/DIP',score:0.55,items:['非DRG豁免','未获创新药除外支付','费用可能超出病组标准']},
-    ],
-    expertise:['医保准入','报销政策','基金评估','DRG/DIP','谈判策略'],
-    institutions:['医保局25%','学术25%','药企30%','咨询20%'],
-  },
-  samples:[
-    {name:'马国强',title:'前医保局专家',inst:'某省级医保局(已退休)',exp:22,focus:'准入政策',region:'北京',
-     stance:'肿瘤是医保优先领域，这是最大的利好。但价格15000元/月确实偏高，医保基金压力大。建议药企主动降价20-30%以换取快速准入。创新药快速通道可以利用，但最终还是要看药物经济学证据。',
-     dims:{access:0.68,reimb:0.45,fund:0.42,drg:0.52}},
-    {name:'韩梅',title:'医保政策研究员',inst:'中国药科大学医药政策研究所',exp:14,focus:'DRG/DIP',region:'南京',
-     stance:'DRG/DIP支付下，该药可能面临挑战。15000元/月的费用在很多病组中会超出支付标准。建议申请创新药除外支付或DRG豁免，这需要与医保部门提前沟通。',
-     dims:{access:0.62,reimb:0.52,fund:0.50,drg:0.60}},
-  ]
-},
+<script src="app.js"></script><script>
+// ═══════════════════════════════════════
+// FDA DRUG DATABASE
+// ═══════════════════════════════════════
+const DRUGS=[
+// ── 肿瘤/免疫 ──
+{name:"Keytruda",generic:"帕博利珠单抗",company:"默沙东(MSD)",cat:"肿瘤/免疫",fda:"2014",china:"2019",indications:["非小细胞肺癌","黑色素瘤","头颈癌","膀胱癌","MSI-H实体瘤"],mechanism:"PD-1抑制剂",price_us:150000,efficacy:{orr:44.8,pfs:4.3,os:2.8}},
+{name:"Opdivo",generic:"纳武利尤单抗",company:"百时美施贵宝(BMS)",cat:"肿瘤/免疫",fda:"2014",china:"2018",indications:["非小细胞肺癌","黑色素瘤","肾癌","肝癌","胃癌"],mechanism:"PD-1抑制剂",price_us:140000,efficacy:{orr:42.1,pfs:3.9,os:2.5}},
+{name:"Tecentriq",generic:"阿替利珠单抗",company:"罗氏(Roche)",cat:"肿瘤/免疫",fda:"2016",china:"2020",indications:["非小细胞肺癌","尿路上皮癌","三阴乳腺癌","肝癌"],mechanism:"PD-L1抑制剂",price_us:135000,efficacy:{orr:38.5,pfs:4.1,os:2.3}},
+{name:"Imfinzi",generic:"度伐利尤单抗",company:"阿斯利康(AZ)",cat:"肿瘤/免疫",fda:"2017",china:"2021",indications:["非小细胞肺癌","小细胞肺癌","胆道癌"],mechanism:"PD-L1抑制剂",price_us:130000,efficacy:{orr:35.2,pfs:3.8,os:2.1}},
+{name:"Yervoy",generic:"伊匹木单抗",company:"百时美施贵宝(BMS)",cat:"肿瘤/免疫",fda:"2011",china:"2021",indications:["黑色素瘤","肾癌","结直肠癌","非小细胞肺癌"],mechanism:"CTLA-4抑制剂",price_us:120000,efficacy:{orr:32.0,pfs:3.2,os:3.5}},
+{name:"Perjeta",generic:"帕妥珠单抗",company:"罗氏(Roche)",cat:"肿瘤/免疫",fda:"2012",china:"2018",indications:["HER2+乳腺癌"],mechanism:"HER2靶向",price_us:90000,efficacy:{orr:80.2,pfs:18.5,os:15.7}},
+{name:"Herceptin",generic:"曲妥珠单抗",company:"罗氏(Roche)",cat:"肿瘤/免疫",fda:"1998",china:"2002",indications:["HER2+乳腺癌","HER2+胃癌"],mechanism:"HER2靶向",price_us:70000,efficacy:{orr:75.0,pfs:12.0,os:10.5}},
+{name:"Tagrisso",generic:"奥希替尼",company:"阿斯利康(AZ)",cat:"肿瘤/免疫",fda:"2015",china:"2017",indications:["EGFR突变NSCLC"],mechanism:"第三代EGFR-TKI",price_us:160000,efficacy:{orr:71.0,pfs:18.9,os:12.4}},
+{name:"Lynparza",generic:"奥拉帕利",company:"阿斯利康(AZ)",cat:"肿瘤/免疫",fda:"2014",china:"2019",indications:["BRCA突变卵巢癌","BRCA突变乳腺癌","胰腺癌"],mechanism:"PARP抑制剂",price_us:140000,efficacy:{orr:65.0,pfs:19.1,os:8.2}},
+{name:"Ibrance",generic:"哌柏西利",company:"辉瑞(Pfizer)",cat:"肿瘤/免疫",fda:"2015",china:"2018",indications:["HR+/HER2-乳腺癌"],mechanism:"CDK4/6抑制剂",price_us:120000,efficacy:{orr:55.0,pfs:24.8,os:5.6}},
+{name:"Xalkori",generic:"克唑替尼",company:"辉瑞(Pfizer)",cat:"肿瘤/免疫",fda:"2011",china:"2013",indications:["ALK+NSCLC","ROS1+NSCLC"],mechanism:"ALK/ROS1抑制剂",price_us:150000,efficacy:{orr:74.0,pfs:10.9,os:6.3}},
+{name:"Darzalex",generic:"达雷妥尤单抗",company:"强生(J&J)",cat:"肿瘤/免疫",fda:"2015",china:"2021",indications:["多发性骨髓瘤"],mechanism:"CD38靶向",price_us:160000,efficacy:{orr:67.0,pfs:16.5,os:9.2}},
+{name:"Revlimid",generic:"来那度胺",company:"BMS/新基",cat:"肿瘤/免疫",fda:"2005",china:"2013",indications:["多发性骨髓瘤","MDS","套细胞淋巴瘤"],mechanism:"免疫调节剂",price_us:150000,efficacy:{orr:70.0,pfs:14.5,os:8.0}},
+{name:"Zytiga",generic:"阿比特龙",company:"强生(J&J)",cat:"肿瘤/免疫",fda:"2011",china:"2015",indications:["转移性前列腺癌"],mechanism:"CYP17抑制剂",price_us:110000,efficacy:{orr:62.0,pfs:16.5,os:4.4}},
+{name:"Xtandi",generic:"恩扎卢胺",company:"安斯泰来(Astellas)",cat:"肿瘤/免疫",fda:"2012",china:"2019",indications:["转移性前列腺癌"],mechanism:"AR拮抗剂",price_us:125000,efficacy:{orr:59.0,pfs:20.0,os:4.8}},
+// ── 代谢/糖尿病 ──
+{name:"Ozempic",generic:"司美格鲁肽",company:"诺和诺德(Novo Nordisk)",cat:"代谢/糖尿病",fda:"2017",china:"2021",indications:["2型糖尿病","肥胖"],mechanism:"GLP-1受体激动剂",price_us:12000,efficacy:{hba1c:1.8,weight:6.2}},
+{name:"Mounjaro",generic:"替尔泊肽",company:"礼来(Eli Lilly)",cat:"代谢/糖尿病",fda:"2022",china:"申请中",indications:["2型糖尿病","肥胖"],mechanism:"GLP-1/GIP双靶点",price_us:15000,efficacy:{hba1c:2.4,weight:9.5}},
+{name:"Jardiance",generic:"恩格列净",公司:"勃林格殷格翰/礼来",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:8000,efficacy:{hba1c:0.8,weight:2.0}},
+{name:"Farxiga",generic:"达格列净",company:"阿斯利康(AZ)",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:7500,efficacy:{hba1c:0.7,weight:1.8}},
+{name:"Trulicity",generic:"度拉糖肽",company:"礼来(Eli Lilly)",cat:"代谢/糖尿病",fda:"2014",china:"2019",indications:["2型糖尿病"],mechanism:"GLP-1受体激动剂",price_us:10000,efficacy:{hba1c:1.4,weight:3.5}},
+{name:"Rybelsus",generic:"口服司美格鲁肽",company:"诺和诺德(Novo Nordisk)",cat:"代谢/糖尿病",fda:"2019",china:"2023",indications:["2型糖尿病"],mechanism:"GLP-1受体激动剂(口服)",price_us:11000,efficacy:{hba1c:1.5,weight:4.5}},
+// ── 心血管 ──
+{name:"Eliquis",generic:"阿哌沙班",company:"BMS/辉瑞",cat:"心血管",fda:"2012",china:"2013",indications:["房颤卒中预防","DVT/PE"],mechanism:"Xa因子抑制剂",price_us:6000,efficacy:{stroke_reduction:0.55,bleeding:0.42}},
+{name:"Xarelto",generic:"利伐沙班",company:"拜耳/强生",cat:"心血管",fda:"2011",china:"2014",indications:["房颤卒中预防","DVT/PE","ACS"],mechanism:"Xa因子抑制剂",price_us:5500,efficacy:{stroke_reduction:0.52,bleeding:0.45}},
+{name:"Entresto",generic:"沙库巴曲缬沙坦",company:"诺华(Novartis)",cat:"心血管",fda:"2015",china:"2017",indications:["心衰(HFrEF)"],mechanism:"ARNI",price_us:7000,efficacy:{hospital_reduction:0.21,mortality:0.20}},
+{name:"Repatha",generic:"依洛尤单抗",company:"安进(Amgen)",cat:"心血管",fda:"2015",china:"2018",indications:["高胆固醇血症","ASCVD"],mechanism:"PCSK9抑制剂",price_us:14000,efficacy:{ldl_reduction:0.60}},
+{name:"Repatha",generic:"依洛尤单抗",company:"安进(Amgen)",cat:"心血管",fda:"2015",china:"2018",indications:["高胆固醇血症"],mechanism:"PCSK9抑制剂",price_us:14000,efficacy:{ldl_reduction:0.60}},
+{name:"Leqvio",generic:"Inclisiran",company:"诺华(Novartis)",cat:"心血管",fda:"2021",china:"申请中",indications:["高胆固醇血症"],mechanism:"siRNA-PCSK9",price_us:10000,efficacy:{ldl_reduction:0.52}},
+// ── 自身免疫 ──
+{name:"Humira",generic:"阿达木单抗",company:"艾伯维(AbbVie)",cat:"自身免疫",fda:"2002",china:"2010",indications:["类风湿关节炎","银屑病","克罗恩病","溃疡性结肠炎"],mechanism:"TNF-α抑制剂",price_us:70000,efficacy:{response_rate:0.70,remission:0.40}},
+{name:"Stelara",generic:"乌司奴单抗",company:"强生(J&J)",cat:"自身免疫",fda:"2009",china:"2019",indications:["银屑病","克罗恩病","溃疡性结肠炎"],mechanism:"IL-12/23抑制剂",price_us:65000,efficacy:{response_rate:0.75,remission:0.45}},
+{name:"Cosentyx",generic:"司库奇尤单抗",company:"诺华(Novartis)",cat:"自身免疫",fda:"2015",china:"2019",indications:["银屑病","强直性脊柱炎","银屑病关节炎"],mechanism:"IL-17A抑制剂",price_us:60000,efficacy:{response_rate:0.80,remission:0.50}},
+{name:"Dupixent",generic:"度普利尤单抗",company:"赛诺菲/再生元",cat:"自身免疫",fda:"2017",china:"2020",indications:["中重度特应性皮炎","哮喘","鼻息肉"],mechanism:"IL-4Rα抑制剂",price_us:55000,efficacy:{response_rate:0.72,remission:0.38}},
+{name:"Skyrizi",generic:"瑞莎珠单抗",company:"艾伯维(AbbVie)",cat:"自身免疫",fda:"2019",china:"2022",indications:["银屑病","克罗恩病"],mechanism:"IL-23抑制剂",price_us:58000,efficacy:{response_rate:0.85,remission:0.55}},
+{name:"Tremfya",generic:"古塞奇尤单抗",company:"强生(J&J)",cat:"自身免疫",fda:"2017",china:"2020",indications:["银屑病","银屑病关节炎"],mechanism:"IL-23抑制剂",price_us:56000,efficacy:{response_rate:0.82,remission:0.52}},
+// ── 罕见病 ──
+{name:"Spinraza",generic:"诺西那生钠",company:"渤健(Biogen)",cat:"罕见病",fda:"2016",china:"2019",indications:["脊髓性肌萎缩症(SMA)"],mechanism:"反义寡核苷酸",price_us:750000,efficacy:{motor_improvement:0.65}},
+{name:"Zolgensma",generic:"Onasemnogene",company:"诺华(Novartis)",cat:"罕见病",fda:"2019",china:"申请中",indications:["SMA(基因治疗)"],mechanism:"AAV基因治疗",price_us:2100000,efficacy:{survival:0.95}},
+{name:"Soliris",generic:"依库珠单抗",company:"亚力兄(Alexion)",cat:"罕见病",fda:"2007",china:"2018",indications:["PNH","aHUS","gMG"],mechanism:"C5补体抑制剂",price_us:500000,efficacy:{hemolysis_control:0.90}},
+{name:"Ultomiris",generic:"Ravulizumab",company:"亚力兄(Alexion)",cat:"罕见病",fda:"2018",china:"2021",indications:["PNH","aHUS","gMG"],mechanism:"C5补体抑制剂(长效)",price_us:450000,efficacy:{hemolysis_control:0.92}},
+{name:"Hemlibra",generic:"Emicizumab",company:"罗氏(Roche)",cat:"罕见病",fda:"2017",china:"2020",indications:["A型血友病"],mechanism:"双特异性抗体",price_us:480000,efficacy:{bleed_reduction:0.96}},
+// ── 神经科学 ──
+{name:"Leqembi",generic:"Lecanemab",company:"渤健/卫材",cat:"神经科学",fda:"2023",china:"申请中",indications:["早期阿尔茨海默病"],mechanism:"Aβ单抗",price_us:26500,efficacy:{cognitive_decline_reduction:0.27}},
+{name:"Aduhelm",generic:"Aducanumab",company:"渤健(Biogen)",cat:"神经科学",fda:"2021",china:"未申请",indications:["阿尔茨海默病"],mechanism:"Aβ单抗",price_us:28000,efficacy:{cognitive_decline_reduction:0.22}},
+{name:"Aimovig",generic:"Erenumab",company:"安进(Amgen)",cat:"神经科学",fda:"2018",china:"2021",indications:["偏头痛预防"],mechanism:"CGRP受体拮抗剂",price_us:7000,efficacy:{attack_reduction:0.50}},
+{name:"Vyepti",generic:"Eptinezumab",company:"灵北(Lundbeck)",cat:"神经科学",fda:"2020",china:"未申请",indications:["偏头痛预防"],mechanism:"CGRP单抗",price_us:8000,efficacy:{attack_reduction:0.55}},
+// ── 感染性疾病 ──
+{name:"Paxlovid",generic:"奈玛特韦/利托那韦",company:"辉瑞(Pfizer)",cat:"感染性疾病",fda:"2021",china:"2022",indications:["COVID-19"],mechanism:"3CL蛋白酶抑制剂",price_us:530,efficacy:{hospitalization_reduction:0.89}},
+{name:"Dovato",generic:"多替拉韦/拉米夫定",company:"ViiV/GSK",cat:"感染性疾病",fda:"2019",china:"2021",indications:["HIV-1"],mechanism:"INSTI+NRTI",price_us:24000,efficacy:{viral_suppression:0.95}},
+{name:"Biktarvy",generic:"BIC/FTC/TAF",company:"吉利德(Gilead)",cat:"感染性疾病",fda:"2018",china:"2020",indications:["HIV-1"],mechanism:"INSTI+NRTI",price_us:30000,efficacy:{viral_suppression:0.97}},
 ];
 
-const CLUSTERS=[{name:'积极采纳',count:750,color:'#10b981'},{name:'谨慎观望',count:243,color:'#f59e0b'},{name:'中立',count:7,color:'#64748b'},{name:'怀疑犹豫',count:0,color:'#ef4444'}];
-const MONTHS=[{m:1,pv:127},{m:3,pv:380},{m:6,pv:757},{m:9,pv:1400},{m:12,pv:2145},{m:15,pv:2700},{m:18,pv:3111},{m:21,pv:3450},{m:24,pv:3732}];
+const CATEGORIES=[...new Set(DRUGS.map(d=>d.cat))];
+let selectedDrug=null,currentCat='全部';
 
-// ═══ HERO BG ═══
-(function(){const c=document.getElementById('heroBg'),ctx=c.getContext('2d');let W,H,p=[];function rs(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}rs();window.addEventListener('resize',rs);const cs=['#06b6d4','#3b82f6','#8b5cf6','#10b981','#f59e0b'];for(let i=0;i<120;i++)p.push({x:Math.random()*2e3,y:Math.random()*1e3,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,c:cs[i%5],a:Math.random()*.3+.15});function d(){ctx.clearRect(0,0,W,H);p.forEach(q=>{q.x+=q.vx;q.y+=q.vy;if(q.x<0)q.x=W;if(q.x>W)q.x=0;if(q.y<0)q.y=H;if(q.y>H)q.y=0;ctx.beginPath();ctx.arc(q.x,q.y,q.r,0,6.28);ctx.fillStyle=q.c;ctx.globalAlpha=q.a;ctx.fill()});ctx.globalAlpha=.04;ctx.strokeStyle='#3b82f6';ctx.lineWidth=.5;for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const dx=p[i].x-p[j].x,dy=p[i].y-p[j].y;if(dx*dx+dy*dy<6e3){ctx.beginPath();ctx.moveTo(p[i].x,p[i].y);ctx.lineTo(p[j].x,p[j].y);ctx.stroke()}}ctx.globalAlpha=1;requestAnimationFrame(d)}d()})();
-
-// ═══ COUNTER ═══
-function anim(el,t,d=2e3){let s=0;const st=t/(d/16);const tm=setInterval(()=>{s+=st;if(s>=t){s=t;clearInterval(tm)}el.textContent=Math.floor(s).toLocaleString()},16)}
-const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){anim(document.getElementById('counter'),1801);anim(document.getElementById('s1'),400);anim(document.getElementById('s2'),1e3);anim(document.getElementById('s3'),400);obs.disconnect()}})},{threshold:.3});
-obs.observe(document.querySelector('.hero'));
-
-// ═══ EXPERT GRID ═══
-const grid=document.getElementById('expertGrid');
-EXPERTS.forEach((e,i)=>{
-  const c=document.createElement('div');c.className='expert-card';c.style.setProperty('--ec',e.color);c.style.animationDelay=i*100+'ms';
-  c.onclick=()=>openModal(e);
-  const pct=Math.round(e.score*100);
-  c.innerHTML=`<div class="av" style="background:${e.color}12;border:2px solid ${e.color}25;animation-delay:${i*.15}s">${e.emoji}</div>
-    <h3 style="color:${e.color}">${e.name}</h3><div class="cnt">${e.count}位专家 · ${e.grade}</div>
-    <div class="sc" style="color:${e.color}">${e.score.toFixed(3)}</div>
-    <div class="bar"><div data-w="${pct}%" style="width:0;background:linear-gradient(90deg,${e.color},${e.color2})"></div></div>
-    <div class="tag">${e.tag}</div><div class="click-hint">点击查看详细画像 →</div>`;
-  grid.appendChild(c);
-});
-setTimeout(()=>{document.querySelectorAll('.bar div[data-w]').forEach(el=>{el.style.width=el.dataset.w})},500);
-
-// ═══ MODAL ═══
-function openModal(e){
-  const o=document.getElementById('modalOverlay');o.classList.add('active');
-  // header
-  document.getElementById('modalHeader').innerHTML=`
-    <div class="mh-icon" style="font-size:3.5rem">${e.emoji}</div>
-    <div class="mh-info"><h2 style="color:${e.color}">${e.profile.title}</h2><div class="mh-sub">${e.profile.desc}</div><div class="mh-sub" style="margin-top:.3rem">${e.count}位专家参与评估</div></div>
-    <div class="mh-score"><div class="mh-val" style="color:${e.color}">${e.score.toFixed(3)}</div><div class="mh-grade" style="background:${e.color}20;color:${e.color}">${e.grade}</div></div>`;
-  // body
-  let html='<div class="profile-grid">';
-  // sub-dimensions
-  html+=`<div class="profile-card"><h4>📋 子维度评分</h4>`;
-  e.profile.sub_dims.forEach(d=>{
-    html+=`<div style="margin-bottom:.8rem">
-      <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:.3rem"><span style="font-weight:600">${d.name}</span><span style="color:${e.color};font-weight:700">${d.score.toFixed(2)}</span></div>
-      <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:${Math.round(d.score*100)}%;height:100%;background:${e.color};border-radius:3px;transition:width 1s"></div></div>
-      <div style="margin-top:.3rem">${d.items.map(it=>`<div style="font-size:.75rem;color:var(--dim);padding:.15rem 0">• ${it}</div>`).join('')}</div>
-    </div>`;
-  });
-  html+='</div>';
-  // expertise & institutions
-  html+=`<div class="profile-card"><h4>🎓 专业能力</h4><div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem">${e.profile.expertise.map(x=>`<span style="font-size:.75rem;padding:.2rem .5rem;border-radius:6px;background:${e.color}15;color:${e.color};border:1px solid ${e.color}30">${x}</span>`).join('')}</div>`;
-  html+=`<h4 style="margin-top:.5rem">🏢 机构分布</h4>${e.profile.institutions.map(x=>`<div style="font-size:.8rem;padding:.2rem 0;color:var(--dim)">• ${x}</div>`).join('')}</div>`;
-  html+='</div>';
-  // sample agents
-  html+=`<div class="sample-section"><h4 style="color:${e.color};font-size:1.1rem;margin-bottom:1rem">👤 样本Agent画像 (${e.samples.length}个)</h4>`;
-  e.samples.forEach(s=>{
-    html+=`<div class="agent-sample">
-      <div class="as-head">
-        <div class="as-avatar" style="background:${e.color}15;border:2px solid ${e.color}30">${e.emoji}</div>
-        <div><div class="as-name">${s.name}</div><div class="as-meta">${s.title} · ${s.inst} · ${s.exp}年经验 · ${s.region} · 专长：${s.focus}</div></div>
-      </div>
-      <div class="as-stance" style="background:${e.color}08;border-left:3px solid ${e.color}">${s.stance}</div>
-      <div class="as-dims">${Object.entries(s.dims).map(([k,v])=>`<span style="color:${v>.75?'#10b981':v>.6?'#f59e0b':'#ef4444'}">${k}: ${v.toFixed(2)}</span>`).join('')}</div>
-    </div>`;
-  });
-  html+='</div>';
-  document.getElementById('modalBody').innerHTML=html;
+// ═══ NAVIGATION ═══
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t.dataset.p===page)});
+  if(page==='agents'&&!window._particlesInit)initParticles();
 }
-function closeModal(){document.getElementById('modalOverlay').classList.remove('active')}
-document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
-
-// ═══ SCOREBOARD ═══
-const sb=document.getElementById('scoreboard');sb.innerHTML='<h3>📋 7维度得分排名（点击查看详情）</h3>';
-EXPERTS.forEach(e=>{
-  const pct=Math.round(e.score*100);const g=e.score>.7?'🟢':e.score>.6?'🟡':'🟠';
-  const r=document.createElement('div');r.className='dim-row';r.onclick=()=>openModal(e);
-  r.innerHTML=`<div class="di">${e.emoji}</div><div class="dn" style="color:${e.color}">${e.name}</div><div class="db"><div class="df" data-w="${pct}%" style="width:0;background:linear-gradient(90deg,${e.color},${e.color2})"></div></div><div class="ds" style="color:${e.color}">${e.score.toFixed(3)}</div><div class="dg" style="background:${e.color}15;color:${e.color}">${e.grade}</div>`;
-  sb.appendChild(r);
-});
-setTimeout(()=>{document.querySelectorAll('.df[data-w]').forEach(el=>{el.style.width=el.dataset.w})},800);
-// comp
-const avg=(EXPERTS.reduce((s,e)=>s+e.score,0)/EXPERTS.length).toFixed(3);
-document.getElementById('compBox').innerHTML=`<div style="font-size:.9rem;color:var(--dim);margin-bottom:.3rem">7维度综合评估</div><div class="cv">${avg}</div><div class="cr" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid #10b98140">✅ 推荐上市</div><div style="margin-top:.8rem;color:var(--dim);font-size:.8rem">400位专家 · 7维度 · 21个子维度 · 细粒度决策</div>`;
-
-// ═══ CLUSTERS ═══
-const cv=document.getElementById('clusterViz');const tot=CLUSTERS.reduce((s,c)=>s+c.count,0);
-CLUSTERS.forEach(c=>{const pct=((c.count/tot)*100).toFixed(1);const r=48,circ=2*Math.PI*r,off=circ*(1-c.count/tot);
-  const b=document.createElement('div');b.className='cluster-box';
-  b.innerHTML=`<div class="cring" style="color:${c.color}"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${r}" stroke="${c.color}20"/><circle cx="55" cy="55" r="${r}" stroke="${c.color}" stroke-dasharray="${circ}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset 2s"/></svg>${pct}%</div><div style="color:${c.color};font-weight:600">${c.name}</div><div style="color:var(--dim);font-size:.8rem">${c.count}人</div>`;
-  cv.appendChild(b);
-});
-
-// ═══ CHART ═══
-(function(){const c=document.getElementById('chartCanvas'),ctx=c.getContext('2d');const W=c.width,H=c.height,p={t:35,r:35,b:45,l:65},pw=W-p.l-p.r,ph=H-p.t-p.b;ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(148,163,184,.08)';for(let i=0;i<=5;i++){const y=p.t+ph*i/5;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke()}const mx=4e3;MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,bh=(d.pv/mx)*ph,y=p.t+ph-bh;const g=ctx.createLinearGradient(x,y,x,p.t+ph);g.addColorStop(0,'#06b6d4');g.addColorStop(1,'rgba(6,182,212,.1)');ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(x-18,y,36,bh,5);ctx.fill();ctx.fillStyle='#e2e8f0';ctx.font='bold 11px Inter';ctx.textAlign='center';ctx.fillText(d.pv.toLocaleString(),x,y-6);ctx.fillStyle='#64748b';ctx.font='10px Inter';ctx.fillText('M'+d.m,x,H-p.b+18)});ctx.beginPath();ctx.strokeStyle='#10b981';ctx.lineWidth=2;MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();MONTHS.forEach((d,i)=>{const x=p.l+(i/(MONTHS.length-1))*pw,y=p.t+ph-(d.pv/mx)*ph;ctx.beginPath();ctx.arc(x,y,3.5,0,6.28);ctx.fillStyle='#10b981';ctx.fill()})})();
-
-// ═══ NAV SCROLL ═══
-document.querySelectorAll('nav a').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'})})});
-</script>
-</body>
-</html>
+// Drug filtering
+function initDrugPage(){var f=document.getElementById(\"catFilters\");f.innerHTML=\"<button class=\\\"active\\\" onclick=\\\"filterCat(\\x27全部\\x27,this)\\\">全部 (\"+DRUGS.length+\")</button>\";CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+=\"<button onclick=\\\"filterCat(\\x27\"+c+\"\\x27,this)\\\">\"+c+\" (\"+n+\")</button>\"});renderDrugs()}
+initDrugPage();</script></body></html>
