@@ -189,6 +189,416 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
 @media(max-width:800px){.config-grid{grid-template-columns:1fr}.features{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.pricing-grid{grid-template-columns:1fr}.drug-grid{grid-template-columns:1fr}.nav-tabs{display:none}}
 
+
+/* ═══════════════════════════════════════════════
+   Architecture Visualization Styles
+   ═══════════════════════════════════════════════ */
+
+.arch-viz-section {
+  margin: 4rem 0;
+  padding: 3rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.arch-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.arch-tab {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.arch-tab:hover, .arch-tab.active {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(6,182,212,.06);
+}
+
+.arch-panel {
+  display: none;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.arch-panel.active {
+  display: block;
+}
+
+/* Transformer Architecture */
+.transformer-diagram {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.tf-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.tf-label {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+  text-align: center;
+  padding: .5rem;
+  border-radius: 8px;
+}
+
+.tf-encoder .tf-label { background: rgba(6,182,212,.1); color: var(--cyan); }
+.tf-decoder .tf-label { background: rgba(139,92,246,.1); color: var(--purple); }
+.tf-output .tf-label { background: rgba(16,185,129,.1); color: var(--green); }
+
+.tf-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.tf-layer {
+  padding: .8rem 1rem;
+  margin: .5rem 0;
+  border-radius: 8px;
+  font-size: .85rem;
+  font-weight: 500;
+  text-align: center;
+  transition: all .3s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.tf-layer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+
+.tf-layer[data-layer="input"] { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
+.tf-layer[data-layer="mha"], .tf-layer[data-layer="masked-mha"] { background: rgba(139,92,246,.08); border-color: rgba(139,92,246,.2); }
+.tf-layer[data-layer="cross-attn"] { background: rgba(236,72,153,.08); border-color: rgba(236,72,153,.2); }
+.tf-layer[data-layer="ffn"], .tf-layer[data-layer="ffn2"] { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); }
+.tf-layer[data-layer*="addnorm"] { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); }
+.tf-layer[data-layer="linear"] { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
+.tf-layer[data-layer="softmax"] { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); }
+.tf-layer[data-layer="output"] { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
+
+.tf-multihead { font-weight: 700; }
+.tf-cross-attn { font-weight: 600; }
+.tf-feedforward { font-style: italic; }
+
+.tf-repeat {
+  text-align: center;
+  font-size: .75rem;
+  color: var(--dim);
+  margin: .5rem 0;
+  font-weight: 700;
+}
+
+.tf-attention-viz {
+  flex: 1.5;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.tf-attention-viz h4 {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.tf-attention-matrix {
+  margin: 1rem auto;
+  max-width: 300px;
+}
+
+#attentionCanvas {
+  border-radius: 8px;
+  background: rgba(0,0,0,.2);
+}
+
+.tf-attention-controls {
+  display: flex;
+  gap: .5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.tf-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .5rem 1rem;
+  font-size: .8rem;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.tf-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.tf-arrows {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+.tf-arrow {
+  font-size: 1.5rem;
+  color: var(--dim);
+}
+
+.tf-info-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.tf-info-panel h4 {
+  margin-bottom: 1rem;
+  color: var(--cyan);
+}
+
+.tf-info-panel ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tf-info-panel li {
+  margin: .5rem 0;
+  font-size: .9rem;
+  color: var(--text2);
+}
+
+/* Agent Architecture */
+.agent-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.agent-loop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.agent-component {
+  flex: 1;
+  min-width: 150px;
+  max-width: 200px;
+  background: rgba(6,182,212,.06);
+  border: 1px solid rgba(6,182,212,.15);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all .3s;
+  cursor: pointer;
+}
+
+.agent-component:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,.2);
+  border-color: var(--cyan);
+}
+
+.agent-perception { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
+.agent-memory { background: rgba(139,92,246,.08); border-color: rgba(139,92,246,.2); }
+.agent-decision { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); }
+.agent-action { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); }
+
+.ac-icon {
+  font-size: 2rem;
+  margin-bottom: .5rem;
+}
+
+.ac-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: .5rem;
+}
+
+.ac-desc {
+  font-size: .8rem;
+  color: var(--dim);
+  line-height: 1.4;
+}
+
+.agent-arrow {
+  font-size: 1.5rem;
+  color: var(--dim);
+  margin: 0 .5rem;
+}
+
+.agent-tools {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.agent-tools h4 {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.tool-item {
+  background: rgba(6,182,212,.06);
+  border: 1px solid rgba(6,182,212,.1);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: all .3s;
+  cursor: pointer;
+}
+
+.tool-item:hover {
+  transform: translateY(-2px);
+  background: rgba(6,182,212,.1);
+  border-color: var(--cyan);
+}
+
+.tool-icon {
+  font-size: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+.tool-name {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.agent-communication {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.agent-communication h4 {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.comm-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.agent-box {
+  background: rgba(139,92,246,.06);
+  border: 1px solid rgba(139,92,246,.15);
+  border-radius: 8px;
+  padding: 1rem;
+  min-width: 120px;
+  text-align: center;
+}
+
+.ab-type {
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--purple);
+  margin-bottom: .5rem;
+}
+
+.ab-action {
+  font-size: .75rem;
+  color: var(--dim);
+}
+
+.comm-arrow {
+  font-size: 1.2rem;
+  color: var(--dim);
+}
+
+.agent-info-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.agent-info-panel h4 {
+  margin-bottom: 1rem;
+  color: var(--purple);
+}
+
+.agent-info-panel ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.agent-info-panel li {
+  margin: .5rem 0;
+  font-size: .9rem;
+  color: var(--text2);
+}
+
+@media(max-width:800px) {
+  .transformer-diagram {
+    flex-direction: column;
+  }
+  
+  .tf-arrows {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .agent-loop {
+    flex-direction: column;
+  }
+  
+  .agent-arrow {
+    transform: rotate(90deg);
+  }
+  
+  .comm-flow {
+    flex-direction: column;
+  }
+  
+  .comm-arrow {
+    transform: rotate(90deg);
+  }
+}
 </style>
 </head>
 <body>
@@ -306,6 +716,183 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
     <div class="feature"><div class="feature-icon" style="background:rgba(245,158,11,.1)">💊</div><h3>FDA Drug Database</h3><p>Comprehensive database of 44+ FDA-approved drugs across 7 therapeutic areas with real efficacy data, pricing, and China entry status.</p></div>
     <div class="feature"><div class="feature-icon" style="background:rgba(236,72,153,.1)">📈</div><h3>24-Month Forecast</h3><p>Predictive modeling of prescription volume, market penetration, revenue curves, and patient adoption with Monte Carlo confidence intervals.</p></div>
     <div class="feature"><div class="feature-icon" style="background:rgba(239,68,68,.1)">🔬</div><h3>Agent Profile Explorer</h3><p>Click any agent to see their complete background, hospital affiliation, specialty, adoption attitude, and detailed clinical stance.</p></div>
+  </div>
+
+  <!-- ARCHITECTURE VIZ -->
+  <div class="arch-viz-section">
+    <h2>🧠 Our AI Architecture</h2>
+    <p class="desc">Interactive visualization of the core AI systems powering PharmaSim's 1,801 agent simulations</p>
+    
+    <div class="arch-tabs">
+      <button class="arch-tab active" onclick="showArch('transformer')">Transformer Architecture</button>
+      <button class="arch-tab" onclick="showArch('agent')">Agent Architecture</button>
+    </div>
+    
+    <!-- Transformer Architecture -->
+    <div class="arch-panel active" id="arch-transformer">
+      <div class="transformer-diagram">
+        <div class="tf-section tf-encoder">
+          <div class="tf-label">Encoder</div>
+          <div class="tf-block">
+            <div class="tf-layer" data-layer="input">Input Embeddings + Positional Encoding</div>
+            <div class="tf-layer tf-multihead" data-layer="mha">Multi-Head Self-Attention</div>
+            <div class="tf-layer" data-layer="addnorm1">Add & Layer Norm</div>
+            <div class="tf-layer tf-feedforward" data-layer="ffn">Feed-Forward Network</div>
+            <div class="tf-layer" data-layer="addnorm2">Add & Layer Norm</div>
+            <div class="tf-repeat">×N</div>
+          </div>
+        </div>
+        
+        <div class="tf-attention-viz">
+          <h4>Attention Mechanism</h4>
+          <div class="tf-attention-matrix" id="attentionMatrix">
+            <canvas id="attentionCanvas" width="300" height="300"></canvas>
+          </div>
+          <div class="tf-attention-controls">
+            <button class="tf-btn" onclick="toggleAttention()">Toggle Heads</button>
+            <button class="tf-btn" onclick="resetAttention()">Reset</button>
+          </div>
+        </div>
+        
+        <div class="tf-section tf-decoder">
+          <div class="tf-label">Decoder</div>
+          <div class="tf-block">
+            <div class="tf-layer" data-layer="output">Output Embeddings + Positional Encoding</div>
+            <div class="tf-layer tf-multihead" data-layer="masked-mha">Masked Multi-Head Attention</div>
+            <div class="tf-layer" data-layer="addnorm3">Add & Layer Norm</div>
+            <div class="tf-layer tf-cross-attn" data-layer="cross-attn">Cross-Attention (Encoder Output)</div>
+            <div class="tf-layer" data-layer="addnorm4">Add & Layer Norm</div>
+            <div class="tf-layer tf-feedforward" data-layer="ffn2">Feed-Forward Network</div>
+            <div class="tf-layer" data-layer="addnorm5">Add & Layer Norm</div>
+            <div class="tf-repeat">×N</div>
+          </div>
+        </div>
+        
+        <div class="tf-arrows">
+          <div class="tf-arrow encoder-to-cross">→</div>
+          <div class="tf-arrow decoder-to-output">→</div>
+        </div>
+        
+        <div class="tf-section tf-output">
+          <div class="tf-label">Output</div>
+          <div class="tf-block">
+            <div class="tf-layer" data-layer="linear">Linear</div>
+            <div class="tf-layer" data-layer="softmax">Softmax</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tf-info-panel">
+        <h4>Transformer in PharmaSim</h4>
+        <p>Our transformer architecture processes multi-modal drug data including:</p>
+        <ul>
+          <li><b>Clinical trial reports</b> (text embeddings)</li>
+          <li><b>Efficacy parameters</b> (structured data)</li>
+          <li><b>Pricing information</b> (numerical features)</li>
+          <li><b>Epidemiological data</b> (time-series)</li>
+        </ul>
+        <p>Click any component above to see detailed information.</p>
+      </div>
+    </div>
+    
+    <!-- Agent Architecture -->
+    <div class="arch-panel" id="arch-agent">
+      <div class="agent-diagram">
+        <div class="agent-loop">
+          <div class="agent-component agent-perception" id="agentPerception">
+            <div class="ac-icon">👁️</div>
+            <div class="ac-title">Perception</div>
+            <div class="ac-desc">Observe environment and receive inputs</div>
+          </div>
+          
+          <div class="agent-arrow">→</div>
+          
+          <div class="agent-component agent-memory" id="agentMemory">
+            <div class="ac-icon">🧠</div>
+            <div class="ac-title">Memory</div>
+            <div class="ac-desc">Short-term & long-term memory systems</div>
+          </div>
+          
+          <div class="agent-arrow">→</div>
+          
+          <div class="agent-component agent-decision" id="agentDecision">
+            <div class="ac-icon">🤔</div>
+            <div class="ac-title">Decision</div>
+            <div class="ac-desc">Reasoning and planning engine</div>
+          </div>
+          
+          <div class="agent-arrow">→</div>
+          
+          <div class="agent-component agent-action" id="agentAction">
+            <div class="ac-icon">🛠️</div>
+            <div class="ac-title">Action</div>
+            <div class="ac-desc">Execute tools and affect environment</div>
+          </div>
+        </div>
+        
+        <div class="agent-tools">
+          <h4>Available Tools</h4>
+          <div class="tool-grid">
+            <div class="tool-item">
+              <div class="tool-icon">📊</div>
+              <div class="tool-name">Data Analysis</div>
+            </div>
+            <div class="tool-item">
+              <div class="tool-icon">📝</div>
+              <div class="tool-name">Report Generation</div>
+            </div>
+            <div class="tool-item">
+              <div class="tool-icon">🔬</div>
+              <div class="tool-name">Clinical Data</div>
+            </div>
+            <div class="tool-item">
+              <div class="tool-icon">💊</div>
+              <div class="tool-name">Drug Information</div>
+            </div>
+            <div class="tool-item">
+              <div class="tool-icon">👥</div>
+              <div class="tool-name">Agent Communication</div>
+            </div>
+            <div class="tool-item">
+              <div class="tool-icon">📈</div>
+              <div class="tool-name">Market Simulation</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="agent-communication">
+          <h4>Agent-to-Agent Communication</h4>
+          <div class="comm-flow">
+            <div class="agent-box">
+              <div class="ab-type">Doctor Agent</div>
+              <div class="ab-action">Suggests prescription</div>
+            </div>
+            <div class="comm-arrow">⇄</div>
+            <div class="agent-box">
+              <div class="ab-type">Expert Agent</div>
+              <div class="ab-action">Provides evidence</div>
+            </div>
+            <div class="comm-arrow">⇄</div>
+            <div class="agent-box">
+              <div class="ab-type">Patient Agent</div>
+              <div class="ab-action">Evaluates options</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="agent-info-panel">
+        <h4>Multi-Agent System</h4>
+        <p>PharmaSim simulates a complete ecosystem with:</p>
+        <ul>
+          <li><b>400 Doctor Agents</b> — each with unique prescription behaviors</li>
+          <li><b>1,000 Patient Agents</b> — diverse demographics and preferences</li>
+          <li><b>400 Expert Agents</b> — 7 domain specializations</li>
+          <li><b>Social Network</b> — Watts-Strogatz small-world connections</li>
+        </ul>
+        <p>Click any component to see detailed agent behavior.</p>
+      </div>
+    </div>
   </div>
 </div>
 
