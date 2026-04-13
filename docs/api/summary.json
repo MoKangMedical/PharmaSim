@@ -1,0 +1,36 @@
+{
+  "version": "3.2",
+  "exported_at": "2026-04-13T11:57:56.943523",
+  "total_drugs": 14,
+  "total_diseases": 12,
+  "total_pipeline": 8,
+  "dimensions": 7,
+  "sub_dimensions": 28,
+  "top_drugs": [
+    {
+      "name": "Humira",
+      "score": 0.704,
+      "recommendation": "✅ 推荐上市"
+    },
+    {
+      "name": "Tagrisso",
+      "score": 0.688,
+      "recommendation": "✅ 推荐上市"
+    },
+    {
+      "name": "Tecentriq",
+      "score": 0.673,
+      "recommendation": "✅ 推荐上市"
+    },
+    {
+      "name": "Ozempic",
+      "score": 0.646,
+      "recommendation": "⚠️ 有条件推荐"
+    },
+    {
+      "name": "Entresto",
+      "score": 0.638,
+      "recommendation": "⚠️ 有条件推荐"
+    }
+  ]
+}

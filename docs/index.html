@@ -499,66 +499,17 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
 
 <script src="app.js"></script>
 <script>
-const DRUGS=[
-// ── 肿瘤/免疫 ──
-{name:"Keytruda",generic:"帕博利珠单抗",company:"默沙东(MSD)",cat:"肿瘤/免疫",fda:"2014",china:"2019",indications:["非小细胞肺癌","黑色素瘤","头颈癌","膀胱癌","MSI-H实体瘤"],mechanism:"PD-1抑制剂",price_us:150000,efficacy:{orr:44.8,pfs:4.3,os:2.8}},
-{name:"Opdivo",generic:"纳武利尤单抗",company:"百时美施贵宝(BMS)",cat:"肿瘤/免疫",fda:"2014",china:"2018",indications:["非小细胞肺癌","黑色素瘤","肾癌","肝癌","胃癌"],mechanism:"PD-1抑制剂",price_us:140000,efficacy:{orr:42.1,pfs:3.9,os:2.5}},
-{name:"Tecentriq",generic:"阿替利珠单抗",company:"罗氏(Roche)",cat:"肿瘤/免疫",fda:"2016",china:"2020",indications:["非小细胞肺癌","尿路上皮癌","三阴乳腺癌","肝癌"],mechanism:"PD-L1抑制剂",price_us:135000,efficacy:{orr:38.5,pfs:4.1,os:2.3}},
-{name:"Imfinzi",generic:"度伐利尤单抗",company:"阿斯利康(AZ)",cat:"肿瘤/免疫",fda:"2017",china:"2021",indications:["非小细胞肺癌","小细胞肺癌","胆道癌"],mechanism:"PD-L1抑制剂",price_us:130000,efficacy:{orr:35.2,pfs:3.8,os:2.1}},
-{name:"Yervoy",generic:"伊匹木单抗",company:"百时美施贵宝(BMS)",cat:"肿瘤/免疫",fda:"2011",china:"2021",indications:["黑色素瘤","肾癌","结直肠癌","非小细胞肺癌"],mechanism:"CTLA-4抑制剂",price_us:120000,efficacy:{orr:32.0,pfs:3.2,os:3.5}},
-{name:"Perjeta",generic:"帕妥珠单抗",company:"罗氏(Roche)",cat:"肿瘤/免疫",fda:"2012",china:"2018",indications:["HER2+乳腺癌"],mechanism:"HER2靶向",price_us:90000,efficacy:{orr:80.2,pfs:18.5,os:15.7}},
-{name:"Herceptin",generic:"曲妥珠单抗",company:"罗氏(Roche)",cat:"肿瘤/免疫",fda:"1998",china:"2002",indications:["HER2+乳腺癌","HER2+胃癌"],mechanism:"HER2靶向",price_us:70000,efficacy:{orr:75.0,pfs:12.0,os:10.5}},
-{name:"Tagrisso",generic:"奥希替尼",company:"阿斯利康(AZ)",cat:"肿瘤/免疫",fda:"2015",china:"2017",indications:["EGFR突变NSCLC"],mechanism:"第三代EGFR-TKI",price_us:160000,efficacy:{orr:71.0,pfs:18.9,os:12.4}},
-{name:"Lynparza",generic:"奥拉帕利",company:"阿斯利康(AZ)",cat:"肿瘤/免疫",fda:"2014",china:"2019",indications:["BRCA突变卵巢癌","BRCA突变乳腺癌","胰腺癌"],mechanism:"PARP抑制剂",price_us:140000,efficacy:{orr:65.0,pfs:19.1,os:8.2}},
-{name:"Ibrance",generic:"哌柏西利",company:"辉瑞(Pfizer)",cat:"肿瘤/免疫",fda:"2015",china:"2018",indications:["HR+/HER2-乳腺癌"],mechanism:"CDK4/6抑制剂",price_us:120000,efficacy:{orr:55.0,pfs:24.8,os:5.6}},
-{name:"Xalkori",generic:"克唑替尼",company:"辉瑞(Pfizer)",cat:"肿瘤/免疫",fda:"2011",china:"2013",indications:["ALK+NSCLC","ROS1+NSCLC"],mechanism:"ALK/ROS1抑制剂",price_us:150000,efficacy:{orr:74.0,pfs:10.9,os:6.3}},
-{name:"Darzalex",generic:"达雷妥尤单抗",company:"强生(J&J)",cat:"肿瘤/免疫",fda:"2015",china:"2021",indications:["多发性骨髓瘤"],mechanism:"CD38靶向",price_us:160000,efficacy:{orr:67.0,pfs:16.5,os:9.2}},
-{name:"Revlimid",generic:"来那度胺",company:"BMS/新基",cat:"肿瘤/免疫",fda:"2005",china:"2013",indications:["多发性骨髓瘤","MDS","套细胞淋巴瘤"],mechanism:"免疫调节剂",price_us:150000,efficacy:{orr:70.0,pfs:14.5,os:8.0}},
-{name:"Zytiga",generic:"阿比特龙",company:"强生(J&J)",cat:"肿瘤/免疫",fda:"2011",china:"2015",indications:["转移性前列腺癌"],mechanism:"CYP17抑制剂",price_us:110000,efficacy:{orr:62.0,pfs:16.5,os:4.4}},
-{name:"Xtandi",generic:"恩扎卢胺",company:"安斯泰来(Astellas)",cat:"肿瘤/免疫",fda:"2012",china:"2019",indications:["转移性前列腺癌"],mechanism:"AR拮抗剂",price_us:125000,efficacy:{orr:59.0,pfs:20.0,os:4.8}},
-// ── 代谢/糖尿病 ──
-{name:"Ozempic",generic:"司美格鲁肽",company:"诺和诺德(Novo Nordisk)",cat:"代谢/糖尿病",fda:"2017",china:"2021",indications:["2型糖尿病","肥胖"],mechanism:"GLP-1受体激动剂",price_us:12000,efficacy:{hba1c:1.8,weight:6.2}},
-{name:"Mounjaro",generic:"替尔泊肽",company:"礼来(Eli Lilly)",cat:"代谢/糖尿病",fda:"2022",china:"申请中",indications:["2型糖尿病","肥胖"],mechanism:"GLP-1/GIP双靶点",price_us:15000,efficacy:{hba1c:2.4,weight:9.5}},
-{name:"Jardiance",generic:"恩格列净",company:"勃林格殷格翰/礼来",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:8000,efficacy:{hba1c:0.8,weight:2.0}},
-{name:"Farxiga",generic:"达格列净",company:"阿斯利康(AZ)",cat:"代谢/糖尿病",fda:"2014",china:"2017",indications:["2型糖尿病","心衰","慢性肾病"],mechanism:"SGLT2抑制剂",price_us:7500,efficacy:{hba1c:0.7,weight:1.8}},
-{name:"Trulicity",generic:"度拉糖肽",company:"礼来(Eli Lilly)",cat:"代谢/糖尿病",fda:"2014",china:"2019",indications:["2型糖尿病"],mechanism:"GLP-1受体激动剂",price_us:10000,efficacy:{hba1c:1.4,weight:3.5}},
-{name:"Rybelsus",generic:"口服司美格鲁肽",company:"诺和诺德(Novo Nordisk)",cat:"代谢/糖尿病",fda:"2019",china:"2023",indications:["2型糖尿病"],mechanism:"GLP-1受体激动剂(口服)",price_us:11000,efficacy:{hba1c:1.5,weight:4.5}},
-// ── 心血管 ──
-{name:"Eliquis",generic:"阿哌沙班",company:"BMS/辉瑞",cat:"心血管",fda:"2012",china:"2013",indications:["房颤卒中预防","DVT/PE"],mechanism:"Xa因子抑制剂",price_us:6000,efficacy:{stroke_reduction:0.55,bleeding:0.42}},
-{name:"Xarelto",generic:"利伐沙班",company:"拜耳/强生",cat:"心血管",fda:"2011",china:"2014",indications:["房颤卒中预防","DVT/PE","ACS"],mechanism:"Xa因子抑制剂",price_us:5500,efficacy:{stroke_reduction:0.52,bleeding:0.45}},
-{name:"Entresto",generic:"沙库巴曲缬沙坦",company:"诺华(Novartis)",cat:"心血管",fda:"2015",china:"2017",indications:["心衰(HFrEF)"],mechanism:"ARNI",price_us:7000,efficacy:{hospital_reduction:0.21,mortality:0.20}},
-{name:"Repatha",generic:"依洛尤单抗",company:"安进(Amgen)",cat:"心血管",fda:"2015",china:"2018",indications:["高胆固醇血症","ASCVD"],mechanism:"PCSK9抑制剂",price_us:14000,efficacy:{ldl_reduction:0.60}},
-{name:"Leqvio",generic:"Inclisiran",company:"诺华(Novartis)",cat:"心血管",fda:"2021",china:"申请中",indications:["高胆固醇血症"],mechanism:"siRNA-PCSK9",price_us:10000,efficacy:{ldl_reduction:0.52}},
-// ── 自身免疫 ──
-{name:"Humira",generic:"阿达木单抗",company:"艾伯维(AbbVie)",cat:"自身免疫",fda:"2002",china:"2010",indications:["类风湿关节炎","银屑病","克罗恩病","溃疡性结肠炎"],mechanism:"TNF-α抑制剂",price_us:70000,efficacy:{response_rate:0.70,remission:0.40}},
-{name:"Stelara",generic:"乌司奴单抗",company:"强生(J&J)",cat:"自身免疫",fda:"2009",china:"2019",indications:["银屑病","克罗恩病","溃疡性结肠炎"],mechanism:"IL-12/23抑制剂",price_us:65000,efficacy:{response_rate:0.75,remission:0.45}},
-{name:"Cosentyx",generic:"司库奇尤单抗",company:"诺华(Novartis)",cat:"自身免疫",fda:"2015",china:"2019",indications:["银屑病","强直性脊柱炎","银屑病关节炎"],mechanism:"IL-17A抑制剂",price_us:60000,efficacy:{response_rate:0.80,remission:0.50}},
-{name:"Dupixent",generic:"度普利尤单抗",company:"赛诺菲/再生元",cat:"自身免疫",fda:"2017",china:"2020",indications:["中重度特应性皮炎","哮喘","鼻息肉"],mechanism:"IL-4Rα抑制剂",price_us:55000,efficacy:{response_rate:0.72,remission:0.38}},
-{name:"Skyrizi",generic:"瑞莎珠单抗",company:"艾伯维(AbbVie)",cat:"自身免疫",fda:"2019",china:"2022",indications:["银屑病","克罗恩病"],mechanism:"IL-23抑制剂",price_us:58000,efficacy:{response_rate:0.85,remission:0.55}},
-{name:"Tremfya",generic:"古塞奇尤单抗",company:"强生(J&J)",cat:"自身免疫",fda:"2017",china:"2020",indications:["银屑病","银屑病关节炎"],mechanism:"IL-23抑制剂",price_us:56000,efficacy:{response_rate:0.82,remission:0.52}},
-// ── 罕见病 ──
-{name:"Spinraza",generic:"诺西那生钠",company:"渤健(Biogen)",cat:"罕见病",fda:"2016",china:"2019",indications:["脊髓性肌萎缩症(SMA)"],mechanism:"反义寡核苷酸",price_us:750000,efficacy:{motor_improvement:0.65}},
-{name:"Zolgensma",generic:"Onasemnogene",company:"诺华(Novartis)",cat:"罕见病",fda:"2019",china:"申请中",indications:["SMA(基因治疗)"],mechanism:"AAV基因治疗",price_us:2100000,efficacy:{survival:0.95}},
-{name:"Soliris",generic:"依库珠单抗",company:"亚力兄(Alexion)",cat:"罕见病",fda:"2007",china:"2018",indications:["PNH","aHUS","gMG"],mechanism:"C5补体抑制剂",price_us:500000,efficacy:{hemolysis_control:0.90}},
-{name:"Ultomiris",generic:"Ravulizumab",company:"亚力兄(Alexion)",cat:"罕见病",fda:"2018",china:"2021",indications:["PNH","aHUS","gMG"],mechanism:"C5补体抑制剂(长效)",price_us:450000,efficacy:{hemolysis_control:0.92}},
-{name:"Hemlibra",generic:"Emicizumab",company:"罗氏(Roche)",cat:"罕见病",fda:"2017",china:"2020",indications:["A型血友病"],mechanism:"双特异性抗体",price_us:480000,efficacy:{bleed_reduction:0.96}},
-// ── 神经科学 ──
-{name:"Leqembi",generic:"Lecanemab",company:"渤健/卫材",cat:"神经科学",fda:"2023",china:"申请中",indications:["早期阿尔茨海默病"],mechanism:"Aβ单抗",price_us:26500,efficacy:{cognitive_decline_reduction:0.27}},
-{name:"Aduhelm",generic:"Aducanumab",company:"渤健(Biogen)",cat:"神经科学",fda:"2021",china:"未申请",indications:["阿尔茨海默病"],mechanism:"Aβ单抗",price_us:28000,efficacy:{cognitive_decline_reduction:0.22}},
-{name:"Aimovig",generic:"Erenumab",company:"安进(Amgen)",cat:"神经科学",fda:"2018",china:"2021",indications:["偏头痛预防"],mechanism:"CGRP受体拮抗剂",price_us:7000,efficacy:{attack_reduction:0.50}},
-{name:"Vyepti",generic:"Eptinezumab",company:"灵北(Lundbeck)",cat:"神经科学",fda:"2020",china:"未申请",indications:["偏头痛预防"],mechanism:"CGRP单抗",price_us:8000,efficacy:{attack_reduction:0.55}},
-// ── 感染性疾病 ──
-{name:"Paxlovid",generic:"奈玛特韦/利托那韦",company:"辉瑞(Pfizer)",cat:"感染性疾病",fda:"2021",china:"2022",indications:["COVID-19"],mechanism:"3CL蛋白酶抑制剂",price_us:530,efficacy:{hospitalization_reduction:0.89}},
-{name:"Dovato",generic:"多替拉韦/拉米夫定",company:"ViiV/GSK",cat:"感染性疾病",fda:"2019",china:"2021",indications:["HIV-1"],mechanism:"INSTI+NRTI",price_us:24000,efficacy:{viral_suppression:0.95}},
-{name:"Biktarvy",generic:"BIC/FTC/TAF",company:"吉利德(Gilead)",cat:"感染性疾病",fda:"2018",china:"2020",indications:["HIV-1"],mechanism:"INSTI+NRTI",price_us:30000,efficacy:{viral_suppression:0.97}},
-];
-
-const CATEGORIES=[...new Set(DRUGS.map(d=>d.cat))];
-let selectedDrug=null,currentCat='全部';
-
-// Drug filtering
-function initDrugPage(){var f=document.getElementById("catFilters");f.innerHTML="<button class=\"active\" onclick=\"filterCat('\u5168\u90e8',this)\">\u5168\u90e8 ("+DRUGS.length+")</button>";CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+="<button onclick=\"filterCat('"+c+"',this)\">"+c+" ("+n+")</button>"});renderDrugs()}
-initDrugPage();
+// Real data loader — replaces hardcoded DRUGS with database exports
+var CATEGORIES=[];var selectedDrug=null,currentCat='全部';
+function initDrugPage(){
+  CATEGORIES=[...new Set(window.DRUGS.map(function(d){return d.cat}))];
+  var f=document.getElementById("catFilters");
+  f.innerHTML="<button class=\"active\" onclick=\"filterCat('\u5168\u90e8',this)\">\u5168\u90e8 ("+DRUGS.length+")</button>";
+  CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+="<button onclick=\"filterCat('"+c+"',this)\">"+c+" ("+n+")</button>"});
+  renderDrugs();
+}
+// Load real data from JSON exports, then initialize
+loadData(function(){ initDrugPage(); });
 </script>
 </body>
 </html>

@@ -1,0 +1,163 @@
+{
+  "epidemiology": {
+    "name_cn": "流行病学",
+    "emoji": "🧬",
+    "weight": 0.15,
+    "sub_dimensions": {
+      "disease_burden": {
+        "name_cn": "疾病负担",
+        "weight": 0.35
+      },
+      "population_size": {
+        "name_cn": "人群规模",
+        "weight": 0.3
+      },
+      "unmet_need": {
+        "name_cn": "未满足需求",
+        "weight": 0.25
+      },
+      "mortality_severity": {
+        "name_cn": "死亡率/严重度",
+        "weight": 0.1
+      }
+    }
+  },
+  "clinical": {
+    "name_cn": "临床评估",
+    "emoji": "🩺",
+    "weight": 0.25,
+    "sub_dimensions": {
+      "efficacy": {
+        "name_cn": "疗效",
+        "weight": 0.4
+      },
+      "safety": {
+        "name_cn": "安全性",
+        "weight": 0.3
+      },
+      "guideline_position": {
+        "name_cn": "指南推荐",
+        "weight": 0.2
+      },
+      "operational_feasibility": {
+        "name_cn": "可操作性",
+        "weight": 0.1
+      }
+    }
+  },
+  "market": {
+    "name_cn": "市场评估",
+    "emoji": "📊",
+    "weight": 0.15,
+    "sub_dimensions": {
+      "competition": {
+        "name_cn": "竞争格局",
+        "weight": 0.3
+      },
+      "market_size": {
+        "name_cn": "市场容量",
+        "weight": 0.25
+      },
+      "channel_access": {
+        "name_cn": "渠道可及",
+        "weight": 0.25
+      },
+      "commercialization": {
+        "name_cn": "商业化能力",
+        "weight": 0.2
+      }
+    }
+  },
+  "pricing": {
+    "name_cn": "定价评估",
+    "emoji": "💰",
+    "weight": 0.15,
+    "sub_dimensions": {
+      "value_support": {
+        "name_cn": "价值支撑",
+        "weight": 0.3
+      },
+      "competitive_pricing": {
+        "name_cn": "竞争定价",
+        "weight": 0.25
+      },
+      "nrml_access": {
+        "name_cn": "医保准入",
+        "weight": 0.25
+      },
+      "international_reference": {
+        "name_cn": "国际参考",
+        "weight": 0.2
+      }
+    }
+  },
+  "pharmacology": {
+    "name_cn": "药物学",
+    "emoji": "⚗️",
+    "weight": 0.1,
+    "sub_dimensions": {
+      "pk_profile": {
+        "name_cn": "药代动力学",
+        "weight": 0.3
+      },
+      "pd_efficacy": {
+        "name_cn": "药效学",
+        "weight": 0.3
+      },
+      "toxicology": {
+        "name_cn": "毒理",
+        "weight": 0.25
+      },
+      "formulation": {
+        "name_cn": "制剂便利性",
+        "weight": 0.15
+      }
+    }
+  },
+  "pharmaecon": {
+    "name_cn": "药物经济学",
+    "emoji": "📐",
+    "weight": 0.1,
+    "sub_dimensions": {
+      "cost_effectiveness": {
+        "name_cn": "成本效果",
+        "weight": 0.35
+      },
+      "budget_impact": {
+        "name_cn": "预算影响",
+        "weight": 0.3
+      },
+      "qol_improvement": {
+        "name_cn": "生活质量改善",
+        "weight": 0.2
+      },
+      "hta_evidence": {
+        "name_cn": "HTA证据",
+        "weight": 0.15
+      }
+    }
+  },
+  "insurance": {
+    "name_cn": "医保评估",
+    "emoji": "📋",
+    "weight": 0.1,
+    "sub_dimensions": {
+      "nrml_eligibility": {
+        "name_cn": "国谈准入",
+        "weight": 0.3
+      },
+      "reimbursement_breadth": {
+        "name_cn": "报销广度",
+        "weight": 0.25
+      },
+      "fund_impact": {
+        "name_cn": "基金影响",
+        "weight": 0.25
+      },
+      "drg_compatibility": {
+        "name_cn": "DRG兼容",
+        "weight": 0.2
+      }
+    }
+  }
+}
