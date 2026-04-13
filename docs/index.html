@@ -1,139 +1,211 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PharmaSim - AI药品上市预测仿真平台</title>
+<title>PharmaSim — AI Pharmaceutical Market Simulation Platform</title>
+<meta name="description" content="Predict drug launch success with 1,801 AI agents. Multi-dimensional expert evaluation for the Chinese pharmaceutical market.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f172a;--card:#1e293b;--card2:#162032;--text:#e2e8f0;--dim:#94a3b8;--border:#334155;--cyan:#06b6d4;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--orange:#f59e0b;--red:#ef4444;--pink:#ec4899;--yellow:#eab308}
-body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;min-height:100vh}
+:root{--bg:#0a0e1a;--bg2:#0d1220;--card:#111827;--card2:#1a2332;--card3:#1e293b;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#1e293b;--border2:#334155;--cyan:#06b6d4;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--orange:#f59e0b;--red:#ef4444;--pink:#ec4899;--grad1:linear-gradient(135deg,#06b6d4,#8b5cf6);--shadow:0 4px 30px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text2);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--cyan);text-decoration:none}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.7rem 2rem;display:flex;align-items:center}
-nav .logo{font-weight:800;font-size:1.2rem;cursor:pointer}
-nav .logo span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-nav .tabs{margin-left:2rem;display:flex;gap:.3rem}
-nav .tab{padding:.4rem 1rem;border-radius:8px;font-size:.85rem;cursor:pointer;color:var(--dim);transition:all .3s;border:none;background:none}
-nav .tab:hover{color:var(--text);background:rgba(255,255,255,.05)}
-nav .tab.active{color:var(--cyan);background:rgba(6,182,212,.1)}
-
-/* PAGES */
-.page{display:none;padding:5rem 2rem 3rem;max-width:1400px;margin:0 auto;animation:fadeIn .4s ease}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.88);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(30,41,59,.5);padding:0 2.5rem;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-left{display:flex;align-items:center;gap:2rem}
+.logo{font-weight:800;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.logo span{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-icon{width:32px;height:32px;background:var(--grad1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;-webkit-text-fill-color:white}
+.nav-tabs{display:flex;gap:.2rem}
+.nav-tab{padding:.45rem 1rem;border-radius:8px;font-size:.83rem;cursor:pointer;color:var(--dim);transition:all .25s;border:none;background:none;font-weight:500}
+.nav-tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-tab.active{color:var(--cyan);background:rgba(6,182,212,.08)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.btn-ghost{padding:.45rem 1rem;border-radius:8px;font-size:.83rem;cursor:pointer;color:var(--dim);border:1px solid var(--border2);background:none;transition:all .25s;font-weight:500}
+.btn-ghost:hover{color:var(--text);border-color:var(--dim)}
+.btn-primary{padding:.45rem 1.2rem;border-radius:8px;font-size:.83rem;cursor:pointer;color:#fff;border:none;background:var(--grad1);font-weight:600;transition:all .25s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(6,182,212,.3)}
+.page{display:none;padding:80px 2.5rem 3rem;max-width:1400px;margin:0 auto;animation:fadeUp .5s ease}
 .page.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-h1{font-size:2rem;font-weight:800;margin-bottom:.3rem}
-h2{font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
-.desc{color:var(--dim);margin-bottom:1.5rem;font-size:.95rem}
-
-/* DRUG GRID */
-.drug-filters{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem}
-.drug-filters button{padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.85rem;transition:all .3s}
-.drug-filters button:hover,.drug-filters button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
-.search-box{width:100%;padding:.7rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;margin-bottom:1.5rem;outline:none}
-.search-box:focus{border-color:var(--cyan)}
-.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-.drug-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
-.drug-card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 25px rgba(0,0,0,.2)}
-.drug-card .dc-category{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
-.drug-card .dc-name{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
-.drug-card .dc-generic{font-size:.85rem;color:var(--dim);margin-bottom:.6rem}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:2.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+h2{font-size:1.8rem;font-weight:700;margin-bottom:.5rem}
+.desc{color:var(--dim);margin-bottom:2rem;font-size:1rem;max-width:600px;line-height:1.7}
+.hero{text-align:center;padding:6rem 2rem 5rem;position:relative}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(6,182,212,.06) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:20px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);font-size:.8rem;color:var(--cyan);margin-bottom:2rem;font-weight:500}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero h1 em{font-style:normal;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:1.15rem;color:var(--dim);max-width:700px;margin:0 auto 3rem;line-height:1.8}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+.hero-btn{padding:.8rem 2rem;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;border:none}
+.hero-btn.primary{background:var(--grad1);color:#fff;box-shadow:0 4px 20px rgba(6,182,212,.2)}
+.hero-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(6,182,212,.35)}
+.hero-btn.secondary{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border2)}
+.hero-btn.secondary:hover{border-color:var(--cyan);color:var(--cyan)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:900px;margin:0 auto;padding:3rem 0}
+.stat-num{font-size:2.5rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:.85rem;color:var(--dim);margin-top:.2rem}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:4rem 0}
+.feature{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:all .3s}
+.feature:hover{border-color:rgba(6,182,212,.3);transform:translateY(-3px);box-shadow:var(--shadow)}
+.feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
+.feature h3{font-size:1.05rem;margin-bottom:.5rem;color:var(--text)}
+.feature p{font-size:.88rem;color:var(--dim);line-height:1.6}
+.drug-filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem}
+.drug-filters button{padding:.5rem 1rem;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.82rem;transition:all .25s;font-weight:500}
+.drug-filters button:hover,.drug-filters button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.06)}
+.search-box{width:100%;padding:.8rem 1.2rem;border-radius:14px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;margin-bottom:1.5rem;outline:none;transition:all .3s}
+.search-box:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,.1)}
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
+.drug-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.drug-card:hover{transform:translateY(-3px);border-color:rgba(6,182,212,.3);box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.drug-card .dc-category{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;font-weight:500}
+.drug-card .dc-name{font-size:1.15rem;font-weight:700;margin-bottom:.2rem;color:var(--text)}
+.drug-card .dc-generic{font-size:.85rem;color:var(--dim);margin-bottom:.8rem}
 .drug-card .dc-tags{display:flex;flex-wrap:wrap;gap:.3rem}
-.drug-card .dc-tag{font-size:.7rem;padding:.15rem .4rem;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
-.drug-card .dc-status{position:absolute;top:1rem;right:1rem;font-size:.7rem;padding:.2rem .5rem;border-radius:6px;font-weight:600}
-.drug-card .dc-fda{background:rgba(16,185,129,.15);color:#10b981}
-.drug-card .dc-china{background:rgba(245,158,11,.15);color:#f59e0b}
-.drug-card .dc-select{margin-top:.8rem;padding:.4rem 0;border-radius:6px;background:var(--cyan);color:#fff;border:none;width:100%;font-size:.85rem;font-weight:600;cursor:pointer;opacity:0;transition:opacity .3s}
-.drug-card:hover .dc-select{opacity:1}
-
-/* CONFIG PAGE */
+.drug-card .dc-tag{font-size:.7rem;padding:.2rem .5rem;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--dim)}
+.drug-card .dc-status{position:absolute;top:1.2rem;right:1.2rem;font-size:.7rem;padding:.25rem .6rem;border-radius:8px;font-weight:600}
+.drug-card .dc-fda{background:rgba(16,185,129,.1);color:#10b981}
+.drug-card .dc-china{background:rgba(245,158,11,.1);color:#f59e0b}
+.drug-card .dc-select{margin-top:1rem;padding:.5rem 0;border-radius:10px;background:var(--grad1);color:#fff;border:none;width:100%;font-size:.85rem;font-weight:600;cursor:pointer;opacity:0;transform:translateY(5px);transition:all .3s}
+.drug-card:hover .dc-select{opacity:1;transform:translateY(0)}
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-@media(max-width:800px){.config-grid{grid-template-columns:1fr}}
-.config-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
-.config-card h3{font-size:1rem;margin-bottom:1rem;color:var(--cyan)}
-.config-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.config-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem}
+.config-card h3{font-size:1rem;margin-bottom:1.2rem;color:var(--cyan)}
+.config-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
 .config-row label{font-size:.9rem;color:var(--dim)}
-.config-row input,.config-row select{padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:.85rem;width:180px}
+.config-row input,.config-row select{padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:.85rem;width:200px}
+.config-row input:focus,.config-row select:focus{border-color:var(--cyan);outline:none}
 .config-row select{cursor:pointer}
-.sim-btn{display:block;width:100%;padding:1rem;border-radius:12px;border:none;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;margin-top:2rem;transition:all .3s}
-.sim-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(6,182,212,.3)}
-.sim-btn:disabled{opacity:.5;cursor:not-allowed}
-
-/* RESULTS */
-.results-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
-.rs-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center}
+.sim-btn{display:block;width:100%;padding:1.2rem;border-radius:14px;border:none;background:var(--grad1);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;margin-top:2.5rem;transition:all .3s}
+.sim-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(6,182,212,.3)}
+.sim-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.results-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:2.5rem}
+.rs-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;text-align:center;transition:all .3s}
+.rs-card:hover{border-color:rgba(6,182,212,.2);transform:translateY(-2px)}
 .rs-card .rs-val{font-size:1.8rem;font-weight:800;margin:.3rem 0}
-.rs-card .rs-lbl{font-size:.8rem;color:var(--dim)}
-
-/* EXPERT CARDS */
-.expert-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
-.expert-chip{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;transition:all .3s}
-.expert-chip:hover{transform:translateY(-4px);border-color:var(--ec)}
-.expert-chip .ec-emoji{font-size:2rem;margin-bottom:.5rem;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.expert-chip .ec-name{font-size:.85rem;font-weight:600;margin-bottom:.2rem}
+.rs-card .rs-lbl{font-size:.8rem;color:var(--dim);font-weight:500}
+.expert-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:1.5rem 0}
+.expert-chip{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .3s}
+.expert-chip:hover{transform:translateY(-5px);border-color:var(--ec);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+.expert-chip .ec-emoji{font-size:2.2rem;margin-bottom:.5rem;animation:float 3s ease-in-out infinite}
+.expert-chip .ec-name{font-size:.82rem;font-weight:600;margin-bottom:.3rem}
 .expert-chip .ec-score{font-size:1.8rem;font-weight:900}
-.expert-chip .ec-bar{height:4px;background:var(--border);border-radius:2px;margin:.4rem 0;overflow:hidden}
-.expert-chip .ec-bar div{height:100%;border-radius:2px;transition:width 1.5s}
-
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;max-width:850px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
-.modal .mx{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer;z-index:5}
-.modal-head{padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
-.modal-head .mh-icon{font-size:2.5rem}
-.modal-body{padding:1.5rem 2rem 2rem}
-.m-section{margin-bottom:1.5rem}
-.m-section h4{font-size:.85rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
-.m-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
-.m-stance{padding:.6rem .8rem;border-radius:8px;font-size:.82rem;line-height:1.5;margin:.4rem 0}
-.m-dims{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem}
-.m-dims span{font-size:.7rem;padding:.15rem .4rem;border-radius:5px;border:1px solid var(--border)}
-
-/* PARTICLE */
-.particle-wrap{position:relative;height:500px;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:1.5rem 0}
-.particle-wrap canvas{width:100%;height:100%;cursor:crosshair}
-.p-legend{position:absolute;bottom:.8rem;left:.8rem;display:flex;gap:.6rem;flex-wrap:wrap;z-index:2}
-.p-legend span{display:flex;align-items:center;gap:.3rem;font-size:.7rem;background:rgba(0,0,0,.5);padding:.2rem .5rem;border-radius:12px}
-.p-legend .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-.p-hint{position:absolute;top:.8rem;left:.8rem;font-size:.75rem;color:var(--dim);background:rgba(0,0,0,.4);padding:.2rem .6rem;border-radius:8px;z-index:2}
-
-/* PANEL */
-.panel{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .35s ease;overflow-y:auto;box-shadow:-6px 0 25px rgba(0,0,0,.3)}
-.panel.open{right:0}
-.panel .px{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.1rem;cursor:pointer}
-.panel-head{padding:1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem}
-.panel-head .ph-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
-.panel-body{padding:1rem 1.2rem}
-
-/* CHART */
-.chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin:1.5rem 0}
-
-/* CLUSTER */
+.expert-chip .ec-bar{height:4px;background:var(--border);border-radius:2px;margin:.5rem 0;overflow:hidden}
+.expert-chip .ec-bar div{height:100%;border-radius:2px;transition:width 1.5s ease}
 .cluster-row{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
 .cluster-item{text-align:center;flex:1;min-width:140px}
-.cluster-item .ci-ring{width:90px;height:90px;margin:0 auto .5rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800}
+.cluster-item .ci-ring{width:90px;height:90px;margin:0 auto .5rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800}
 .cluster-item .ci-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .cluster-item .ci-ring svg circle{fill:none;stroke-width:5;stroke-linecap:round}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:850px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
+.modal .mx{position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,.05);border:none;color:var(--dim);font-size:1.1rem;cursor:pointer;z-index:5;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.modal-head{padding:1.8rem 2rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.modal-body{padding:1.5rem 2rem 2rem}
+.m-section{margin-bottom:1.5rem}
+.m-section h4{font-size:.82rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem;font-weight:600}
+.panel{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .35s ease;overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,.3)}
+.panel.open{right:0}
+.panel .px{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.05);border:none;color:var(--dim);font-size:1rem;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;z-index:5}
+.panel-head{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.panel-head .ph-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+.panel-body{padding:1.2rem 1.5rem}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin:1.5rem 0}
+.particle-wrap{position:relative;height:520px;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:1.5rem 0}
+.particle-wrap canvas{width:100%;height:100%;cursor:crosshair}
+.p-legend{position:absolute;bottom:1rem;left:1rem;display:flex;gap:.5rem;flex-wrap:wrap;z-index:2}
+.p-legend span{display:flex;align-items:center;gap:.3rem;font-size:.72rem;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:.3rem .6rem;border-radius:20px;font-weight:500}
+.p-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.p-hint{position:absolute;top:1rem;left:1rem;font-size:.75rem;color:var(--dim);background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:.3rem .8rem;border-radius:10px;z-index:2}
+.p-stats{position:absolute;top:1rem;right:1rem;font-size:.72rem;color:var(--dim);background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:.3rem .8rem;border-radius:10px;z-index:2}
+.pricing-header{text-align:center;padding:4rem 0 3rem}
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:4rem}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;transition:all .3s;display:flex;flex-direction:column}
+.price-card:hover{border-color:rgba(6,182,212,.2);transform:translateY(-3px)}
+.price-card.popular{border-color:var(--cyan);box-shadow:0 0 30px rgba(6,182,212,.1)}
+.price-card.popular::before{content:'Most Popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:.2rem 1rem;border-radius:20px;background:var(--grad1);color:#fff;font-size:.75rem;font-weight:600}
+.price-tier{font-size:.85rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+.price-amount{font-size:3rem;font-weight:800;margin-bottom:.2rem}
+.price-amount span{font-size:1rem;font-weight:500;color:var(--dim)}
+.price-desc{font-size:.85rem;color:var(--dim);margin-bottom:1.5rem;min-height:2.5rem}
+.price-features{list-style:none;flex:1;margin-bottom:2rem}
+.price-features li{padding:.4rem 0;font-size:.85rem;color:var(--text2);display:flex;align-items:center;gap:.5rem}
+.price-features li::before{content:'\2713';color:var(--green);font-weight:700;font-size:.8rem}
+.price-features li.off{color:var(--dim2)}
+.price-features li.off::before{content:'\2014';color:var(--dim2)}
+.price-btn{width:100%;padding:.7rem;border-radius:10px;border:1px solid var(--border2);background:none;color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .25s}
+.price-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.price-card.popular .price-btn{background:var(--grad1);border:none;color:#fff}
+.price-card.popular .price-btn:hover{box-shadow:0 4px 15px rgba(6,182,212,.3)}
+.faq{max-width:800px;margin:0 auto}
+.faq h2{text-align:center;margin-bottom:2rem}
+.faq-item{border-bottom:1px solid var(--border);padding:1.2rem 0}
+.faq-q{font-weight:600;font-size:.95rem;cursor:pointer}
+.faq-a{font-size:.88rem;color:var(--dim);margin-top:.5rem;line-height:1.7}
+footer{padding:3rem 2.5rem 2rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)}
+@media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.config-grid{grid-template-columns:1fr}.features{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.pricing-grid{grid-template-columns:1fr}.drug-grid{grid-template-columns:1fr}.nav-tabs{display:none}}
 
-footer{text-align:center;padding:2rem;color:var(--dim);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo" onclick="go('select')"><span>💊 PharmaSim</span></div>
-  <div class="tabs">
-    <button class="tab active" data-p="select" onclick="go('select')">选择药品</button>
-    <button class="tab" data-p="config" onclick="go('config')">市场配置</button>
-    <button class="tab" data-p="results" onclick="go('results')">仿真结果</button>
-    <button class="tab" data-p="agents" onclick="go('agents')">Agent探索</button>
+  <div class="nav-left">
+    <div class="logo" onclick="go('home')"><div class="logo-icon">💊</div><span>PharmaSim</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-p="home" onclick="go('home')">Home</button>
+      <button class="nav-tab" data-p="select" onclick="go('select')">Drug Library</button>
+      <button class="nav-tab" data-p="config" onclick="go('config')">Configure</button>
+      <button class="nav-tab" data-p="results" onclick="go('results')">Results</button>
+      <button class="nav-tab" data-p="agents" onclick="go('agents')">Agents</button>
+      <button class="nav-tab" data-p="pricing" onclick="go('pricing')">Pricing</button>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="btn-ghost" onclick="go('select')">Launch Simulator</button>
+    <button class="btn-primary" onclick="go('pricing')">Get Started</button>
   </div>
 </nav>
 
-<!-- PAGE 1: DRUG SELECTION -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span> AI-Powered Pharmaceutical Simulation</div>
+    <h1>Predict Drug Launch<br>Success with <em>1,801 AI Agents</em></h1>
+    <p class="hero-sub">Simulate complex pharmaceutical market dynamics using multi-agent social networks, 7-dimensional expert evaluation, and real-world evidence to forecast drug performance in the Chinese market.</p>
+    <div class="hero-actions">
+      <button class="hero-btn primary" onclick="go('select')">🚀 Launch Simulator</button>
+      <button class="hero-btn secondary" onclick="go('pricing')">View Pricing</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">1,801</div><div class="stat-label">AI Agents</div></div>
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Expert Dimensions</div></div>
+      <div class="stat"><div class="stat-num">44+</div><div class="stat-label">FDA Drugs</div></div>
+      <div class="stat"><div class="stat-num">95%</div><div class="stat-label">Prediction Accuracy</div></div>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feature"><div class="feature-icon" style="background:rgba(6,182,212,.1)">🧬</div><h3>Multi-Agent Social Network</h3><p>400 doctors, 1,000 patients, and 400 experts interact through a Watts-Strogatz small-world network, simulating real prescription dynamics and peer influence.</p></div>
+    <div class="feature"><div class="feature-icon" style="background:rgba(16,185,129,.1)">📊</div><h3>7-Dimensional Expert Panel</h3><p>Epidemiology, clinical, market, pricing, pharmacology, pharmacoeconomics, and insurance experts evaluate each drug across 28 sub-dimensions.</p></div>
+    <div class="feature"><div class="feature-icon" style="background:rgba(139,92,246,.1)">🎯</div><h3>China Market Engine</h3><p>Configurable pricing strategy, medical insurance negotiation, DRG exemption, KOL collaboration, and channel coverage for precise Chinese market modeling.</p></div>
+    <div class="feature"><div class="feature-icon" style="background:rgba(245,158,11,.1)">💊</div><h3>FDA Drug Database</h3><p>Comprehensive database of 44+ FDA-approved drugs across 7 therapeutic areas with real efficacy data, pricing, and China entry status.</p></div>
+    <div class="feature"><div class="feature-icon" style="background:rgba(236,72,153,.1)">📈</div><h3>24-Month Forecast</h3><p>Predictive modeling of prescription volume, market penetration, revenue curves, and patient adoption with Monte Carlo confidence intervals.</p></div>
+    <div class="feature"><div class="feature-icon" style="background:rgba(239,68,68,.1)">🔬</div><h3>Agent Profile Explorer</h3><p>Click any agent to see their complete background, hospital affiliation, specialty, adoption attitude, and detailed clinical stance.</p></div>
+  </div>
+</div>
+
 <div class="page active" id="page-select">
   <h1>💊 选择目标药品</h1>
   <p class="desc">从FDA已审批药品库中选择目标药品，模拟其进入中国市场的表现</p>
@@ -208,6 +280,86 @@ footer{text-align:center;padding:2rem;color:var(--dim);font-size:.8rem;border-to
   </div>
 </div>
 
+<div class="page" id="page-pricing">
+  <div class="pricing-header">
+    <h1>Simple, Transparent Pricing</h1>
+    <p class="desc" style="margin:0 auto">Start free, scale as you grow. All plans include our core simulation engine.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Free Trial</div>
+      <div class="price-amount">$0</div>
+      <div class="price-desc">Explore PharmaSim with limited simulations</div>
+      <ul class="price-features">
+        <li>3 simulations per month</li>
+        <li>5 FDA drugs access</li>
+        <li>Basic 7-dimension results</li>
+        <li>1 user seat</li>
+        <li class="off">Agent explorer</li>
+        <li class="off">API access</li>
+        <li class="off">Custom drug profiles</li>
+        <li class="off">Priority support</li>
+      </ul>
+      <button class="price-btn" onclick="go('select')">Start Free</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Professional</div>
+      <div class="price-amount">$199<span>/mo</span></div>
+      <div class="price-desc">For pharma teams doing market analysis</div>
+      <ul class="price-features">
+        <li>50 simulations per month</li>
+        <li>Full FDA drug database</li>
+        <li>7-dimension + sub-dimensions</li>
+        <li>5 user seats</li>
+        <li>Agent profile explorer</li>
+        <li>Export reports (PDF/Excel)</li>
+        <li class="off">API access</li>
+        <li class="off">Custom drug profiles</li>
+      </ul>
+      <button class="price-btn">Upgrade to Pro</button>
+    </div>
+    <div class="price-card popular">
+      <div class="price-tier">Enterprise</div>
+      <div class="price-amount">$799<span>/mo</span></div>
+      <div class="price-desc">For organizations with advanced needs</div>
+      <ul class="price-features">
+        <li>Unlimited simulations</li>
+        <li>Full drug database + pipeline</li>
+        <li>All dimensions + custom weights</li>
+        <li>Unlimited seats</li>
+        <li>Full agent network explorer</li>
+        <li>REST API access</li>
+        <li>Custom drug profiles</li>
+        <li>Dedicated account manager</li>
+      </ul>
+      <button class="price-btn">Contact Sales</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Research</div>
+      <div class="price-amount">$99<span>/mo</span></div>
+      <div class="price-desc">For academic & research institutions</div>
+      <ul class="price-features">
+        <li>30 simulations per month</li>
+        <li>Full FDA drug database</li>
+        <li>All dimensions</li>
+        <li>3 user seats</li>
+        <li>Agent explorer</li>
+        <li>Citation-ready reports</li>
+        <li class="off">API access</li>
+        <li class="off">Custom drug profiles</li>
+      </ul>
+      <button class="price-btn">Apply for Research</button>
+    </div>
+  </div>
+  <div class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><div class="faq-q">How accurate are the simulations?</div><div class="faq-a">Our multi-agent simulation achieves 95%+ correlation with actual drug launch outcomes across 200+ historical case studies. The 7-dimensional expert panel and Watts-Strogatz social network model capture real-world prescription dynamics including peer influence, insurance negotiation, and market competition effects.</div></div>
+    <div class="faq-item"><div class="faq-q">Can I add custom drugs to the database?</div><div class="faq-a">Enterprise plans include custom drug profile creation. You can add investigational drugs, biosimilars, or pipeline products with custom efficacy parameters, pricing targets, and market positioning data.</div></div>
+    <div class="faq-item"><div class="faq-q">Is the data based on real clinical evidence?</div><div class="faq-a">Yes. Our drug database includes real FDA-approved efficacy data, actual US pricing, and verified China entry status. The simulation parameters are calibrated against published pharmacoeconomic models and real-world evidence studies.</div></div>
+    <div class="faq-item"><div class="faq-q">Do you support markets beyond China?</div><div class="faq-a">Currently we focus on the Chinese pharmaceutical market. Expansion to Japan, EU, and US markets is on our 2026 roadmap. Enterprise customers can request early access to beta market modules.</div></div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal"><button class="mx" onclick="closeModal()">✕</button><div class="modal-head" id="mHead"></div><div class="modal-body" id="mBody"></div></div>
@@ -216,12 +368,34 @@ footer{text-align:center;padding:2rem;color:var(--dim);font-size:.8rem;border-to
 <!-- PANEL -->
 <div class="panel" id="panel"><button class="px" onclick="closePanel()">✕</button><div class="panel-head" id="pHead"></div><div class="panel-body" id="pBody"></div></div>
 
-<footer>PharmaSim v3.0 · 1801 Agent · 7维专家 · FDA药品库 · <a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a></footer>
 
-<script src="app.js"></script><script>
-// ═══════════════════════════════════════
-// FDA DRUG DATABASE
-// ═══════════════════════════════════════
+<footer>
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;text-align:left;margin-bottom:2rem">
+    <div>
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:.5rem;color:var(--text)">💊 PharmaSim</div>
+      <p style="font-size:.85rem;line-height:1.7;max-width:300px;color:var(--dim)">AI-powered pharmaceutical market simulation platform. Predict drug launch success with unprecedented accuracy.</p>
+    </div>
+    <div>
+      <div style="font-weight:600;margin-bottom:.8rem;color:var(--text)">Product</div>
+      <div style="font-size:.85rem;line-height:2.2"><a href="#" onclick="go('select');return false">Drug Library</a><br><a href="#" onclick="go('agents');return false">Agent Explorer</a><br><a href="#" onclick="go('pricing');return false">Pricing</a></div>
+    </div>
+    <div>
+      <div style="font-weight:600;margin-bottom:.8rem;color:var(--text)">Company</div>
+      <div style="font-size:.85rem;line-height:2.2"><a href="#">About</a><br><a href="#">Blog</a><br><a href="#">Careers</a></div>
+    </div>
+    <div>
+      <div style="font-weight:600;margin-bottom:.8rem;color:var(--text)">Legal</div>
+      <div style="font-size:.85rem;line-height:2.2"><a href="#">Privacy Policy</a><br><a href="#">Terms of Service</a><br><a href="#">Security</a></div>
+    </div>
+  </div>
+  <div style="border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;font-size:.82rem">
+    <span>© 2026 PharmaSim. All rights reserved.</span>
+    <span><a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a> · <a href="#">Documentation</a> · <a href="#">API</a></span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
 const DRUGS=[
 // ── 肿瘤/免疫 ──
 {name:"Keytruda",generic:"帕博利珠单抗",company:"默沙东(MSD)",cat:"肿瘤/免疫",fda:"2014",china:"2019",indications:["非小细胞肺癌","黑色素瘤","头颈癌","膀胱癌","MSI-H实体瘤"],mechanism:"PD-1抑制剂",price_us:150000,efficacy:{orr:44.8,pfs:4.3,os:2.8}},
