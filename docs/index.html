@@ -1037,7 +1037,7 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
         <li class="off">Custom drug profiles</li>
         <li class="off">Priority support</li>
       </ul>
-      <button class="price-btn" onclick="go('select')">Start Free</button>
+      <button class="price-btn" data-creem-plan="free" onclick="go('select')">Start Free</button>
     </div>
     <div class="price-card">
       <div class="price-tier">Professional</div>
@@ -1053,7 +1053,7 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
         <li class="off">API access</li>
         <li class="off">Custom drug profiles</li>
       </ul>
-      <button class="price-btn">Upgrade to Pro</button>
+      <button class="price-btn" data-creem-plan="pro">Upgrade to Pro</button>
     </div>
     <div class="price-card popular">
       <div class="price-tier">Enterprise</div>
@@ -1069,7 +1069,7 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
         <li>Custom drug profiles</li>
         <li>Dedicated account manager</li>
       </ul>
-      <button class="price-btn">Contact Sales</button>
+      <button class="price-btn" data-creem-plan="enterprise">Contact Sales</button>
     </div>
     <div class="price-card">
       <div class="price-tier">Research</div>
@@ -1085,7 +1085,7 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
         <li class="off">API access</li>
         <li class="off">Custom drug profiles</li>
       </ul>
-      <button class="price-btn">Apply for Research</button>
+      <button class="price-btn" data-creem-plan="research">Apply for Research</button>
     </div>
   </div>
   <div class="faq">
@@ -1132,14 +1132,15 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
 </footer>
 
 <script src="app.js"></script>
+<script src="creem-integration.js"></script>
 <script>
 // Real data loader — replaces hardcoded DRUGS with database exports
 var CATEGORIES=[];var selectedDrug=null,currentCat='全部';
 function initDrugPage(){
   CATEGORIES=[...new Set(window.DRUGS.map(function(d){return d.cat}))];
   var f=document.getElementById("catFilters");
-  f.innerHTML="<button class=\"active\" onclick=\"filterCat('\u5168\u90e8',this)\">\u5168\u90e8 ("+DRUGS.length+")</button>";
-  CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+="<button onclick=\"filterCat('"+c+"',this)\">"+c+" ("+n+")</button>"});
+  f.innerHTML="<button class="active" onclick="filterCat('\u5168\u90e8',this)">\u5168\u90e8 ("+DRUGS.length+")</button>";
+  CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+="<button onclick="filterCat('"+c+"',this)">"+c+" ("+n+")</button>"});
   renderDrugs();
 }
 // Load real data from JSON exports, then initialize
