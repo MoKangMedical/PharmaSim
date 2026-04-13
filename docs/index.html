@@ -641,11 +641,12 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
       
       <!-- PROMO VIDEO -->
       <div style="text-align:center;margin:3rem 0">
-        <video controls preload="metadata" style="max-width:900px;width:100%;border-radius:16px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.4)">
+        <video id="promoVideo" controls preload="auto" playsinline style="max-width:900px;width:100%;border-radius:16px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.4)">
           <source src="PharmaSim_Promo_60s.mp4" type="video/mp4">
           Your browser does not support video playback.
         </video>
-        <p style="font-size:.85rem;color:var(--dim);margin-top:.8rem">🎬 60-Second Platform Overview</p>
+        <p style="font-size:.85rem;color:var(--dim);margin-top:.8rem">🎬 60-Second Platform Overview · English Narration</p>
+        <button onclick="document.getElementById('promoVideo').play()" style="margin-top:.5rem;padding:.6rem 1.5rem;background:var(--cyan);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem">▶ Play Video with Sound</button>
       </div>
     </div>
   </div>
