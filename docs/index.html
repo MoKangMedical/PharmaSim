@@ -37,8 +37,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.88
 h1{font-size:2.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
 h2{font-size:1.8rem;font-weight:700;margin-bottom:.5rem}
 .desc{color:var(--dim);margin-bottom:2rem;font-size:1rem;max-width:600px;line-height:1.7}
-.hero{text-align:center;padding:6rem 2rem 5rem;position:relative}
-.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(6,182,212,.06) 0%,transparent 70%);pointer-events:none}
+.hero{text-align:center;padding:6rem 2rem 5rem;position:relative;min-height:85vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-canvas canvas{width:100%;height:100%}
+.hero-content{position:relative;z-index:2}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:20px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);font-size:.8rem;color:var(--cyan);margin-bottom:2rem;font-weight:500}
 .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 .hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -152,6 +154,35 @@ h2{font-size:1.8rem;font-weight:700;margin-bottom:.5rem}
 .faq-item{border-bottom:1px solid var(--border);padding:1.2rem 0}
 .faq-q{font-weight:600;font-size:.95rem;cursor:pointer}
 .faq-a{font-size:.88rem;color:var(--dim);margin-top:.5rem;line-height:1.7}
+/* ═══ DECISION FLOW ═══ */
+.decision-flow{margin:4rem 0;padding:3rem 0}
+.decision-flow h2{text-align:center;margin-bottom:.5rem}
+.decision-flow .desc{text-align:center;margin:0 auto 3rem}
+.flow-steps{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+.flow-step{flex:1;min-width:160px;max-width:200px;text-align:center;padding:1.5rem 1rem;position:relative}
+.flow-step .fs-icon{width:56px;height:56px;border-radius:16px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative;z-index:2}
+.flow-step .fs-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
+.flow-step .fs-desc{font-size:.78rem;color:var(--dim);line-height:1.5}
+.flow-arrow{color:var(--cyan);font-size:1.5rem;opacity:.5;flex-shrink:0}
+.flow-result{text-align:center;margin-top:2.5rem;padding:2rem;background:linear-gradient(135deg,rgba(6,182,212,.06),rgba(139,92,246,.06));border:1px solid var(--border);border-radius:20px;max-width:700px;margin-left:auto;margin-right:auto}
+.flow-result .fr-score{font-size:3.5rem;font-weight:900;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.flow-result .fr-label{font-size:1rem;color:var(--dim);margin-top:.3rem}
+
+/* ═══ LIVE DEMO SECTION ═══ */
+.live-demo{margin:3rem 0;position:relative}
+.live-demo h2{text-align:center;margin-bottom:.5rem}
+.live-demo .desc{text-align:center;margin:0 auto 2rem}
+.demo-canvas-wrap{position:relative;height:450px;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border)}
+.demo-canvas-wrap canvas{width:100%;height:100%;cursor:crosshair}
+.demo-overlay{position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-start;justify-content:space-between;padding:1.5rem}
+.demo-stats{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border-radius:12px;padding:1rem 1.2rem;font-size:.78rem;color:var(--dim);line-height:1.8}
+.demo-stats b{color:var(--text);font-weight:600}
+.demo-stats .val{color:var(--cyan);font-weight:700}
+.demo-legend{position:absolute;bottom:1rem;left:1rem;display:flex;gap:.5rem;flex-wrap:wrap;z-index:2}
+.demo-legend span{display:flex;align-items:center;gap:.3rem;font-size:.72rem;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:.3rem .6rem;border-radius:20px;font-weight:500}
+.demo-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.demo-hint{position:absolute;top:1rem;left:50%;transform:translateX(-50%);font-size:.75rem;color:var(--dim);background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:.3rem .8rem;border-radius:10px;z-index:2}
+
 footer{padding:3rem 2.5rem 2rem;border-top:1px solid var(--border);margin-top:3rem}
 footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)}
 @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
@@ -182,20 +213,92 @@ footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)
 
 <div class="page active" id="page-home">
   <div class="hero">
-    <div class="hero-badge"><span class="dot"></span> AI-Powered Pharmaceutical Simulation</div>
-    <h1>Predict Drug Launch<br>Success with <em>1,801 AI Agents</em></h1>
-    <p class="hero-sub">Simulate complex pharmaceutical market dynamics using multi-agent social networks, 7-dimensional expert evaluation, and real-world evidence to forecast drug performance in the Chinese market.</p>
-    <div class="hero-actions">
-      <button class="hero-btn primary" onclick="go('select')">🚀 Launch Simulator</button>
-      <button class="hero-btn secondary" onclick="go('pricing')">View Pricing</button>
-    </div>
-    <div class="stats-row">
-      <div class="stat"><div class="stat-num">1,801</div><div class="stat-label">AI Agents</div></div>
-      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Expert Dimensions</div></div>
-      <div class="stat"><div class="stat-num">44+</div><div class="stat-label">FDA Drugs</div></div>
-      <div class="stat"><div class="stat-num">95%</div><div class="stat-label">Prediction Accuracy</div></div>
+    <div class="hero-canvas"><canvas id="heroCanvas"></canvas></div>
+    <div class="hero-content">
+      <div class="hero-badge"><span class="dot"></span> AI-Powered · 1,801 Agents Live</div>
+      <h1>Predict Drug Launch<br>Success with <em>1,801 AI Agents</em></h1>
+      <p class="hero-sub">Watch <b style="color:var(--cyan)">400 doctors</b>, <b style="color:var(--green)">1,000 patients</b>, and <b style="color:var(--purple)">400 experts</b> interact in real-time through a Watts-Strogatz social network. Each connection represents a real influence channel — peer recommendations, KOL effects, and insurance negotiations.</p>
+      <div class="hero-actions">
+        <button class="hero-btn primary" onclick="go('select')">🚀 Launch Simulator</button>
+        <button class="hero-btn secondary" onclick="go('pricing')">View Pricing</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num">1,801</div><div class="stat-label">AI Agents</div></div>
+        <div class="stat"><div class="stat-num">7</div><div class="stat-label">Expert Dimensions</div></div>
+        <div class="stat"><div class="stat-num">44+</div><div class="stat-label">FDA Drugs</div></div>
+        <div class="stat"><div class="stat-num">95%</div><div class="stat-label">Prediction Accuracy</div></div>
+      </div>
     </div>
   </div>
+
+  <!-- LIVE DEMO: Interactive Agent Network -->
+  <div class="live-demo">
+    <h2>🔬 Live Agent Network Simulation</h2>
+    <p class="desc">Click any agent to see their profile. Hover to trace influence connections. <b style="color:var(--cyan)">Lines show decision influence pathways.</b></p>
+    <div class="demo-canvas-wrap">
+      <canvas id="demoCanvas"></canvas>
+      <div class="demo-hint">🖱️ Hover agents to trace connections · Click to view profiles</div>
+      <div class="demo-overlay">
+        <div class="demo-stats" id="demoStats">
+          <div><b>Network Density</b>: <span class="val" id="statDensity">—</span></div>
+          <div><b>Avg Connections</b>: <span class="val" id="statConns">—</span></div>
+          <div><b>Positive Clusters</b>: <span class="val" id="statPositive">—</span></div>
+          <div><b>Decision Path Length</b>: <span class="val" id="statPath">—</span></div>
+        </div>
+      </div>
+      <div class="demo-legend">
+        <span><span class="dot" style="background:#3b82f6"></span> Doctor Agents</span>
+        <span><span class="dot" style="background:#10b981"></span> Positive Patients</span>
+        <span><span class="dot" style="background:#f59e0b"></span> Cautious Patients</span>
+        <span><span class="dot" style="background:#ef4444"></span> Skeptical Patients</span>
+        <span><span class="dot" style="background:#8b5cf6"></span> Expert Agents</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISION FLOW -->
+  <div class="decision-flow">
+    <h2>📊 How Decisions Are Made</h2>
+    <p class="desc">Every prediction follows a transparent, multi-step evaluation pipeline</p>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="fs-icon" style="background:rgba(6,182,212,.12)">💊</div>
+        <div class="fs-title">Drug Selection</div>
+        <div class="fs-desc">Choose from 44+ FDA-approved drugs with real efficacy data</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon" style="background:rgba(16,185,129,.12)">⚙️</div>
+        <div class="fs-title">Market Config</div>
+        <div class="fs-desc">Set pricing, insurance, competition, and channel parameters</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon" style="background:rgba(139,92,246,.12)">🧬</div>
+        <div class="fs-title">Agent Simulation</div>
+        <div class="fs-desc">1,801 agents interact through social network connections</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon" style="background:rgba(245,158,11,.12)">🔬</div>
+        <div class="fs-title">7D Evaluation</div>
+        <div class="fs-desc">28 sub-dimensions scored by 7 expert panels</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="fs-icon" style="background:rgba(236,72,153,.12)">📈</div>
+        <div class="fs-title">Forecast</div>
+        <div class="fs-desc">24-month prediction with confidence intervals</div>
+      </div>
+    </div>
+    <div class="flow-result">
+      <div style="font-size:.82rem;color:var(--dim);margin-bottom:.5rem">SAMPLE OUTPUT — Mounjaro (替尔泊肽)</div>
+      <div class="fr-score">0.660</div>
+      <div class="fr-label">✅ Recommended for Launch · 2,583 peak prescriptions/month · ¥6.5B 24-month revenue</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
   <div class="features">
     <div class="feature"><div class="feature-icon" style="background:rgba(6,182,212,.1)">🧬</div><h3>Multi-Agent Social Network</h3><p>400 doctors, 1,000 patients, and 400 experts interact through a Watts-Strogatz small-world network, simulating real prescription dynamics and peer influence.</p></div>
     <div class="feature"><div class="feature-icon" style="background:rgba(16,185,129,.1)">📊</div><h3>7-Dimensional Expert Panel</h3><p>Epidemiology, clinical, market, pricing, pharmacology, pharmacoeconomics, and insurance experts evaluate each drug across 28 sub-dimensions.</p></div>
