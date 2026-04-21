@@ -11,3 +11,9 @@ build/
 .DS_Store
 *.log
 data/simulation_result.json
+.env.local
+.env.*.local
+*.key
+*.pem
+*_secret*
+credentials.json
