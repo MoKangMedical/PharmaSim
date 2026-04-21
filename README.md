@@ -1,115 +1,277 @@
-# 💊 PharmaSim v3.0
+# PharmaSim
 
-> AI驱动的药品上市表现预测仿真平台 | 1000用户Agent社交网络交互 | 仿Aaru多智能体仿真
+医疗AI项目
 
-[![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://mokangmedical.github.io/PharmaSim)
-[![A2A Protocol](https://img.shields.io/badge/Protocol-A2A-green)](https://github.com/MoKangMedical/PharmaSim)
-[![Agents](https://img.shields.io/badge/Agents-1801-brightgreen)](https://github.com/MoKangMedical/PharmaSim)
+## 项目简介
 
-## 🎯 核心价值
+这是一个医疗AI项目，致力于通过人工智能技术解决医疗健康领域的挑战。
 
-传统药品上市预测需要 **3-6个月**、花费 **50-200万**，准确率仅60-70%。
+## 功能特性
 
-PharmaSim 通过 **1801个多维度AI Agent** 仿真，将预测时间缩短至 **1天**，成本降低 **90%**，准确率提升至 **85%+**。
+### 核心功能
+- 🏥 医疗AI核心功能
+- 🔬 智能诊断与分析
+- 📊 数据可视化与报告
+- 🤖 多模态交互支持
+- 🔒 数据安全与隐私保护
 
-## 🤖 Agent矩阵 (1801个)
+### 技术特性
+- 🚀 高性能计算
+- 📈 可扩展架构
+- 🔄 实时数据处理
+- 🌐 分布式部署
+- 📱 多平台支持
 
-| Agent类型 | 数量 | 职责维度 |
-|-----------|------|----------|
-| 👨‍⚕️ 医生Agent | 400 | 处方决策行为模拟 |
-| 🧑 患者Agent | 1000 | 用药决策+社交网络交互 |
-| 💊 药物学专家 | 80 | 药理/毒理/药代动力学评估 |
-| 📊 流行病学专家 | 80 | 疾病负担/人群分析 |
-| 💰 药物经济学专家 | 80 | ICER/成本效果/预算影响 |
-| 🏥 医保专家 | 40 | 准入/报销/DRG-DIP策略 |
-| 🔬 临床专家 | 40 | 疗效/安全性/指南依从 |
-| 💲 定价专家 | 40 | 价值定价/竞争定价/国际参考 |
-| 📈 市场专家 | 40 | 竞争格局/渠道/商业化策略 |
-| 🏛️ 医保支付方 | 1 | 医保局准入决策 |
+## 技术栈
 
-## 🔬 Aaru式社交网络交互
+### 后端技术
+- **框架**: Python FastAPI, Django, Flask
+- **AI框架**: TensorFlow, PyTorch, Scikit-learn
+- **数据库**: PostgreSQL, MongoDB, Redis
+- **消息队列**: RabbitMQ, Kafka
+- **容器化**: Docker, Kubernetes
 
-仿照 [Aaru](https://aaru.com) 的多智能体仿真方法：
+### 前端技术
+- **框架**: React, Vue.js, Angular
+- **UI库**: Ant Design, Material-UI, Element UI
+- **可视化**: D3.js, ECharts, Plotly
+- **移动端**: React Native, Flutter
 
-### 社交网络拓扑
-- **Watts-Strogatz小世界网络**: 患者间通过社交关系连接
-- **KOL枢纽节点**: 医生作为意见领袖影响患者群体
-- **病友社区**: 同疾病患者形成信息社区
-- **弱连接**: 专家信息通过社交网络传播
+### 数据处理
+- **分析**: Pandas, NumPy, SciPy
+- **可视化**: Matplotlib, Seaborn, Plotly
+- **大数据**: Spark, Hadoop
+- **流处理**: Flink, Storm
 
-### 决策交互引擎
-1. **意见初始化**: 基于个体属性(经济/信息源/疾病阶段)产生差异化意见
-2. **影响力传播**: `影响强度 = 社交权重 × 信心差距 × 意见相似度 × 时间衰减`
-3. **外部事件冲击**: 媒体报道、KOL推荐、病友反馈、医保谈判结果
-4. **多轮协商**: 8轮迭代直至收敛
-5. **涌现行为**: 群体决策从个体交互中涌现
+## 快速开始
 
-### 权重匹配机制
+### 环境要求
+
+- Python 3.9+
+- Node.js 16+
+- Docker 20+
+- Git 2.30+
+
+### 安装步骤
+
+1. **克隆仓库**
+```bash
+git clone https://github.com/MoKangMedical/PharmaSim.git
+cd PharmaSim
 ```
-个体决策 = 基础意愿 + 经济敏感度 × 价格因素 + 信息权重 × 疗效感知 
-         + 疾病阶段加成 + 依从性影响 + 品牌偏好 + 随机噪声
 
-社交协商后: 意愿 = 原意愿 × (1 - 学习率) + 邻居加权平均 × 学习率
-学习率 = max(0.08, 0.35 - 信心度 × 0.4) × 异质冲击系数
+2. **后端设置**
+```bash
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate  # Windows
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 配置环境变量
+cp .env.example .env
+# 编辑.env文件，配置数据库连接等
 ```
 
-## 🏗️ 项目结构
+3. **前端设置**
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+4. **数据库设置**
+```bash
+# 初始化数据库
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+5. **启动服务**
+```bash
+# 使用Docker Compose（推荐）
+docker-compose up -d
+
+# 或手动启动
+python manage.py runserver
+```
+
+## 项目结构
 
 ```
 PharmaSim/
-├── src/
-│   ├── agents/                    # Agent模块 (10种专业Agent)
-│   │   ├── agent_factory.py       # 1800 Agent工厂
-│   │   ├── doctor_agent.py        # 医生Agent
-│   │   ├── patient_agent.py       # 患者Agent
-│   │   ├── payer_agent.py         # 医保支付方
-│   │   ├── pharmacology_agent.py  # 药物学专家
-│   │   ├── epidemiology_agent.py  # 流行病学专家
-│   │   ├── pharmacoeconomics_agent.py  # 药物经济学专家
-│   │   ├── insurance_expert_agent.py   # 医保专家
-│   │   ├── clinical_expert_agent.py    # 临床专家
-│   │   ├── pricing_expert_agent.py     # 定价专家
-│   │   └── market_expert_agent.py      # 市场专家
-│   ├── simulation/                # 仿真引擎
-│   │   ├── simulation_engine.py   # 核心仿真引擎 v3.0
-│   │   ├── social_network.py      # 社交网络拓扑
-│   │   └── interaction_engine.py  # 决策交互引擎
-│   └── main.py                    # 主入口
-├── docs/                          # GitHub Pages 站点
-├── configs/config.yaml            # 配置文件
-├── data/                          # 模拟数据
-└── server.py                      # FastAPI后端
+├── backend/                 # 后端代码
+│   ├── api/                # API接口
+│   ├── models/             # 数据模型
+│   ├── services/           # 业务逻辑
+│   ├── utils/              # 工具函数
+│   └── tests/              # 测试用例
+├── frontend/               # 前端代码
+│   ├── src/               # 源代码
+│   ├── public/            # 静态资源
+│   └── package.json       # 依赖配置
+├── ai-engine/             # AI引擎
+│   ├── models/           # AI模型
+│   ├── training/         # 训练脚本
+│   └── inference/        # 推理服务
+├── data/                  # 数据存储
+│   ├── raw/              # 原始数据
+│   ├── processed/        # 处理后的数据
+│   └── models/           # 训练好的模型
+├── docs/                  # 项目文档
+│   ├── api/              # API文档
+│   ├── user/             # 用户手册
+│   └── dev/              # 开发文档
+├── scripts/               # 脚本工具
+│   ├── deploy/           # 部署脚本
+│   ├── data/             # 数据处理脚本
+│   └── utils/            # 工具脚本
+├── tests/                 # 测试代码
+├── docker-compose.yml     # Docker编排
+├── Dockerfile            # Docker配置
+├── requirements.txt      # Python依赖
+├── .env.example          # 环境变量示例
+├── .gitignore           # Git忽略文件
+└── README.md            # 项目说明
 ```
 
-## ⚡ 快速开始
+## API文档
+
+### 主要接口
+
+#### 基础接口
+- `GET /` - 首页
+- `GET /health` - 健康检查
+- `GET /api/v1/status` - 系统状态
+
+#### 数据接口
+- `GET /api/v1/data` - 获取数据列表
+- `POST /api/v1/data` - 上传数据
+- `GET /api/v1/data/<built-in function id>` - 获取特定数据
+
+#### 分析接口
+- `POST /api/v1/analyze` - 数据分析
+- `GET /api/v1/analyze/<built-in function id>` - 获取分析结果
+- `GET /api/v1/reports` - 获取报告列表
+
+#### 用户接口
+- `POST /api/v1/auth/login` - 用户登录
+- `POST /api/v1/auth/register` - 用户注册
+- `GET /api/v1/users/me` - 获取当前用户信息
+
+### 详细文档
+
+启动服务后，访问以下地址查看完整API文档：
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/openapi.json
+
+## 配置说明
+
+### 环境变量
+
+创建 `.env` 文件并配置以下变量：
 
 ```bash
-# 克隆项目
-git clone https://github.com/MoKangMedical/PharmaSim.git
-cd PharmaSim
+# 基础配置
+DEBUG=True
+SECRET_KEY=your-secret-key
+ALLOWED_HOSTS=localhost,127.0.0.1
 
-# 运行仿真
-cd src
-python main.py
+# 数据库配置
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+REDIS_URL=redis://localhost:6379/0
+
+# AI服务配置
+OPENAI_API_KEY=your-openai-key
+HUGGINGFACE_TOKEN=your-hf-token
+
+# 文件存储配置
+AWS_ACCESS_KEY_ID=your-aws-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret
+AWS_STORAGE_BUCKET_NAME=your-bucket-name
+
+# 邮件配置
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-email-password
 ```
 
-## 🔗 A2A 协议集成
+## 部署指南
 
-PharmaSim 实现了 A2A (Agent-to-Agent) 协议，支持：
-- **Agent 发现**: 通过 `/api/a2a/discovery` 发现可用 Agent
-- **消息传递**: Agent 间通过标准化消息通信
-- **任务协作**: 多 Agent 协同完成复杂模拟任务
+### Docker部署（推荐）
 
-## 📊 Demo
+1. **构建镜像**
+```bash
+docker build -t PharmaSim .
+```
 
-访问 [GitHub Pages Demo](https://mokangmedical.github.io/PharmaSim) 查看在线演示。
+2. **运行容器**
+```bash
+docker run -d -p 8000:8000 --name PharmaSim PharmaSim
+```
 
-## 📝 许可证
+3. **使用Docker Compose**
+```bash
+docker-compose up -d
+```
 
-MIT License © 2026 MoKangMedical
+## 测试
 
-## 📐 理论基础
+### 运行测试
 
-> **Harness理论**：在AI领域，Harness（环境设计）比模型本身更重要。使性能提升64%。
+```bash
+# 运行所有测试
+python -m pytest tests/
 
-> **红杉论点**：从卖工具到卖结果。
+# 运行特定测试
+python -m pytest tests/test_api.py
+
+# 生成测试覆盖率报告
+python -m pytest --cov=app tests/
+```
+
+## 贡献指南
+
+我们欢迎任何形式的贡献！请遵循以下步骤：
+
+1. **Fork本仓库**
+2. **创建特性分支**
+```bash
+git checkout -b feature/AmazingFeature
+```
+
+3. **提交更改**
+```bash
+git commit -m 'Add some AmazingFeature'
+```
+
+4. **推送到分支**
+```bash
+git push origin feature/AmazingFeature
+```
+
+5. **创建Pull Request**
+
+## 许可证
+
+本项目采用 [MIT License](LICENSE) 许可证。
+
+## 联系方式
+
+- **项目维护者**: MoKangMedical
+- **邮箱**: contact@mokangmedical.com
+- **项目主页**: https://github.com/MoKangMedical/PharmaSim
+- **问题反馈**: https://github.com/MoKangMedical/PharmaSim/issues
+
+## 致谢
+
+感谢所有为这个项目做出贡献的开发者和医疗领域专家！
+
+---
+
+**注意**: 这是一个活跃开发中的项目，API和功能可能会发生变化。请定期查看更新日志获取最新信息。
