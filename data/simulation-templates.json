@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2026-04-26",
+    "description": "PharmaSim模拟模板库 — 覆盖肿瘤、慢病、罕见病等主流药物市场准入场景"
+  },
+  "templates": [
+    {
+      "id": "oncology-immunotherapy",
+      "name": "肿瘤免疫治疗药物模拟",
+      "category": "oncology",
+      "description": "PD-1/PD-L1抑制剂在实体瘤中的市场准入模拟，包含多线治疗场景",
+      "indication": "非小细胞肺癌",
+      "mechanism": "PD-1/PD-L1免疫检查点抑制",
+      "default_params": {
+        "drug_name": "免疫检查点抑制剂",
+        "efficacy_rate": 0.72,
+        "safety_score": 0.85,
+        "price": 28000,
+        "num_agents": 1800,
+        "simulation_months": 24,
+        "regions": ["北京", "上海", "广州", "深圳", "成都", "武汉"]
+      },
+      "expected_outcomes": {
+        "market_penetration_range": [0.15, 0.35],
+        "doctor_adoption_range": [0.25, 0.50],
+        "key_success_factors": ["临床数据", "医保谈判价格", "KOL推广"]
+      }
+    },
+    {
+      "id": "targeted-therapy",
+      "name": "靶向治疗药物模拟",
+      "category": "oncology",
+      "description": "小分子靶向药物在驱动基因阳性肿瘤中的市场准入模拟",
+      "indication": "EGFR突变非小细胞肺癌",
+      "mechanism": "EGFR-TKI",
+      "default_params": {
+        "drug_name": "三代EGFR-TKI",
+        "efficacy_rate": 0.80,
+        "safety_score": 0.82,
+        "price": 18000,
+        "num_agents": 1500,
+        "simulation_months": 18,
+        "regions": ["北京", "上海", "广州", "杭州", "南京"]
+      },
+      "expected_outcomes": {
+        "market_penetration_range": [0.20, 0.45],
+        "doctor_adoption_range": [0.30, 0.55],
+        "key_success_factors": ["基因检测覆盖率", "耐药数据", "价格竞争力"]
+      }
+    },
+    {
+      "id": "chronic-diabetes",
+      "name": "糖尿病药物模拟",
+      "category": "chronic",
+      "description": "新型降糖药在2型糖尿病患者中的市场准入模拟",
+      "indication": "2型糖尿病",
+      "mechanism": "GLP-1受体激动剂 / SGLT2抑制剂",
+      "default_params": {
+        "drug_name": "GLP-1RA周制剂",
+        "efficacy_rate": 0.78,
+        "safety_score": 0.88,
+        "price": 1200,
+        "num_agents": 2000,
+        "simulation_months": 36,
+        "regions": ["北京", "上海", "广州", "深圳", "成都", "武汉", "杭州", "南京"]
+      },
+      "expected_outcomes": {
+        "market_penetration_range": [0.25, 0.50],
+        "doctor_adoption_range": [0.35, 0.60],
+        "key_success_factors": ["心血管获益数据", "减重效果", "注射便利性"]
+      }
+    },
+    {
+      "id": "rare-disease",
+      "name": "罕见病药物模拟",
+      "category": "rare",
+      "description": "罕见病孤儿药的市场准入模拟，考虑患者基数小、支付能力有限的特点",
+      "indication": "脊髓性肌萎缩症（SMA）",
+      "mechanism": "基因治疗 / 反义寡核苷酸",
+      "default_params": {
+        "drug_name": "SMA基因治疗药物",
+        "efficacy_rate": 0.65,
+        "safety_score": 0.75,
+        "price": 2000000,
+        "num_agents": 500,
+        "simulation_months": 24,
+        "regions": ["北京", "上海", "广州"]
+      },
+      "expected_outcomes": {
+        "market_penetration_range": [0.30, 0.60],
+        "doctor_adoption_range": [0.40, 0.70],
+        "key_success_factors": ["医保准入", "患者援助计划", "长期疗效数据"]
+      }
+    },
+    {
+      "id": "biosimilar",
+      "name": "生物类似药模拟",
+      "category": "biosimilar",
+      "description": "生物类似药进入市场后的替代率模拟，考虑原研品牌效应",
+      "indication": "类风湿关节炎",
+      "mechanism": "TNF-α抑制剂生物类似药",
+      "default_params": {
+        "drug_name": "阿达木单抗生物类似药",
+        "efficacy_rate": 0.75,
+        "safety_score": 0.83,
+        "price": 3000,
+        "num_agents": 1500,
+        "simulation_months": 24,
+        "regions": ["北京", "上海", "广州", "深圳", "成都", "武汉"]
+      },
+      "expected_outcomes": {
+        "market_penetration_range": [0.10, 0.30],
+        "doctor_adoption_range": [0.15, 0.40],
+        "key_success_factors": ["价格折扣力度", "医院准入", "患者转换意愿"]
+      }
+    },
+    {
+      "id": "cardiovascular",
+      "name": "心血管药物模拟",
+      "category": "chronic",
+      "description": "新型心血管药物的市场准入模拟，考虑处方习惯和指南推荐",
+      "indication": "心力衰竭",
+      "mechanism": "ARNI / SGLT2i",
+      "default_params": {
+        "drug_name": "ARNI类药物",
+        "efficacy_rate": 0.82,
+        "safety_score": 0.86,
+        "price": 800,
+        "num_agents": 2000,
+        "simulation_months": 36,
+        "regions": ["北京", "上海", "广州", "深圳", "成都", "武汉", "杭州", "南京"]
+      },
+      "expected_outcomes": {
+        "market_penetration_range": [0.20, 0.45],
+        "doctor_adoption_range": [0.30, 0.55],
+        "key_success_factors": ["指南推荐等级", "心衰门诊覆盖", "长期预后数据"]
+      }
+    }
+  ],
+  "simulation_defaults": {
+    "num_agents": 1800,
+    "simulation_months": 24,
+    "random_seed": 42,
+    "deliberation_rounds": 8,
+    "convergence_threshold": 0.01,
+    "default_regions": ["北京", "上海", "广州", "深圳", "成都", "武汉", "杭州", "南京", "重庆", "天津", "西安", "长沙"]
+  },
+  "agent_distribution": {
+    "doctors": {
+      "count": 400,
+      "specialties": ["肿瘤科", "内科", "心内科", "内分泌科", "神经科"],
+      "seniority": {"attending": 0.4, "associate": 0.35, "professor": 0.25}
+    },
+    "patients": {
+      "count": 1000,
+      "age_distribution": {"18-40": 0.15, "40-60": 0.35, "60-80": 0.40, "80+": 0.10},
+      "insurance": {"basic": 0.70, "commercial": 0.20, "self_pay": 0.10}
+    },
+    "experts": {
+      "count": 400,
+      "roles": ["临床专家", "药学专家", "流行病学专家", "卫生经济学专家"]
+    },
+    "payer": {
+      "count": 1,
+      "type": "国家医保局"
+    }
+  }
+}
