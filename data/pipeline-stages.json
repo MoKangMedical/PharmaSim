@@ -1,0 +1,317 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-26",
+  "description": "药物研发全流程阶段定义与关键参数",
+  "stages": [
+    {
+      "id": "target_discovery",
+      "name": "靶点发现",
+      "phase": "discovery",
+      "order": 1,
+      "duration_months": {"min": 12, "typical": 24, "max": 48},
+      "cost_millions_usd": {"min": 2, "typical": 5, "max": 15},
+      "key_activities": [
+        "基因组学分析",
+        "蛋白质组学筛选",
+        "生物信息学预测",
+        "靶点验证实验",
+        "可成药性评估"
+      ],
+      "key_deliverables": [
+        "靶点验证报告",
+        "可成药性评分",
+        "竞争格局分析"
+      ],
+      "success_criteria": {
+        "druggability_score": 0.6,
+        "genetic_evidence": true,
+        "literature_support": "strong"
+      },
+      "risk_factors": [
+        "靶点生物学功能不明确",
+        "缺乏合适的体外模型",
+        "竞争对手先发优势"
+      ]
+    },
+    {
+      "id": "hit_identification",
+      "name": "苗头化合物发现",
+      "phase": "discovery",
+      "order": 2,
+      "duration_months": {"min": 6, "typical": 12, "max": 24},
+      "cost_millions_usd": {"min": 1, "typical": 3, "max": 8},
+      "key_activities": [
+        "高通量筛选（HTS）",
+        "虚拟筛选",
+        "片段筛选（FBDD）",
+        "AI 分子生成",
+        "初步活性验证"
+      ],
+      "key_deliverables": [
+        "苗头化合物清单",
+        "构效关系初探",
+        "筛选数据报告"
+      ],
+      "success_criteria": {
+        "hit_count": 5,
+        "potency_um": 10,
+        "selectivity_fold": 10
+      },
+      "risk_factors": [
+        "筛选命中率低",
+        "化合物库多样性不足",
+        "假阳性干扰"
+      ]
+    },
+    {
+      "id": "lead_optimization",
+      "name": "先导化合物优化",
+      "phase": "discovery",
+      "order": 3,
+      "duration_months": {"min": 12, "typical": 18, "max": 36},
+      "cost_millions_usd": {"min": 3, "typical": 8, "max": 20},
+      "key_activities": [
+        "构效关系（SAR）研究",
+        "ADMET 性质优化",
+        "选择性优化",
+        "体内药效验证",
+        "初步毒理评估"
+      ],
+      "key_deliverables": [
+        "候选化合物（PCC）",
+        "ADMET 数据包",
+        "体内药效数据"
+      ],
+      "success_criteria": {
+        "potency_nm": 10,
+        "oral_bioavailability": 0.3,
+        "clearance_ml_min_kg": 30,
+        "selectivity": 100
+      },
+      "risk_factors": [
+        "ADMET 性质不达标",
+        "合成路线不可放大",
+        "专利空间受限"
+      ]
+    },
+    {
+      "id": "preclinical",
+      "name": "临床前研究",
+      "phase": "preclinical",
+      "order": 4,
+      "duration_months": {"min": 12, "typical": 24, "max": 36},
+      "cost_millions_usd": {"min": 5, "typical": 15, "max": 30},
+      "key_activities": [
+        "GLP 毒理学研究",
+        "安全药理学研究",
+        "药代动力学（PK）研究",
+        "制剂开发",
+        "CMC 研究",
+        "IND 申报资料准备"
+      ],
+      "key_deliverables": [
+        "IND 申报资料",
+        "毒理学报告",
+        "CMC 资料包",
+        "临床方案草案"
+      ],
+      "success_criteria": {
+        "noael_margin": 10,
+        "genotoxicity_negative": true,
+        "cv_safety_clean": true
+      },
+      "risk_factors": [
+        "毒理学发现限制性毒性",
+        "制剂稳定性问题",
+        "CMC 放大困难"
+      ]
+    },
+    {
+      "id": "phase1",
+      "name": "I 期临床试验",
+      "phase": "clinical",
+      "order": 5,
+      "duration_months": {"min": 12, "typical": 18, "max": 24},
+      "cost_millions_usd": {"min": 10, "typical": 25, "max": 50},
+      "key_activities": [
+        "首次人体试验（FIH）",
+        "剂量递增研究",
+        "PK/PD 建模",
+        "安全性评估",
+        "食物效应研究"
+      ],
+      "key_deliverables": [
+        "I 期临床报告",
+        "MTD/RP2D 确定",
+        "人体 PK 数据",
+        "II 期剂量选择依据"
+      ],
+      "success_criteria": {
+        "safety_profile_acceptable": true,
+        "pk_predictable": true,
+        "biomarker_signal": true
+      },
+      "risk_factors": [
+        "不可预期的毒性",
+        "PK 不理想",
+        "人种差异"
+      ]
+    },
+    {
+      "id": "phase2",
+      "name": "II 期临床试验",
+      "phase": "clinical",
+      "order": 6,
+      "duration_months": {"min": 18, "typical": 30, "max": 48},
+      "cost_millions_usd": {"min": 20, "typical": 50, "max": 100},
+      "key_activities": [
+        "概念验证（PoC）研究",
+        "剂量探索试验",
+        "生物标志物验证",
+        "患者分层策略",
+        "II 期结束会议（EOP2）"
+      ],
+      "key_deliverables": [
+        "II 期临床报告",
+        "关键剂量确认",
+        "生物标志物策略",
+        "III 期方案设计"
+      ],
+      "success_criteria": {
+        "efficacy_p_value": 0.05,
+        "effect_size": 0.3,
+        "safety_manageable": true
+      },
+      "risk_factors": [
+        "疗效不达预期",
+        "安慰剂效应过大",
+        "入组困难"
+      ]
+    },
+    {
+      "id": "phase3",
+      "name": "III 期临床试验",
+      "phase": "clinical",
+      "order": 7,
+      "duration_months": {"min": 24, "typical": 36, "max": 60},
+      "cost_millions_usd": {"min": 50, "typical": 150, "max": 500},
+      "key_activities": [
+        "关键性注册试验",
+        "多中心/多区域试验",
+        "对照试验设计",
+        "安全性数据库建设",
+        "NDA/BLA 资料准备"
+      ],
+      "key_deliverables": [
+        "III 期临床报告",
+        "安全性汇总报告",
+        "NDA/BLA 申报资料",
+        "风险管理计划"
+      ],
+      "success_criteria": {
+        "primary_endpoint_met": true,
+        "safety_acceptable": true,
+        "risk_benefit_positive": true
+      },
+      "risk_factors": [
+        "主要终点未达到",
+        "严重不良事件",
+        "竞争产品先获批",
+        "患者招募延迟"
+      ]
+    },
+    {
+      "id": "regulatory",
+      "name": "监管审批",
+      "phase": "regulatory",
+      "order": 8,
+      "duration_months": {"min": 8, "typical": 14, "max": 24},
+      "cost_millions_usd": {"min": 5, "typical": 15, "max": 30},
+      "key_activities": [
+        "NDA/BLA 提交",
+        "审评应答（IR/DR）",
+        "GMP 现场检查",
+        "标签谈判",
+        "咨询委员会会议"
+      ],
+      "key_deliverables": [
+        "上市许可",
+        "药品标签",
+        "上市后承诺"
+      ],
+      "success_criteria": {
+        "approval_granted": true,
+        "label_acceptable": true,
+        "no_rems_required": false
+      },
+      "risk_factors": [
+        "完整回复函（CRL）",
+        "要求补充数据",
+        "标签限制过多",
+        "REMS 要求严格"
+      ]
+    },
+    {
+      "id": "launch",
+      "name": "上市与商业化",
+      "phase": "commercial",
+      "order": 9,
+      "duration_months": {"min": 6, "typical": 12, "max": 24},
+      "cost_millions_usd": {"min": 20, "typical": 50, "max": 150},
+      "key_activities": [
+        "市场准入策略",
+        "医保谈判",
+        "商业化生产放大",
+        "医学教育与推广",
+        "真实世界数据收集"
+      ],
+      "key_deliverables": [
+        "商业化方案",
+        "市场准入材料",
+        "上市后研究方案",
+        "销售预测模型"
+      ],
+      "success_criteria": {
+        "market_share_target": 0.1,
+        "formulary_access": true,
+        "revenue_target_met": true
+      },
+      "risk_factors": [
+        "医保谈判降价",
+        "仿制药/生物类似药竞争",
+        "安全性信号",
+        "市场接受度低"
+      ]
+    },
+    {
+      "id": "post_market",
+      "name": "上市后监测",
+      "phase": "lifecycle",
+      "order": 10,
+      "duration_months": {"min": 60, "typical": 120, "max": 240},
+      "cost_millions_usd": {"min": 2, "typical": 10, "max": 30},
+      "key_activities": [
+        "药物警戒",
+        "IV 期临床研究",
+        "真实世界证据（RWE）",
+        "适应症拓展",
+        "生命周期管理"
+      ],
+      "key_deliverables": [
+        "定期安全性报告（PSUR）",
+        "RWE 研究报告",
+        "新适应症申报资料"
+      ],
+      "success_criteria": {
+        "no_new_safety_signals": true,
+        "label_expansion": true,
+        "lifecycle_extended": true
+      },
+      "risk_factors": [
+        "新的安全性发现",
+        "竞品上市冲击",
+        "专利悬崖"
+      ]
+    }
+  ]
+}

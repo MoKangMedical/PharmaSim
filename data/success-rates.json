@@ -1,0 +1,154 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-26",
+  "description": "各阶段历史成功率数据（基于 BIO/Informa/Clinical Development Success Rates 2011-2024）",
+  "data_sources": [
+    "BIO/Informa/QLS Clinical Development Success Rates 2011-2024",
+    "DiMasi et al., J Health Economics, 2016",
+    "NMPA Annual Drug Review Report 2024",
+    "FDA CDER Novel Drug Approvals 2024"
+  ],
+  "overall": {
+    "preclinical_to_approval": 0.079,
+    "phase1_to_approval": 0.117,
+    "avg_development_years": 10.5,
+    "avg_total_cost_millions_usd": 2600
+  },
+  "by_phase": {
+    "preclinical_to_phase1": {
+      "overall": 0.57,
+      "by_therapeutic_area": {
+        "oncology": 0.50,
+        "cardiovascular": 0.60,
+        "neurology": 0.52,
+        "infectious_disease": 0.65,
+        "immunology": 0.58,
+        "metabolic": 0.62,
+        "respiratory": 0.55,
+        "ophthalmology": 0.60,
+        "rare_disease": 0.68,
+        "gastroenterology": 0.58
+      }
+    },
+    "phase1_to_phase2": {
+      "overall": 0.632,
+      "by_therapeutic_area": {
+        "oncology": 0.52,
+        "cardiovascular": 0.70,
+        "neurology": 0.58,
+        "infectious_disease": 0.72,
+        "immunology": 0.65,
+        "metabolic": 0.68,
+        "respiratory": 0.62,
+        "ophthalmology": 0.65,
+        "rare_disease": 0.75,
+        "gastroenterology": 0.64
+      }
+    },
+    "phase2_to_phase3": {
+      "overall": 0.307,
+      "by_therapeutic_area": {
+        "oncology": 0.24,
+        "cardiovascular": 0.35,
+        "neurology": 0.22,
+        "infectious_disease": 0.40,
+        "immunology": 0.33,
+        "metabolic": 0.38,
+        "respiratory": 0.30,
+        "ophthalmology": 0.35,
+        "rare_disease": 0.45,
+        "gastroenterology": 0.32
+      }
+    },
+    "phase3_to_approval": {
+      "overall": 0.578,
+      "by_therapeutic_area": {
+        "oncology": 0.50,
+        "cardiovascular": 0.62,
+        "neurology": 0.48,
+        "infectious_disease": 0.68,
+        "immunology": 0.60,
+        "metabolic": 0.62,
+        "respiratory": 0.55,
+        "ophthalmology": 0.65,
+        "rare_disease": 0.72,
+        "gastroenterology": 0.58
+      }
+    },
+    "nda_to_approval": {
+      "overall": 0.853,
+      "by_therapeutic_area": {
+        "oncology": 0.80,
+        "cardiovascular": 0.88,
+        "neurology": 0.78,
+        "infectious_disease": 0.90,
+        "immunology": 0.85,
+        "metabolic": 0.87,
+        "respiratory": 0.83,
+        "ophthalmology": 0.88,
+        "rare_disease": 0.92,
+        "gastroenterology": 0.84
+      }
+    }
+  },
+  "by_modality": {
+    "small_molecule": {
+      "overall_success_rate": 0.073,
+      "avg_phase_duration_months": {"phase1": 14, "phase2": 26, "phase3": 32}
+    },
+    "monoclonal_antibody": {
+      "overall_success_rate": 0.108,
+      "avg_phase_duration_months": {"phase1": 16, "phase2": 28, "phase3": 36}
+    },
+    "gene_therapy": {
+      "overall_success_rate": 0.125,
+      "avg_phase_duration_months": {"phase1": 20, "phase2": 30, "phase3": 38}
+    },
+    "cell_therapy": {
+      "overall_success_rate": 0.095,
+      "avg_phase_duration_months": {"phase1": 18, "phase2": 28, "phase3": 34}
+    },
+    "antisense_rna": {
+      "overall_success_rate": 0.142,
+      "avg_phase_duration_months": {"phase1": 15, "phase2": 24, "phase3": 30}
+    },
+    "vaccine": {
+      "overall_success_rate": 0.136,
+      "avg_phase_duration_months": {"phase1": 16, "phase2": 30, "phase3": 40}
+    }
+  },
+  "failure_reasons": {
+    "phase1": {
+      "pharmacokinetics": 0.25,
+      "safety_toxicity": 0.40,
+      "strategic": 0.20,
+      "operational": 0.15
+    },
+    "phase2": {
+      "lack_of_efficacy": 0.52,
+      "safety": 0.24,
+      "strategic": 0.15,
+      "operational": 0.09
+    },
+    "phase3": {
+      "lack_of_efficacy": 0.48,
+      "safety": 0.18,
+      "strategic": 0.12,
+      "operational": 0.10,
+      "commercial": 0.12
+    }
+  },
+  "trends": {
+    "success_rate_improvement_2015_2024": {
+      "oncology": "+4.2%",
+      "rare_disease": "+8.5%",
+      "neurology": "-1.3%",
+      "overall": "+2.8%"
+    },
+    "ai_impact": {
+      "ai_enabled_programs_success_rate": 0.098,
+      "traditional_programs_success_rate": 0.072,
+      "note": "AI 辅助药物研发项目整体成功率高于传统方法"
+    }
+  }
+}
