@@ -711,12 +711,19 @@ async def list_agents():
 
 # 挂载前端静态文件
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "frontend")
+ASSETS_DIR = os.path.join(FRONTEND_DIR, "assets")
+
+os.makedirs(ASSETS_DIR, exist_ok=True)
+
 if os.path.exists(FRONTEND_DIR):
-    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
-    
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
+
     @app.get("/")
     async def serve_frontend():
-        return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+        index_path = os.path.join(FRONTEND_DIR, "index.html")
+        if os.path.exists(index_path) and os.path.getsize(index_path) > 0:
+            return FileResponse(index_path)
+        return JSONResponse({"message": "PharmaSim API is running. Frontend not yet built.", "docs": "/docs"})
 
 if __name__ == "__main__":
     import uvicorn
