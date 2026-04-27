@@ -1,8 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/131576085_2207178427_223132457.mp4'
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/3710100388_3642713326_3687903127.mp4'
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/3710100388_3773854932_2473181037.mp4'
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/3710100388_1432596116_867203261.mp4'
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/3710100388_1455412336_2658867184.mp4'
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/3710100388_310540274_1098057936.mp4'
-file 'file:/Users/apple/Desktop/PharmaSim/video/media/videos/script/1080p60/partial_movie_files/Scene6_Results/3710100388_3447012491_158459868.mp4'

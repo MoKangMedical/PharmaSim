@@ -1,8 +1,0 @@
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene1_Title.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene2_Problem.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene3_Solution.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene4_AgentTypes.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene5_Evaluation.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene6_Results.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene7_Stats.mp4'
-file '/Users/apple/Desktop/PharmaSim/video/output_v3/Scene8_CTA.mp4'

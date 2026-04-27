@@ -1,8 +1,0 @@
-file 'Scene1_Title_final.mp4'
-file 'Scene2_Problem_final.mp4'
-file 'Scene3_Solution_final.mp4'
-file 'Scene4_AgentTypes_final.mp4'
-file 'Scene5_Evaluation_final.mp4'
-file 'Scene6_Results_final.mp4'
-file 'Scene7_Stats_final.mp4'
-file 'Scene8_CTA_final.mp4'
