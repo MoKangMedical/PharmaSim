@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Pipeline Demo - PharmaSim</title>
+<meta name="description" content="Explore real-time drug development pipeline simulation with interactive visualization.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c18;--bg2:#0c1124;--card:#111827;--card2:#1a2332;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#1e293b;--border2:#334155;--indigo:#6366f1;--indigo2:#818cf8;--cyan:#06b6d4;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;--pink:#ec4899}
+body{background:var(--bg);color:var(--text2);font-family:'Inter',-apple-system,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--indigo2);text-decoration:none}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,12,24,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(30,41,59,.5);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.2rem;color:var(--text)}
+.nav-links{display:flex;gap:.3rem}
+.nav-links a{padding:.4rem .9rem;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--dim);transition:all .25s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-links a.active{color:var(--indigo2);background:rgba(99,102,241,.1)}
+
+.container{padding:80px 2rem 3rem;max-width:1400px;margin:0 auto}
+.hero{text-align:center;padding:3rem 0 2rem}
+.hero h1{font-size:2.5rem;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,var(--indigo2),var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--dim);font-size:1.1rem;margin-top:.8rem;max-width:700px;margin-left:auto;margin-right:auto}
+
+/* Pipeline Visualization */
+.pipeline-container{margin:2rem 0;position:relative}
+.pipeline{display:flex;align-items:center;justify-content:space-between;gap:0;position:relative;padding:0 1rem}
+.pipeline::before{content:'';position:absolute;top:50%;left:5%;right:5%;height:4px;background:linear-gradient(90deg,var(--indigo),var(--cyan),var(--green),var(--amber),var(--pink));border-radius:2px;z-index:0;transform:translateY(-50%)}
+
+.stage{position:relative;z-index:1;text-align:center;cursor:pointer;transition:all .3s}
+.stage-dot{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto .8rem;transition:all .3s;border:3px solid transparent}
+.stage:hover .stage-dot{transform:scale(1.2);box-shadow:0 0 30px rgba(99,102,241,.4)}
+.stage.active .stage-dot{border-color:var(--text);box-shadow:0 0 40px rgba(99,102,241,.6)}
+.stage-name{font-size:.85rem;font-weight:700;color:var(--text)}
+.stage-time{font-size:.75rem;color:var(--dim);margin-top:.2rem}
+.stage-cost{font-size:.8rem;font-weight:600;color:var(--amber);margin-top:.2rem}
+
+.stage-1 .stage-dot{background:linear-gradient(135deg,var(--indigo),var(--indigo2))}
+.stage-2 .stage-dot{background:linear-gradient(135deg,var(--cyan),#22d3ee)}
+.stage-3 .stage-dot{background:linear-gradient(135deg,var(--green),#34d399)}
+.stage-4 .stage-dot{background:linear-gradient(135deg,var(--amber),#fbbf24)}
+.stage-5 .stage-dot{background:linear-gradient(135deg,var(--pink),#f472b6)}
+.stage-6 .stage-dot{background:linear-gradient(135deg,var(--purple),#c084fc)}
+
+/* Detail Panel */
+.detail-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;margin:2rem 0;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.detail-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.detail-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.detail-title{font-size:1.3rem;font-weight:800;color:var(--text)}
+.detail-subtitle{font-size:.9rem;color:var(--dim)}
+
+.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center}
+.metric-value{font-size:1.5rem;font-weight:800;color:var(--text)}
+.metric-label{font-size:.75rem;color:var(--dim);margin-top:.2rem}
+
+.detail-content{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.content-section h4{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.content-section ul{list-style:none}
+.content-section li{padding:.5rem 0;color:var(--dim);font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.03);display:flex;align-items:center;gap:.5rem}
+.content-section li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--indigo);flex-shrink:0}
+
+.risk-bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:.5rem}
+.risk-fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* Charts Section */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.chart-card h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem}
+.chart-container{position:relative;height:250px}
+
+/* Drug Selector */
+.drug-selector{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin:2rem 0}
+.drug-selector h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem}
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem}
+.drug-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:all .25s}
+.drug-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.drug-card.selected{border-color:var(--indigo);background:rgba(99,102,241,.1)}
+.drug-card .name{font-weight:700;color:var(--text);font-size:.95rem}
+.drug-card .category{font-size:.75rem;color:var(--dim);margin-top:.2rem}
+.drug-card .score{font-size:.85rem;font-weight:600;margin-top:.5rem}
+
+/* Agent Network */
+.agent-section{margin:2rem 0}
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem}
+.agent-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;text-align:center;transition:all .3s}
+.agent-card:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.agent-avatar{width:50px;height:50px;border-radius:50%;margin:0 auto .8rem;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:linear-gradient(135deg,var(--indigo),var(--cyan))}
+.agent-name{font-weight:700;color:var(--text);font-size:.9rem}
+.agent-role{font-size:.75rem;color:var(--dim);margin-top:.2rem}
+.agent-status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-top:.5rem}
+.agent-status.active{background:var(--green);box-shadow:0 0 8px var(--green)}
+
+/* CTA */
+.cta-section{text-align:center;padding:3rem 0}
+.cta-btn{padding:14px 36px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;border:none;transition:all .3s;background:linear-gradient(135deg,var(--indigo),var(--cyan));color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.3)}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.5)}
+
+@media(max-width:768px){
+  .pipeline{flex-direction:column;gap:1rem}
+  .pipeline::before{display:none}
+  .detail-grid{grid-template-columns:repeat(2,1fr)}
+  .detail-content{grid-template-columns:1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="url(#g1)" stroke-width="2.5"/><path d="M10 16l4 4 8-8" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="g1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs></svg>
+    PharmaSim
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="calculator.html">Calculator</a>
+    <a href="compare.html">Compare</a>
+    <a href="demo.html" class="active">Demo</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="about.html">About</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <h1>Interactive Pipeline Simulation</h1>
+    <p>Experience real-time drug development pipeline with 1,800+ AI agents. Click each stage to explore details, risks, and investment requirements.</p>
+  </div>
+
+  <!-- Drug Selector -->
+  <div class="drug-selector">
+    <h3>Select a Drug to Simulate</h3>
+    <div class="drug-grid" id="drugGrid"></div>
+  </div>
+
+  <!-- Pipeline Visualization -->
+  <div class="pipeline-container">
+    <div class="pipeline" id="pipeline"></div>
+  </div>
+
+  <!-- Detail Panel -->
+  <div class="detail-panel" id="detailPanel" style="display:none"></div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Success Probability by Stage</h3>
+      <div class="chart-container"><canvas id="successChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Cost Distribution ($M)</h3>
+      <div class="chart-container"><canvas id="costChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Agent Network -->
+  <div class="agent-section">
+    <h2 style="text-align:center;font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:.5rem">1,800+ AI Agents Working Together</h2>
+    <p style="text-align:center;color:var(--dim);margin-bottom:2rem">Our multi-agent system collaborates across every stage of drug development</p>
+    <div class="agent-grid" id="agentGrid"></div>
+  </div>
+
+  <div class="cta-section">
+    <h2 style="font-size:1.8rem;font-weight:800;color:var(--text);margin-bottom:1rem">Ready to Simulate Your Drug Pipeline?</h2>
+    <p style="color:var(--dim);margin-bottom:2rem">Start with our free tier or contact us for enterprise solutions</p>
+    <a href="pricing.html" class="cta-btn">Get Started</a>
+  </div>
+</div>
+
+<script>
+const stages = [
+  { id: 1, name: 'Discovery', icon: '🔬', time: '2-3 years', cost: '$50-100M', success: '60%', color: '#6366f1', description: 'Target identification and validation using AI-powered genomic analysis and molecular modeling.', activities: ['Target identification', 'Hit compound screening', 'Molecular docking', 'ADMET prediction'], risks: ['Target validation failure', 'Off-target effects', 'IP landscape conflicts'] },
+  { id: 2, name: 'Preclinical', icon: '🧪', time: '1-2 years', cost: '$100-200M', success: '45%', color: '#06b6d4', description: 'In vitro and in vivo studies to establish safety profile and therapeutic potential.', activities: ['In vitro efficacy studies', 'Animal model testing', 'Toxicology assessment', 'Formulation development'], risks: ['Toxicity findings', 'Poor bioavailability', 'Regulatory concerns'] },
+  { id: 3, name: 'Phase I', icon: '👥', time: '1-2 years', cost: '$50-100M', success: '70%', color: '#10b981', description: 'First-in-human studies to evaluate safety, tolerability, and pharmacokinetics.', activities: ['Dose escalation studies', 'Safety monitoring', 'PK/PD analysis', 'Biomarker identification'], risks: ['Dose-limiting toxicity', 'Unexpected AEs', 'Patient recruitment delays'] },
+  { id: 4, name: 'Phase II', icon: '📊', time: '2-3 years', cost: '$100-300M', success: '40%', color: '#f59e0b', description: 'Proof-of-concept studies to establish efficacy and optimal dosing regimen.', activities: ['Efficacy endpoints', 'Dose-response studies', 'Patient stratification', 'Comparator studies'], risks: ['Insufficient efficacy', 'Safety signals', 'Competitive landscape'] },
+  { id: 5, name: 'Phase III', icon: '🏥', time: '3-4 years', cost: '$200-500M', success: '60%', color: '#ec4899', description: 'Large-scale pivotal trials to confirm efficacy and safety for regulatory approval.', activities: ['Pivotal trial design', 'Multi-center enrollment', 'Regulatory interactions', 'Real-world evidence'], risks: ['Trial failure', 'Regulatory delays', 'Manufacturing issues'] },
+  { id: 6, name: 'Approval', icon: '✅', time: '1-2 years', cost: '$50-100M', success: '85%', color: '#a855f7', description: 'Regulatory submission and post-approval activities for market access.', activities: ['NDA/BLA submission', 'Regulatory review', 'Label negotiations', 'Launch preparation'], risks: ['Complete Response Letter', 'Pricing pressures', 'Market access challenges'] }
+];
+
+const drugs = [
+  { name: 'Oncology ADC', category: 'Antibody-Drug Conjugate', score: 8.7, color: '#ec4899' },
+  { name: 'GLP-1 Agonist', category: 'Metabolic Disease', score: 9.2, color: '#10b981' },
+  { name: 'mRNA Vaccine', category: 'Infectious Disease', score: 8.9, color: '#6366f1' },
+  { name: 'Gene Therapy', category: 'Rare Disease', score: 7.8, color: '#a855f7' },
+  { name: 'Bispecific Ab', category: 'Immuno-Oncology', score: 8.4, color: '#06b6d4' },
+  { name: 'CAR-T Cell', category: 'Cell Therapy', score: 8.1, color: '#f59e0b' }
+];
+
+const agents = [
+  { name: 'TargetBot', role: 'Target Discovery', emoji: '🎯' },
+  { name: 'MolDesigner', role: 'Molecular Design', emoji: '⚛️' },
+  { name: 'ToxPredict', role: 'Toxicology', emoji: '🛡️' },
+  { name: 'ClinicalAI', role: 'Trial Design', emoji: '📋' },
+  { name: 'RegAgent', role: 'Regulatory', emoji: '📜' },
+  { name: 'MarketBot', role: 'Market Analysis', emoji: '📈' },
+  { name: 'BioAgent', role: 'Biomarker', emoji: '🧬' },
+  { name: 'PatientAI', role: 'Patient Recruitment', emoji: '👥' }
+];
+
+let selectedDrug = 0;
+let selectedStage = null;
+
+// Render drug selector
+function renderDrugs() {
+  const grid = document.getElementById('drugGrid');
+  grid.innerHTML = drugs.map((d, i) => `
+    <div class="drug-card ${i === selectedDrug ? 'selected' : ''}" onclick="selectDrug(${i})">
+      <div class="name">${d.name}</div>
+      <div class="category">${d.category}</div>
+      <div class="score" style="color:${d.color}">Score: ${d.score}/10</div>
+    </div>
+  `).join('');
+}
+
+// Render pipeline
+function renderPipeline() {
+  const pipeline = document.getElementById('pipeline');
+  pipeline.innerHTML = stages.map((s, i) => `
+    <div class="stage stage-${s.id} ${selectedStage === i ? 'active' : ''}" onclick="selectStage(${i})">
+      <div class="stage-dot">${s.icon}</div>
+      <div class="stage-name">${s.name}</div>
+      <div class="stage-time">${s.time}</div>
+      <div class="stage-cost">${s.cost}</div>
+    </div>
+  `).join('');
+}
+
+// Select drug
+function selectDrug(index) {
+  selectedDrug = index;
+  selectedStage = null;
+  renderDrugs();
+  renderPipeline();
+  document.getElementById('detailPanel').style.display = 'none';
+  updateCharts();
+}
+
+// Select stage
+function selectStage(index) {
+  selectedStage = index;
+  const s = stages[index];
+  const panel = document.getElementById('detailPanel');
+  
+  const riskLevel = parseInt(s.success) / 100;
+  const riskColor = riskLevel > 0.6 ? '#10b981' : riskLevel > 0.4 ? '#f59e0b' : '#ef4444';
+  
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div class="detail-icon" style="background:${s.color}22;color:${s.color}">${s.icon}</div>
+      <div>
+        <div class="detail-title">Stage ${s.id}: ${s.name}</div>
+        <div class="detail-subtitle">${s.description}</div>
+      </div>
+    </div>
+    <div class="detail-grid">
+      <div class="metric-card">
+        <div class="metric-value">${s.time}</div>
+        <div class="metric-label">Duration</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">${s.cost}</div>
+        <div class="metric-label">Investment</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color:${riskColor}">${s.success}</div>
+        <div class="metric-label">Success Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">${Math.floor(Math.random() * 50 + 10)}</div>
+        <div class="metric-label">Active Agents</div>
+      </div>
+    </div>
+    <div class="detail-content">
+      <div class="content-section">
+        <h4>Key Activities</h4>
+        <ul>${s.activities.map(a => `<li>${a}</li>`).join('')}</ul>
+      </div>
+      <div class="content-section">
+        <h4>Risk Factors</h4>
+        <ul>${s.risks.map(r => `<li>${r}</li>`).join('')}</ul>
+        <div class="risk-bar">
+          <div class="risk-fill" style="width:${100 - parseInt(s.success)}%;background:${riskColor}"></div>
+        </div>
+        <div style="font-size:.75rem;color:var(--dim);margin-top:.3rem">Risk Level: ${100 - parseInt(s.success)}%</div>
+      </div>
+    </div>
+  `;
+  
+  renderPipeline();
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Charts
+let successChart, costChart;
+
+function initCharts() {
+  const ctx1 = document.getElementById('successChart').getContext('2d');
+  const ctx2 = document.getElementById('costChart').getContext('2d');
+  
+  successChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: stages.map(s => s.name),
+      datasets: [{
+        label: 'Success Probability',
+        data: stages.map(s => parseInt(s.success)),
+        backgroundColor: stages.map(s => s.color + '80'),
+        borderColor: stages.map(s => s.color),
+        borderWidth: 2,
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#94a3b8' } },
+        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+      }
+    }
+  });
+  
+  costChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: stages.map(s => s.name),
+      datasets: [{
+        data: [75, 150, 75, 200, 350, 75],
+        backgroundColor: stages.map(s => s.color + '80'),
+        borderColor: stages.map(s => s.color),
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 15 } }
+      }
+    }
+  });
+}
+
+function updateCharts() {
+  if (successChart) {
+    successChart.data.datasets[0].backgroundColor = stages.map((s, i) => 
+      selectedStage === i ? s.color : s.color + '40'
+    );
+    successChart.update();
+  }
+}
+
+// Render agents
+function renderAgents() {
+  const grid = document.getElementById('agentGrid');
+  grid.innerHTML = agents.map(a => `
+    <div class="agent-card">
+      <div class="agent-avatar">${a.emoji}</div>
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-role">${a.role}</div>
+      <div class="agent-status active"></div>
+    </div>
+  `).join('');
+}
+
+// Init
+renderDrugs();
+renderPipeline();
+renderAgents();
+initCharts();
+</script>
+</body>
+</html>
