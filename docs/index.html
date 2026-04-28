@@ -9,6 +9,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -273,6 +274,18 @@ footer a:hover{color:var(--cyan)}
   <div id="resultsSummary" class="results-summary"></div>
   
   <h3 style="font-size:1.1rem;margin-bottom:.5rem">7-Dimensional Expert Evaluation</h3>
+  
+  <div class="config-grid" style="margin-bottom:1rem">
+    <div class="chart-box" style="margin:0">
+      <h3 style="font-size:.95rem;margin-bottom:.5rem;text-align:center">7-Dimension Radar</h3>
+      <canvas id="radarChart" width="400" height="350"></canvas>
+    </div>
+    <div class="chart-box" style="margin:0">
+      <h3 style="font-size:.95rem;margin-bottom:.5rem;text-align:center">Dimension Breakdown</h3>
+      <canvas id="barChart" width="400" height="350"></canvas>
+    </div>
+  </div>
+  
   <div id="expertRow" class="expert-row"></div>
   
   <div class="config-grid" style="margin-top:1.5rem">
@@ -351,9 +364,9 @@ footer a:hover{color:var(--cyan)}
 
 <script src="app.js"></script>
 <script>
-// SPA state
+// SPA state - must be declared before app.js uses them
 var selectedDrug = null;
-var currentCat = 'all';
+var currentCat = '全部';
 
 // Initialize drug library after data loads
 loadData(function() {
@@ -365,9 +378,10 @@ loadData(function() {
 function buildFilters() {
   var cats = {};
   DRUGS.forEach(function(d) { cats[d.cat] = (cats[d.cat]||0)+1; });
-  var html = '<button class="active" onclick="filterCat('all',this)">All (' + DRUGS.length + ')</button>';
+  var html = '<button class="active" onclick="filterCat(\'全部\',this)">全部 (' + DRUGS.length + ')</button>';
   Object.keys(cats).sort().forEach(function(c) {
-    html += '<button onclick="filterCat(\''+c.replace(/'/g,"\\'")+'\',this)">' + c + ' (' + cats[c] + ')</button>';
+    var safeName = c.replace(/'/g, "\\'");
+    html += '<button onclick="filterCat(\'' + safeName + '\',this)">' + c + ' (' + cats[c] + ')</button>';
   });
   document.getElementById('drugFilters').innerHTML = html;
 }
@@ -377,21 +391,146 @@ function updateDrugCount() {
   document.getElementById('drugCount').textContent = visible + ' drugs';
 }
 
-// Override filterDrugs to also update count
-var _origRenderDrugs = renderDrugs;
-renderDrugs = function() {
-  _origRenderDrugs();
-  setTimeout(updateDrugCount, 50);
-};
+// Monkey-patch renderDrugs to also update count
+var _origRenderDrugs = typeof renderDrugs === 'function' ? renderDrugs : null;
+if (_origRenderDrugs) {
+  var _patchedRenderDrugs = function() {
+    _origRenderDrugs();
+    setTimeout(updateDrugCount, 50);
+  };
+  renderDrugs = _patchedRenderDrugs;
+}
 
-// Override filterCat  
-var _origFilterCat = filterCat;
+// Override filterCat to use '全部' as default
+var _origFilterCat = typeof filterCat === 'function' ? filterCat : null;
 filterCat = function(cat, btn) {
   currentCat = cat;
   document.querySelectorAll('.drug-filters button').forEach(function(b){b.classList.remove('active')});
   btn.classList.add('active');
   renderDrugs();
 };
+
+// ═══ RADAR & BAR CHART RENDERING ═══
+var _radarChart = null, _barChart = null;
+
+var _origGenerateResults = typeof generateResults === 'function' ? generateResults : null;
+if (_origGenerateResults) {
+  generateResults = function() {
+    _origGenerateResults();
+    // Draw charts after results are generated
+    setTimeout(drawDimensionCharts, 100);
+  };
+}
+
+function drawDimensionCharts() {
+  if (!window._dims || !window._dims.length) return;
+  var dims = window._dims;
+  var labels = dims.map(function(d){ return d.name; });
+  var scores = dims.map(function(d){ return d.score; });
+  var colors = dims.map(function(d){ return d.color; });
+  
+  // Radar Chart
+  var radarEl = document.getElementById('radarChart');
+  if (radarEl && typeof Chart !== 'undefined') {
+    if (_radarChart) _radarChart.destroy();
+    _radarChart = new Chart(radarEl.getContext('2d'), {
+      type: 'radar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Dimension Score',
+          data: scores,
+          backgroundColor: 'rgba(6,182,212,0.15)',
+          borderColor: '#06b6d4',
+          borderWidth: 2,
+          pointBackgroundColor: colors,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          pointRadius: 5,
+          pointHoverRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 1,
+            ticks: { 
+              color: '#64748b', 
+              backdropColor: 'transparent',
+              font: { family: 'Inter', size: 10 },
+              stepSize: 0.2
+            },
+            grid: { color: 'rgba(51,65,85,0.4)' },
+            angleLines: { color: 'rgba(51,65,85,0.4)' },
+            pointLabels: { 
+              color: '#e2e8f0', 
+              font: { family: 'Inter', size: 12, weight: '600' }
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.label + ': ' + ctx.raw.toFixed(3);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Bar Chart (horizontal)
+  var barEl = document.getElementById('barChart');
+  if (barEl && typeof Chart !== 'undefined') {
+    if (_barChart) _barChart.destroy();
+    _barChart = new Chart(barEl.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Score',
+          data: scores,
+          backgroundColor: colors.map(function(c){ return c + '99'; }),
+          borderColor: colors,
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          x: {
+            beginAtZero: true, max: 1,
+            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 } },
+            grid: { color: 'rgba(51,65,85,0.3)' }
+          },
+          y: {
+            ticks: { color: '#e2e8f0', font: { family: 'Inter', size: 11, weight: '600' } },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.label + ': ' + ctx.raw.toFixed(3);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+}
 </script>
 </body>
 </html>
