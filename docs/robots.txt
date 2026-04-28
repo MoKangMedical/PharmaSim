@@ -1,5 +1,4 @@
-# PharmaSim - AI Pharmaceutical Market Simulation Platform
 User-agent: *
 Allow: /
 
-Sitemap: https://pharmasim.pages.dev/sitemap.xml
+Sitemap: https://mokangmedical.github.io/PharmaSim/sitemap.xml
