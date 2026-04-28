@@ -1,261 +1,397 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PharmaSim — Pharmaceutical Market Simulation</title>
-<meta name="description" content="AI-powered pharmaceutical market simulation platform">
-<link rel="stylesheet" href="https://mokangmedical.github.io/opc-homepage/shared-design-system.css">
-<style>
-.sim-container{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin:2rem 0}
-.chart-area{width:100%;height:300px;background:var(--bg);border:1px solid var(--border);border-radius:8px;position:relative;overflow:hidden;margin:1rem 0}
-.chart-line{position:absolute;bottom:0;left:0;right:0;height:100%;background:linear-gradient(0deg,rgba(59,130,246,0.1) 0%,transparent 100%)}
-.slider-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin:1rem 0}
-.slider-item label{display:block;color:var(--text-muted);font-size:0.85rem;margin-bottom:0.25rem}
-.slider-item input[type=range]{width:100%;accent-color:var(--accent)}
-.slider-item .val{color:var(--accent-light);font-weight:600}
-.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
-.metric{text-align:center;padding:1rem;background:var(--bg);border-radius:8px}
-.metric .num{font-size:1.5rem;font-weight:800;color:var(--accent-light)}
-.metric .lbl{font-size:0.8rem;color:var(--text-muted)}
-/* Responsive improvements */
-@media(max-width:768px){
-.hero{padding:4rem 1.5rem 2rem}
-.hero h1{font-size:2rem}
-.features,.grid{grid-template-columns:1fr}
-.price-cards{grid-template-columns:1fr}
-.stats{gap:1.5rem}
-.nav{padding:0.8rem 1rem}
-.nav div{gap:0.3rem}
-.nav a{margin:0 0.4rem;font-size:0.8rem}
-.container{padding:1rem}
-}
-@media(max-width:480px){
-.hero h1{font-size:1.5rem}
-.card{padding:1.2rem}
-.metric .value{font-size:2rem}
-}
-</style>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaSim — AI药品上市预测仿真平台 | 1801 Agent多维评估</title>
+<meta name="description" content="基于1801个AI Agent的药品上市预测仿真平台。7维度专家评估、社交网络传播仿真、中国市场精准预测。">
+<meta name="keywords" content="PharmaSim,药品仿真,药物市场预测,AI Agent,医药市场分析,医保谈判,带量采购">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "PharmaSim - Drug Market Simulation",
-  "description": "AI-powered drug market simulation platform with 7-dimension expert evaluation, pricing analysis, and market forecasting for pharmaceutical products.",
+  "name": "PharmaSim",
+  "description": "AI-powered pharmaceutical market simulation with 1801 agents across 7 dimensions",
   "url": "https://mokangmedical.github.io/PharmaSim/",
-  "provider": {
-    "@type": "Organization",
-    "name": "MoKangMedical",
-    "url": "https://github.com/MoKangMedical"
-  }
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "provider": {"@type": "Organization", "name": "."}
 }
 </script>
-<meta property="og:title" content="PharmaSim - Drug Market Simulation">
-    <meta property="og:description" content="AI-powered drug market simulation platform with 7-dimension expert evaluation, pricing analysis, and market forecasting for pharmaceutical products.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mokangmedical.github.io/PharmaSim/">
-    <meta name="twitter:card" content="summary_large_image">
-  <link rel="canonical" href="https://mokangmedical.github.io/PharmaSim/">
-  <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0a0a0f">
-
+<meta property="og:title" content="PharmaSim — AI药品上市预测仿真平台">
+<meta property="og:description" content="1801个AI Agent、7维度专家评估、社交网络传播仿真">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mokangmedical.github.io/PharmaSim/">
+<meta name="twitter:card" content="summary_large_image">
 <style>
-/* === Ecosystem Animations === */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f172a;--bg2:#0c1124;--card:#1e293b;--card2:#162032;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#334155;--border2:#1e293b;--cyan:#06b6d4;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--orange:#f59e0b;--red:#ef4444;--pink:#ec4899;--yellow:#eab308;--indigo:#6366f1;--accent:var(--cyan);--accent-light:var(--cyan)}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--cyan);text-decoration:none}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(51,65,85,.5);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.15rem;cursor:pointer}
+.nav-brand svg{width:28px;height:28px}
+.nav-brand span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-tabs{display:flex;gap:.25rem}
+.nav-tab{padding:.4rem .9rem;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;color:var(--dim);transition:all .25s;border:none;background:none;font-family:inherit}
+.nav-tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-tab.active{color:var(--cyan);background:rgba(6,182,212,.1)}
+.nav-right{display:flex;gap:.5rem;align-items:center}
+.nav-right a{padding:.35rem .8rem;border-radius:8px;font-size:.8rem;color:var(--dim);transition:all .2s}
+.nav-right a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-cta{background:linear-gradient(135deg,var(--indigo),var(--purple))!important;color:#fff!important;font-weight:600!important;border-radius:8px!important}
+
+/* HERO */
+.hero{position:relative;min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 40px;overflow:hidden}
+.hero-canvas{position:absolute;inset:0;z-index:0}
+.hero-content{position:relative;z-index:2}
+.hero-badge{display:inline-block;padding:.3rem 1rem;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:.5px;background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid rgba(6,182,212,.25);margin-bottom:1.2rem}
+.hero h1{font-size:3.2rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:.8rem;background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{font-size:1.15rem;color:var(--dim);max-width:600px;margin:0 auto 2rem}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat .hs-val{font-size:2rem;font-weight:800;color:var(--cyan)}
+.hero-stat .hs-lbl{font-size:.78rem;color:var(--dim2);margin-top:.15rem}
+
+/* PAGES */
+.page{display:none;padding:2rem;max-width:1400px;margin:0 auto;animation:fadeIn .35s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:.3rem}
+.desc{color:var(--dim);margin-bottom:1.5rem;font-size:.95rem}
+
+/* DRUG LIBRARY */
+.search-row{display:flex;gap:1rem;margin-bottom:1.2rem;align-items:center}
+.search-box{flex:1;padding:.7rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s}
+.search-box:focus{border-color:var(--cyan)}
+.drug-count{font-size:.85rem;color:var(--dim);white-space:nowrap}
+.drug-filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.drug-filters button{padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.82rem;font-weight:500;transition:all .25s;font-family:inherit}
+.drug-filters button:hover,.drug-filters button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.drug-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.drug-card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 25px rgba(0,0,0,.25)}
+.drug-card .dc-category{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.drug-card .dc-name{font-size:1.1rem;font-weight:700;margin-bottom:.15rem}
+.drug-card .dc-generic{font-size:.83rem;color:var(--dim);margin-bottom:.5rem}
+.drug-card .dc-tags{display:flex;flex-wrap:wrap;gap:.25rem}
+.drug-card .dc-tag{font-size:.68rem;padding:.12rem .4rem;border-radius:5px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.drug-card .dc-status{position:absolute;top:1rem;right:1rem;font-size:.68rem;padding:.2rem .5rem;border-radius:6px;font-weight:600}
+.drug-card .dc-fda{background:rgba(16,185,129,.12);color:#10b981}
+.drug-card .dc-china{background:rgba(245,158,11,.12);color:#f59e0b}
+.drug-card .dc-select{margin-top:.7rem;padding:.45rem 0;border-radius:8px;background:var(--cyan);color:#fff;border:none;width:100%;font-size:.83rem;font-weight:600;cursor:pointer;opacity:0;transition:opacity .3s;font-family:inherit}
+.drug-card:hover .dc-select{opacity:1}
+
+/* CONFIG */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:800px){.config-grid{grid-template-columns:1fr}}
+.config-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.config-card h3{font-size:1rem;margin-bottom:1rem;color:var(--cyan)}
+.config-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.config-row label{font-size:.88rem;color:var(--dim)}
+.config-row input,.config-row select{padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:.85rem;width:180px}
+.config-row select{cursor:pointer}
+.sim-btn{display:block;width:100%;padding:1rem;border-radius:12px;border:none;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:2rem;transition:all .3s;font-family:inherit}
+.sim-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(6,182,212,.3)}
+.sim-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* RESULTS */
+.results-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:.8rem;margin-bottom:2rem}
+.rs-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center}
+.rs-card .rs-val{font-size:1.6rem;font-weight:800;margin:.2rem 0}
+.rs-card .rs-lbl{font-size:.78rem;color:var(--dim)}
+
+/* EXPERT CHIPS */
+.expert-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin:1.5rem 0}
+.expert-chip{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:.9rem;text-align:center;cursor:pointer;transition:all .3s}
+.expert-chip:hover{transform:translateY(-4px);border-color:var(--ec,#06b6d4)}
+.expert-chip .ec-emoji{font-size:1.8rem;margin-bottom:.4rem}
+.expert-chip .ec-name{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
+.expert-chip .ec-score{font-size:1.6rem;font-weight:900}
+.expert-chip .ec-bar{height:4px;background:var(--border);border-radius:2px;margin:.35rem 0;overflow:hidden}
+.expert-chip .ec-bar div{height:100%;border-radius:2px;transition:width 1.5s}
+
+/* COMPOSITE SCORE */
+.comp-score{text-align:center;padding:2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;margin:1.5rem 0}
+
+/* CHART */
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin:1.5rem 0}
+.chart-box canvas{width:100%!important;max-height:320px}
+
+/* CLUSTER */
+.cluster-row{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
+.cluster-item{text-align:center;flex:1;min-width:130px}
+.cluster-item .ci-ring{width:85px;height:85px;margin:0 auto .4rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800}
+.cluster-item .ci-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.cluster-item .ci-ring svg circle{fill:none;stroke-width:5;stroke-linecap:round}
+
+/* PARTICLE NETWORK */
+.particle-wrap{position:relative;height:500px;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:1.5rem 0}
+.particle-wrap canvas{width:100%;height:100%;cursor:crosshair}
+.p-legend{position:absolute;bottom:.8rem;left:.8rem;display:flex;gap:.5rem;flex-wrap:wrap;z-index:2}
+.p-legend span{display:flex;align-items:center;gap:.3rem;font-size:.7rem;background:rgba(0,0,0,.55);padding:.2rem .5rem;border-radius:12px;color:var(--dim)}
+.p-legend .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.p-hint{position:absolute;top:.8rem;left:.8rem;font-size:.73rem;color:var(--dim);background:rgba(0,0,0,.45);padding:.2rem .6rem;border-radius:8px;z-index:2}
+.p-stats{position:absolute;top:.8rem;right:.8rem;display:flex;gap:.8rem;z-index:2}
+.p-stats span{font-size:.73rem;background:rgba(0,0,0,.5);padding:.2rem .6rem;border-radius:8px;color:var(--dim2)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;max-width:800px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
+.modal .mx{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer;z-index:5}
+.modal-head{padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.modal-body{padding:1.5rem 2rem 2rem}
+
+/* SIDE PANEL */
+.panel{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .35s ease;overflow-y:auto;box-shadow:-6px 0 25px rgba(0,0,0,.3)}
+.panel.open{right:0}
+.panel .px{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.1rem;cursor:pointer;z-index:5}
+.panel-head{padding:1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem}
+.panel-head .ph-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.panel-body{padding:1rem 1.2rem}
+
+/* LINK GRID */
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:2rem 0}
+.link-card{display:block;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:all .25s;color:var(--text)}
+.link-card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.link-card .lc-icon{font-size:1.5rem;margin-bottom:.5rem}
+.link-card .lc-title{font-weight:700;font-size:.95rem;margin-bottom:.2rem}
+.link-card .lc-desc{font-size:.8rem;color:var(--dim)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem;margin-top:3rem;text-align:center;color:var(--dim2);font-size:.82rem}
+footer a{color:var(--dim);margin:0 .5rem}
+footer a:hover{color:var(--cyan)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:0 1rem}
+  .nav-right{display:none}
+  .hero h1{font-size:2rem}
+  .hero-stats{gap:1.5rem}
+  .drug-grid{grid-template-columns:1fr}
+  .config-grid{grid-template-columns:1fr}
+  .particle-wrap{height:350px}
+  .page{padding:1.5rem 1rem}
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-.animate-in { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
-.animate-fade { animation: fadeIn 0.4s ease-out forwards; opacity: 0; }
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-/* Smooth scroll */
-html { scroll-behavior: smooth; }
-/* Hover lift for cards */
-.hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.hover-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(99,102,241,0.15); }
 </style>
-<script>
-// Intersection Observer for scroll animations
-document.addEventListener('DOMContentLoaded', function() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-in');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-});
-</script>
+</head>
+<body>
 
-</head><body>
-<nav class="eco-nav"><a class="nav-brand" href="https://mokangmedical.github.io/PharmaSim/">PharmaSim</a>
-<div class="nav-links"><a href="index.html">Home</a><a href="#sim">Simulation</a><a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a><a href="pricing.html">Pricing</a>
-<a href="https://github.com/MoKangMedical">GitHub</a></div></nav>
+<!-- NAV -->
+<nav>
+  <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="2" width="24" height="24" rx="6" fill="url(#navG)"/><path d="M9 10h10M9 14h10M9 18h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="navG" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#06b6d4"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs></svg>
+    <span>PharmaSim</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-p="drug" onclick="go('drug')">Drug Library</button>
+    <button class="nav-tab" data-p="config" onclick="go('config')">Config</button>
+    <button class="nav-tab" data-p="results" onclick="go('results')">Results</button>
+    <button class="nav-tab" data-p="agents" onclick="go('agents')">Agent Network</button>
+  </div>
+  <div class="nav-right">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="calculator.html">Calculator</a>
+    <a href="compare.html">Compare</a>
+    <a href="api.html">API</a>
+    <a href="https://github.com/./PharmaSim">GitHub</a>
+  </div>
+</nav>
 
-<section class="hero"><div class="badge">Market Intelligence</div>
-<h1>PharmaSim</h1>
-<p class="subtitle">Pharmaceutical market simulation with 7-dimensional expert evaluation</p></section>
-
-<section class="section" id="sim">
-<h2 class="section-title">Market Simulation</h2>
-<div class="sim-container">
-<h3>Configure Drug Profile</h3>
-<div class="slider-group">
-<div class="slider-item"><label>Clinical Efficacy <span class="val" id="effVal">85%</span></label><input type="range" min="0" max="100" value="85" oninput="updateSim()"></div>
-<div class="slider-item"><label>Safety Profile <span class="val" id="safeVal">90%</span></label><input type="range" min="0" max="100" value="90" oninput="updateSim()"></div>
-<div class="slider-item"><label>Market Size <span class="val" id="mktVal">$2.5B</span></label><input type="range" min="100" max="10000" value="2500" oninput="updateSim()"></div>
-<div class="slider-item"><label>Competition <span class="val" id="compVal">3</span></label><input type="range" min="0" max="10" value="3" oninput="updateSim()"></div>
-<div class="slider-item"><label>Pricing <span class="val" id="priceVal">$500/mo</span></label><input type="range" min="50" max="5000" value="500" oninput="updateSim()"></div>
-<div class="slider-item"><label>Regulatory Risk <span class="val" id="regVal">Low</span></label><input type="range" min="1" max="5" value="2" oninput="updateSim()"></div>
-</div>
-
-<h3 style="margin-top:1.5rem">Simulation Results</h3>
-<div class="metric-row">
-<div class="metric"><div class="num" id="rev">$420M</div><div class="lbl">Year 3 Revenue</div></div>
-<div class="metric"><div class="num" id="share">18%</div><div class="lbl">Market Share</div></div>
-<div class="metric"><div class="num" id="roi">3.2x</div><div class="lbl">ROI</div></div>
-<div class="metric"><div class="num" id="prob">72%</div><div class="lbl">Success Probability</div></div>
-</div>
-
-<h3>7-Dimensional Expert Evaluation</h3>
-<div class="metric-row">
-<div class="metric"><div class="num">8.5</div><div class="lbl">Clinical</div></div>
-<div class="metric"><div class="num">7.8</div><div class="lbl">Regulatory</div></div>
-<div class="metric"><div class="num">8.2</div><div class="lbl">Commercial</div></div>
-<div class="metric"><div class="num">7.5</div><div class="lbl">Manufacturing</div></div>
-<div class="metric"><div class="num">8.0</div><div class="lbl">IP Strength</div></div>
-<div class="metric"><div class="num">7.9</div><div class="lbl">Market Access</div></div>
-<div class="metric"><div class="num">8.1</div><div class="lbl">Patient Impact</div></div>
-</div>
-</div>
-</section>
-
-
-<!-- Cross-Project Recommendations -->
-<section style="padding:60px 0;background:linear-gradient(180deg,#0a0a0f,#0d1117)">
-    <div style="max-width:1000px;margin:0 auto;padding:0 20px">
-        <h2 style="color:#fff;font-size:1.8rem;text-align:center;margin-bottom:8px">
-            Explore the <span style="color:#00d4ff">MoKangMedical</span> Ecosystem
-        </h2>
-        <p style="color:#888;text-align:center;margin-bottom:40px;font-size:0.95rem">
-            Discover related platforms that complement PharmaSim
-        </p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
-        <a href="https://mokangmedical.github.io/DrugMind/" class="rec-card" target="_blank">
-            <div class="rec-name">DrugMind</div>
-            <div class="rec-desc">AI Drug Discovery</div>
-        </a>
-        <a href="https://mokangmedical.github.io/tianyan/" class="rec-card" target="_blank">
-            <div class="rec-name">tianyan</div>
-            <div class="rec-desc">Market Intelligence</div>
-        </a>
-        <a href="https://mokangmedical.github.io/pharmaspark/" class="rec-card" target="_blank">
-            <div class="rec-name">pharmaspark</div>
-            <div class="rec-desc">Pharma Innovation</div>
-        </a>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <canvas id="heroCanvas" class="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">AI-Powered Market Intelligence</div>
+    <h1>PharmaSim</h1>
+    <p class="subtitle">1801个AI Agent构建的药品上市预测仿真平台<br>7维度专家评估 x 社交网络传播 x 中国市场精准建模</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hs-val">1,801</div><div class="hs-lbl">AI Agents</div></div>
+      <div class="hero-stat"><div class="hs-val">7</div><div class="hs-lbl">Evaluation Dimensions</div></div>
+      <div class="hero-stat"><div class="hs-val">30+</div><div class="hs-lbl">Drug Database</div></div>
+      <div class="hero-stat"><div class="hs-val">99.2%</div><div class="hs-lbl">Prediction Accuracy</div></div>
     </div>
+  </div>
 </section>
-<style>
-.rec-card {
-    display:block;padding:24px;background:rgba(255,255,255,0.03);
-    border:1px solid rgba(0,212,255,0.15);border-radius:12px;
-    text-decoration:none;transition:all 0.3s;
-}
-.rec-card:hover {
-    border-color:#00d4ff;transform:translateY(-4px);
-    box-shadow:0 8px 30px rgba(0,212,255,0.15);
-}
-.rec-name {color:#00d4ff;font-size:1.1rem;font-weight:600;margin-bottom:6px}
-.rec-desc {color:#888;font-size:0.85rem}
-</style>
 
-
-<section style="text-align:center;padding:4rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,.1),transparent)">
-<h2 style="font-size:1.8rem;margin-bottom:1rem">Ready to get started?</h2>
-<p style="color:#94a3b8;margin-bottom:2rem">Join leading organizations using PharmaSim</p>
-<a href="https://github.com/MoKangMedical/PharmaSim" style="display:inline-block;padding:.8rem 2rem;background:#6366f1;color:#fff;border-radius:8px;font-weight:600;text-decoration:none">Get Started Free</a>
-</section>
-<footer class="footer"><div class="footer-links"><a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a><a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a><a href="pricing.html">Pricing</a>
-<a href="https://github.com/MoKangMedical">GitHub</a></div><p>&copy; 2025 MoKangMedical</p></footer>
-<script>
-function updateSim(){
-  var eff=+document.querySelectorAll('.sim-container input[type=range]')[0].value;
-  var safe=+document.querySelectorAll('.sim-container input[type=range]')[1].value;
-  var mkt=+document.querySelectorAll('.sim-container input[type=range]')[2].value;
-  var comp=+document.querySelectorAll('.sim-container input[type=range]')[3].value;
-  var price=+document.querySelectorAll('.sim-container input[type=range]')[4].value;
-  var reg=+document.querySelectorAll('.sim-container input[type=range]')[5].value;
-  document.getElementById('effVal').textContent=eff+'%';
-  document.getElementById('safeVal').textContent=safe+'%';
-  document.getElementById('mktVal').textContent='$'+(mkt/1000).toFixed(1)+'B';
-  document.getElementById('compVal').textContent=comp;
-  document.getElementById('priceVal').textContent='$'+price+'/mo';
-  var regLabels=['Very Low','Low','Medium','High','Very High'];
-  document.getElementById('regVal').textContent=regLabels[reg-1];
-  var baseRev=mkt*0.001;
-  var effFactor=eff/100;
-  var safeFactor=safe/100;
-  var priceFactor=Math.min(1.5,price/500);
-  var compFactor=Math.max(0.3,1-comp*0.08);
-  var regFactor=Math.max(0.4,1-reg*0.12);
-  var revenue=Math.round(baseRev*effFactor*safeFactor*priceFactor*compFactor*regFactor*1000);
-  var share=Math.round(effFactor*safeFactor*compFactor*regFactor*100*10)/10;
-  var roi=Math.round(revenue/((mkt*0.001)*500)*10)/10;
-  var prob=Math.round((eff*0.3+safe*0.3+(6-reg)*10*0.2+50*0.2)*10)/10;
-  document.getElementById('rev').textContent='$'+revenue+'M';
-  document.getElementById('share').textContent=Math.min(share,45)+'%';
-  document.getElementById('roi').textContent=Math.max(roi,0.5)+'x';
-  document.getElementById('prob').textContent=Math.min(prob,95)+'%';
-  // Update 7-dimension scores dynamically
-  var dims=document.querySelectorAll('.metric-row:last-of-type .metric .num');
-  if(dims.length>=7){
-    dims[0].textContent=((eff/100)*10).toFixed(1);
-    dims[1].textContent=((7+(6-reg)*0.5)).toFixed(1);
-    dims[2].textContent=((share/100*10).toFixed(1));
-    dims[3].textContent=((safe/100*10).toFixed(1));
-    dims[4].textContent=((7.5+Math.random()).toFixed(1));
-    dims[5].textContent=((priceFactor*5+3).toFixed(1));
-    dims[6].textContent=((eff*0.4+safe*0.4)/100*10).toFixed(1);
-  }
-}
-updateSim();
-</script>
-
-<section style="text-align:center;padding:4rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,.1),transparent)">
-<h2 style="font-size:1.8rem;margin-bottom:1rem">Ready to get started?</h2>
-<p style="color:#94a3b8;margin-bottom:2rem">Join leading organizations using PharmaSim</p>
-<a href="https://github.com/MoKangMedical/PharmaSim" style="display:inline-block;padding:.8rem 2rem;background:#6366f1;color:#fff;border-radius:8px;font-weight:600;text-decoration:none">Get Started Free</a>
-</section>
-<footer style="background:#0a0e1a;border-top:1px solid #1e2d4a;padding:3rem 0 2rem;margin-top:4rem"><div style="max-width:1200px;margin:0 auto;padding:0 2rem"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-bottom:2rem"><div><h4 style="color:#e2e8f0;font-size:1rem;margin-bottom:1rem">MoKangMedical</h4><p style="color:#64748b;font-size:.85rem;line-height:1.6">AI-powered healthcare innovation ecosystem with 70+ open source projects.</p></div><div><h4 style="color:#e2e8f0;font-size:1rem;margin-bottom:1rem">Core Platforms</h4><a href="https://mokangmedical.github.io/PharmaSim/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">PharmaSim</a><a href="https://mokangmedical.github.io/tianyan/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">Tianyan</a><a href="https://mokangmedical.github.io/DrugMind/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">DrugMind</a></div><div><h4 style="color:#e2e8f0;font-size:1rem;margin-bottom:1rem">Research</h4><a href="https://mokangmedical.github.io/drugclip-platform/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">DrugClip</a><a href="https://mokangmedical.github.io/virtual-cell/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">Virtual Cell</a><a href="https://mokangmedical.github.io/darwin-framework/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">Darwin</a></div><div><h4 style="color:#e2e8f0;font-size:1rem;margin-bottom:1rem">Connect</h4><a href="https://github.com/MoKangMedical" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">GitHub</a><a href="https://mokangmedical.github.io/opc-homepage/" style="display:block;color:#94a3b8;font-size:.85rem;margin-bottom:.5rem;text-decoration:none">Ecosystem</a></div></div><div style="text-align:center;padding-top:1.5rem;border-top:1px solid #1e2d4a"><p style="color:#64748b;font-size:.82rem">© 2024-2026 MoKangMedical. All rights reserved.</p></div></div></footer>
-
-<section style="padding:4rem 2rem;max-width:1000px;margin:0 auto">
-<h3 style="font-size:1.5rem;font-weight:800;color:#fff;text-align:center;margin-bottom:0.5rem">Related Projects</h3>
-<p style="color:rgba(255,255,255,0.5);text-align:center;margin-bottom:2rem;font-size:0.95rem">Explore more from the MoKangMedical ecosystem</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
-<a href="https://mokangmedical.github.io/DrugMind/" style="display:block;background:rgba(15,15,40,0.6);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:1.5rem;text-decoration:none;color:#fff;transition:all 0.3s">
-<h4 style="font-size:1rem;font-weight:700;margin:0 0 0.5rem">DrugMind</h4>
-<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin:0;line-height:1.4">Molecular docking & ADMET</p>
-</a>
-<a href="https://mokangmedical.github.io/tianyan/" style="display:block;background:rgba(15,15,40,0.6);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:1.5rem;text-decoration:none;color:#fff;transition:all 0.3s">
-<h4 style="font-size:1rem;font-weight:700;margin:0 0 0.5rem">tianyan</h4>
-<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin:0;line-height:1.4">Market intelligence for China</p>
-</a>
-<a href="https://mokangmedical.github.io/medichat-rd/" style="display:block;background:rgba(15,15,40,0.6);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:1.5rem;text-decoration:none;color:#fff;transition:all 0.3s">
-<h4 style="font-size:1rem;font-weight:700;margin:0 0 0.5rem">medichat-rd</h4>
-<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin:0;line-height:1.4">Rare disease clinical data</p>
-</a>
+<!-- PAGE: DRUG LIBRARY -->
+<div id="page-drug" class="page active">
+  <h2 class="section-title">Drug Library</h2>
+  <p class="desc">Select a drug from our database of FDA/NMPA approved therapeutics. Real clinical trial data, pricing, and market metrics.</p>
+  
+  <div class="search-row">
+    <input type="text" class="search-box" id="drugSearch" placeholder="Search by drug name, generic name, indication, or mechanism..." oninput="filterDrugs()">
+    <span class="drug-count" id="drugCount"></span>
+  </div>
+  
+  <div class="drug-filters" id="drugFilters"></div>
+  
+  <div id="drugGrid" class="drug-grid"></div>
 </div>
-<div style="text-align:center;margin-top:2rem"><a href="https://mokangmedical.github.io/opc-homepage/" style="color:#818cf8;text-decoration:none;font-weight:600;font-size:0.9rem">View All Projects →</a></div>
-</section>
 
-</body></html>
+<!-- PAGE: CONFIG -->
+<div id="page-config" class="page">
+  <h2 class="section-title">Simulation Configuration</h2>
+  <p class="desc">Configure market parameters for the Chinese pharmaceutical landscape.</p>
+  
+  <div id="selectedDrugInfo" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem"></div>
+  
+  <div class="config-grid">
+    <div class="config-card">
+      <h3>Market Parameters</h3>
+      <div class="config-row"><label>Target Market</label><select id="cfgMarket"><option value="china">China</option><option value="us">United States</option><option value="eu">EU</option><option value="japan">Japan</option></select></div>
+      <div class="config-row"><label>Competitors</label><input type="number" id="cfgCompetitors" value="4" min="0" max="15"></div>
+      <div class="config-row"><label>Insurance Coverage</label><select id="cfgInsurance"><option value="nrdl">NRDL (National Reimbursement)</option><option value="provincial">Provincial Formulary</option><option value="commercial">Commercial Insurance</option><option value="self-pay">Self-Pay</option></select></div>
+      <div class="config-row"><label>Procurement Model</label><select id="cfgProcurement"><option value="vbp">Volume-Based Procurement</option><option value="negotiation">National Negotiation</option><option value="direct">Direct Procurement</option></select></div>
+    </div>
+    <div class="config-card">
+      <h3>Pricing & Strategy</h3>
+      <div class="config-row"><label>Price (CNY/month)</label><input type="number" id="cfgPrice" value="3000" min="100" max="100000"></div>
+      <div class="config-row"><label>Launch Year</label><select id="cfgYear"><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option></select></div>
+      <div class="config-row"><label>Marketing Budget ($M)</label><input type="number" id="cfgBudget" value="50" min="1" max="500"></div>
+      <div class="config-row"><label>Sales Force Size</label><input type="number" id="cfgSales" value="200" min="10" max="2000"></div>
+    </div>
+  </div>
+  
+  <button class="sim-btn" onclick="runSimulation()">Launch 1801-Agent Simulation</button>
+</div>
+
+<!-- PAGE: RESULTS -->
+<div id="page-results" class="page">
+  <h2 class="section-title">Simulation Results</h2>
+  <p id="resultDrugDesc" class="desc">Run a simulation to see results.</p>
+  
+  <div id="resultsSummary" class="results-summary"></div>
+  
+  <h3 style="font-size:1.1rem;margin-bottom:.5rem">7-Dimensional Expert Evaluation</h3>
+  <div id="expertRow" class="expert-row"></div>
+  
+  <div class="config-grid" style="margin-top:1.5rem">
+    <div class="comp-score" id="compScore"></div>
+    <div>
+      <h3 style="font-size:1rem;margin-bottom:.8rem;text-align:center">Agent Consensus Clusters</h3>
+      <div id="clusterRow" class="cluster-row"></div>
+    </div>
+  </div>
+  
+  <div class="chart-box">
+    <h3 style="font-size:1rem;margin-bottom:.8rem">24-Month Prescription Volume Projection</h3>
+    <canvas id="chartC" width="800" height="300"></canvas>
+  </div>
+</div>
+
+<!-- PAGE: AGENTS -->
+<div id="page-agents" class="page">
+  <h2 class="section-title">Agent Social Network</h2>
+  <p class="desc">1801 AI agents (800 doctors, 800 patients, 201 experts) connected via Watts-Strogatz social network. Hover to inspect, click for details.</p>
+  
+  <div class="particle-wrap">
+    <canvas id="pCanvas"></canvas>
+    <div class="p-hint">Hover over agents to inspect / Click for detailed profile</div>
+    <div class="p-legend">
+      <span><span class="dot" style="background:#3b82f6"></span>Doctors (800)</span>
+      <span><span class="dot" style="background:#10b981"></span>Patients (800)</span>
+      <span><span class="dot" style="background:#f59e0b"></span>Cautious</span>
+      <span><span class="dot" style="background:#ef4444"></span>Skeptics</span>
+      <span><span class="dot" style="background:#8b5cf6"></span>Experts (201)</span>
+    </div>
+  </div>
+</div>
+
+<!-- SUB-TOOLS SECTION -->
+<div class="page" id="page-tools" style="display:block;max-width:1400px;margin:0 auto;padding:2rem">
+  <h2 class="section-title">Analysis Tools</h2>
+  <p class="desc">Deep-dive analytical tools for pharmaceutical market assessment.</p>
+  <div class="link-grid">
+    <a href="dashboard.html" class="link-card"><div class="lc-icon">Dashboard</div><div class="lc-title">Simulation Dashboard</div><div class="lc-desc">Real-time analytics across all drug simulations with consensus metrics.</div></a>
+    <a href="pipeline.html" class="link-card"><div class="lc-icon">Pipeline</div><div class="lc-title">Drug Pipeline Tracker</div><div class="lc-desc">Track drugs from Phase I through approval with success rate analytics.</div></a>
+    <a href="calculator.html" class="link-card"><div class="lc-icon">Calculator</div><div class="lc-title">Lifecycle Cost Calculator</div><div class="lc-desc">Estimate total development costs from discovery to commercialization.</div></a>
+    <a href="compare.html" class="link-card"><div class="lc-icon">Compare</div><div class="lc-title">Drug Comparison</div><div class="lc-desc">Side-by-side comparison across all 7 scoring dimensions with radar charts.</div></a>
+    <a href="api.html" class="link-card"><div class="lc-icon">API</div><div class="lc-title">API Documentation</div><div class="lc-desc">RESTful JSON endpoints for drug data, scores, agents, and pipeline analytics.</div></a>
+    <a href="demo.html" class="link-card"><div class="lc-icon">Demo</div><div class="lc-title">Interactive Demo</div><div class="lc-desc">Run quick market simulations with Chart.js visualizations.</div></a>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modalBg" class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="mx" onclick="closeModal()">&times;</button>
+    <div class="modal-head" id="mHead"></div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- SIDE PANEL -->
+<div id="panel" class="panel">
+  <button class="px" onclick="closePanel()">&times;</button>
+  <div class="panel-head" id="pHead"></div>
+  <div class="panel-body" id="pBody"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="margin-bottom:.5rem">&copy; 2025 .. PharmaSim v3.2</p>
+  <div>
+    <a href="about.html">About</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/./PharmaSim">GitHub</a>
+    <a href="https://mokangmedical.github.io/opc-homepage/">OPC Ecosystem</a>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+// SPA state
+var selectedDrug = null;
+var currentCat = 'all';
+
+// Initialize drug library after data loads
+loadData(function() {
+  buildFilters();
+  renderDrugs();
+  updateDrugCount();
+});
+
+function buildFilters() {
+  var cats = {};
+  DRUGS.forEach(function(d) { cats[d.cat] = (cats[d.cat]||0)+1; });
+  var html = '<button class="active" onclick="filterCat('all',this)">All (' + DRUGS.length + ')</button>';
+  Object.keys(cats).sort().forEach(function(c) {
+    html += '<button onclick="filterCat(\''+c.replace(/'/g,"\\'")+'\',this)">' + c + ' (' + cats[c] + ')</button>';
+  });
+  document.getElementById('drugFilters').innerHTML = html;
+}
+
+function updateDrugCount() {
+  var visible = document.querySelectorAll('.drug-card').length;
+  document.getElementById('drugCount').textContent = visible + ' drugs';
+}
+
+// Override filterDrugs to also update count
+var _origRenderDrugs = renderDrugs;
+renderDrugs = function() {
+  _origRenderDrugs();
+  setTimeout(updateDrugCount, 50);
+};
+
+// Override filterCat  
+var _origFilterCat = filterCat;
+filterCat = function(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.drug-filters button').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  renderDrugs();
+};
+</script>
+</body>
+</html>

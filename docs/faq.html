@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — PharmaSim</title>
+<meta name="description" content="Frequently asked questions about PharmaSim: pharmaceutical market simulation, pricing, security, integration, and more.">
+<meta property="og:title" content="FAQ — PharmaSim">
+<meta property="og:description" content="Frequently asked questions about PharmaSim pharmaceutical market simulation platform.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mokangmedical.github.io/PharmaSim/faq.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://mokangmedical.github.io/PharmaSim/faq.html">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="stylesheet" href="https://mokangmedical.github.io/opc-homepage/shared-design-system.css">
+<style>
+/* FAQ Styles */
+.faq-container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+.faq-section { padding: 40px 0 80px; }
+.faq-category { margin-bottom: 40px; }
+.faq-category-title {
+  font-size: 1.1rem; font-weight: 700; color: var(--accent-light, #818cf8);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.faq-category-title::before {
+  content: ''; width: 4px; height: 20px;
+  background: var(--accent, #6366f1); border-radius: 2px;
+}
+.faq-item {
+  background: var(--bg-card, #111); border: 1px solid var(--border, #1e293b);
+  border-radius: var(--radius, 12px); margin-bottom: 10px;
+  overflow: hidden; transition: border-color 0.3s;
+}
+.faq-item:hover { border-color: var(--accent, #6366f1); }
+.faq-item.open { border-color: var(--accent-light, #818cf8); background: linear-gradient(180deg, rgba(99,102,241,0.05), var(--bg-card, #111)); }
+.faq-question {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px; cursor: pointer; gap: 16px; user-select: none;
+}
+.faq-question h3 { font-size: 0.95rem; font-weight: 600; flex: 1; line-height: 1.5; color: var(--text, #e2e8f0); }
+.faq-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--border, #1e293b);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--text-muted, #64748b);
+  transition: all 0.3s; flex-shrink: 0;
+}
+.faq-item.open .faq-icon {
+  background: var(--accent, #6366f1); color: #fff;
+  border-color: var(--accent, #6366f1); transform: rotate(45deg);
+}
+.faq-answer {
+  display: none; padding: 0 24px 20px;
+  color: var(--text-muted, #94a3b8); font-size: 0.9rem; line-height: 1.8;
+}
+.faq-answer p { margin-bottom: 10px; }
+.faq-answer p:last-child { margin-bottom: 0; }
+.faq-answer ul, .faq-answer ol { padding-left: 22px; margin: 8px 0; }
+.faq-answer li { margin: 5px 0; }
+.faq-answer strong { color: var(--text, #e2e8f0); }
+.faq-nav { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 40px; }
+.faq-nav-btn {
+  padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  border: 1px solid var(--border, #1e293b); background: var(--bg-card, #111); color: var(--text-muted, #94a3b8);
+}
+.faq-nav-btn:hover, .faq-nav-btn.active { border-color: var(--accent, #6366f1); color: var(--accent-light, #818cf8); background: rgba(99,102,241,0.08); }
+@media(max-width:768px) {
+  .faq-question { padding: 14px 16px; }
+  .faq-answer { padding: 0 16px 16px; }
+  .faq-question h3 { font-size: 0.88rem; }
+}
+</style>
+</head>
+<body style="padding-top:56px!important">
+<!-- OPC Ecosystem Nav -->
+<nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:700;font-size:15px">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="url(#ng1)" stroke-width="2.5"/><path d="M10 16h12M16 10v12" stroke="url(#ng1)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="ng1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs></svg>
+    <span style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">PharmaSim — Pharmaceutical Market Simulation</span>
+  </a>
+  <div style="display:flex;gap:6px;align-items:center">
+    <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">Ecosystem</a>
+    <a href="https://github.com/PharmaSim — Pharmaceutical Market Simulation" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">GitHub</a>
+    <a href="https://mokangmedical.github.io/opc-alliance/" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">OPC Hub</a>
+  </div>
+</nav>
+
+<!-- Project Nav -->
+<nav class="eco-nav">
+  <a class="nav-brand" href="index.html">PharmaSim</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="api.html">API</a>
+    <a href="faq.html" class="active">FAQ</a>
+    <a href="https://github.com/PharmaSim — Pharmaceutical Market Simulation/PharmaSim">GitHub</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">Support</div>
+  <h1>Frequently Asked <span style="color:var(--accent-light,#818cf8)">Questions</span></h1>
+  <p class="subtitle">Everything you need to know about PharmaSim — the platform, pricing, security, integration, and more.</p>
+</section>
+
+<!-- FAQ Content -->
+<div class="faq-container faq-section">
+
+  <div class="faq-nav">
+    <a href="#cat-platform" class="faq-nav-btn">Platform</a>
+    <a href="#cat-pricing" class="faq-nav-btn">Pricing</a>
+    <a href="#cat-security" class="faq-nav-btn">Security</a>
+    <a href="#cat-integration" class="faq-nav-btn">Integration</a>
+    <a href="#cat-data" class="faq-nav-btn">Data</a>
+    <a href="#cat-support" class="faq-nav-btn">Support</a>
+  </div>
+
+  <!-- Platform -->
+  <div class="faq-category" id="cat-platform">
+    <div class="faq-category-title">Platform</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>What is PharmaSim and what does it do?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>PharmaSim is an <strong>AI-powered pharmaceutical market simulation platform</strong> that models drug market dynamics using a proprietary 7-dimensional expert evaluation framework. It helps pharmaceutical companies, analysts, and investors forecast market outcomes for drugs at every stage of development.</p>
+        <p>Key capabilities include market size estimation, competitive landscape analysis, pricing strategy simulation, revenue forecasting, and ROI modeling — all driven by real-world clinical and commercial data.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>What is the 7-Dimensional Expert Evaluation?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Our proprietary framework scores drugs across seven critical dimensions:</p>
+        <ul>
+          <li><strong>Clinical Efficacy</strong> — strength of trial data and endpoints</li>
+          <li><strong>Regulatory Risk</strong> — approval probability and pathway complexity</li>
+          <li><strong>Commercial Viability</strong> — market access and payer dynamics</li>
+          <li><strong>Manufacturing Feasibility</strong> — production scalability and cost</li>
+          <li><strong>IP Strength</strong> — patent protection and exclusivity duration</li>
+          <li><strong>Market Access</strong> — formulary placement and reimbursement</li>
+          <li><strong>Patient Impact</strong> — unmet need and quality-of-life improvement</li>
+        </ul>
+        <p>Each dimension is scored 1-10, and the composite score drives all simulation outputs.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Who is PharmaSim designed for?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>PharmaSim is built for:</p>
+        <ul>
+          <li><strong>Pharma commercial teams</strong> — launch planning, pricing strategy, and competitive positioning</li>
+          <li><strong>Business development &amp; licensing</strong> — evaluating acquisition targets and partnership opportunities</li>
+          <li><strong>Investment analysts</strong> — due diligence on pipeline assets and market potential</li>
+          <li><strong>Health economics researchers</strong> — modeling budget impact and cost-effectiveness</li>
+          <li><strong>Consulting firms</strong> — delivering data-driven pharmaceutical market insights</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>How accurate are PharmaSim's market simulations?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Our models are trained on <strong>20+ years of historical drug launch data</strong> covering 500+ products across 15 therapeutic areas. Backtesting shows:</p>
+        <ul>
+          <li>Revenue forecasts within <strong>±15%</strong> of actual Year-3 sales for 78% of evaluated drugs</li>
+          <li>Market share predictions with <strong>R² = 0.85</strong> correlation to real-world outcomes</li>
+          <li>Regulatory approval probability estimates aligned with FDA decision outcomes at 82% accuracy</li>
+        </ul>
+        <p>While no model is perfect, PharmaSim consistently outperforms traditional analyst consensus estimates by 20-30% on average.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="faq-category" id="cat-pricing">
+    <div class="faq-category-title">Pricing</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>What pricing plans does PharmaSim offer?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>PharmaSim offers three tiers:</p>
+        <ul>
+          <li><strong>Explorer (Free)</strong> — access to the interactive demo, limited to 5 simulations/month with basic 3-dimensional scoring</li>
+          <li><strong>Professional ($499/mo)</strong> — full 7-dimensional evaluation, unlimited simulations, export to PDF/Excel, API access</li>
+          <li><strong>Enterprise (Custom)</strong> — dedicated instance, SSO/SAML, custom data integrations, SLA guarantees, and dedicated support</li>
+        </ul>
+        <p>Annual billing saves 20%. Academic and nonprofit discounts are available upon request.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Is there a free trial?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Yes. The Explorer plan is <strong>permanently free</strong> with basic functionality. For full access, we offer a <strong>14-day free trial</strong> of the Professional plan — no credit card required. During the trial you get full simulation capabilities, API access, and export features.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Can I change or cancel my plan?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Yes. You can upgrade, downgrade, or cancel at any time from your account dashboard. Downgrades take effect at the end of your current billing cycle. Cancellations stop future charges immediately, and you retain access until the billing period ends. All your simulation data remains accessible for 90 days after cancellation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="faq-category" id="cat-security">
+    <div class="faq-category-title">Security &amp; Compliance</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Is PharmaSim compliant with industry regulations?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Yes. PharmaSim is designed with pharmaceutical industry compliance in mind:</p>
+        <ul>
+          <li><strong>SOC 2 Type II</strong> certified for security, availability, and confidentiality</li>
+          <li><strong>GDPR compliant</strong> — full data processing agreements available for EU customers</li>
+          <li><strong>HIPAA-ready</strong> infrastructure (Enterprise plan) with BAA available</li>
+          <li>All data encrypted at rest (AES-256) and in transit (TLS 1.3)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>How is my proprietary data protected?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Data protection is our top priority:</p>
+        <ul>
+          <li><strong>Tenant isolation</strong> — each organization's data is logically separated</li>
+          <li><strong>No model training on user data</strong> — your proprietary inputs are never used to train our AI models</li>
+          <li><strong>Audit logging</strong> — all data access is logged and available for review</li>
+          <li><strong>SOC-compliant data centers</strong> — US (AWS us-east-1) and EU (Frankfurt) regions available</li>
+          <li><strong>Data retention controls</strong> — configure automatic deletion policies per your compliance requirements</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Integration -->
+  <div class="faq-category" id="cat-integration">
+    <div class="faq-category-title">Integration</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Does PharmaSim have an API?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Yes. PharmaSim provides a comprehensive <strong>RESTful API</strong> (Professional plan and above) that supports:</p>
+        <ul>
+          <li>Programmatic simulation execution</li>
+          <li>Bulk drug evaluation pipelines</li>
+          <li>Real-time market data queries</li>
+          <li>Webhook notifications for simulation completion</li>
+        </ul>
+        <p>Full API documentation is available at <a href="api.html">api.html</a>. SDKs for Python and R are also provided.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Can PharmaSim integrate with our existing BI tools?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Absolutely. PharmaSim supports native connectors for:</p>
+        <ul>
+          <li><strong>Tableau</strong> — via published data source connectors</li>
+          <li><strong>Power BI</strong> — OData feed and custom connector</li>
+          <li><strong>Snowflake / BigQuery</strong> — direct data warehouse export</li>
+          <li><strong>Excel / CSV</strong> — standard export for all simulation results</li>
+        </ul>
+        <p>Enterprise customers can also set up custom ETL pipelines via our API.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>How does PharmaSim integrate with other OPC ecosystem tools?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>PharmaSim is part of the PharmaSim — Pharmaceutical Market Simulation OPC ecosystem and integrates seamlessly with:</p>
+        <ul>
+          <li><strong>DrugMind</strong> — import molecular candidates and ADMET profiles for market potential scoring</li>
+          <li><strong>Tianyan</strong> — pull competitive intelligence and market data for China-focused simulations</li>
+          <li><strong>MediChat-RD</strong> — incorporate rare disease prevalence data into orphan drug simulations</li>
+        </ul>
+        <p>Cross-platform data sharing is available via shared API keys on Professional plans and above.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data -->
+  <div class="faq-category" id="cat-data">
+    <div class="faq-category-title">Data Handling</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>What data sources does PharmaSim use?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>PharmaSim aggregates data from <strong>50+ authoritative sources</strong> including:</p>
+        <ul>
+          <li>ClinicalTrials.gov and EudraCT for trial data</li>
+          <li>FDA Orange Book and EMA databases for regulatory information</li>
+          <li>IQVIA, Evaluate Pharma, and CMS for market and pricing data</li>
+          <li>PubMed and Cochrane for clinical evidence</li>
+          <li>SEC filings and earnings transcripts for commercial intelligence</li>
+          <li>Patent databases (USPTO, EPO, WIPO) for IP analysis</li>
+        </ul>
+        <p>Data is refreshed daily. You can also upload proprietary datasets for custom simulations.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Can I upload my own data to PharmaSim?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Yes. Professional and Enterprise plans support <strong>custom data uploads</strong> via:</p>
+        <ul>
+          <li>CSV / Excel file upload through the dashboard</li>
+          <li>API-based data ingestion for programmatic workflows</li>
+          <li>Direct database connections (Enterprise plan) for Snowflake, PostgreSQL, and MySQL</li>
+        </ul>
+        <p>Uploaded data is used exclusively for your simulations and is never shared with other users or used for model training.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>How often is PharmaSim's market data updated?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Our data pipeline runs on different schedules depending on the source:</p>
+        <ul>
+          <li><strong>Regulatory data</strong> (FDA, EMA) — updated within 24 hours of new approvals or decisions</li>
+          <li><strong>Clinical trial data</strong> — refreshed weekly</li>
+          <li><strong>Market and pricing data</strong> — updated monthly with quarterly deep refreshes</li>
+          <li><strong>Patent data</strong> — refreshed monthly</li>
+        </ul>
+        <p>All data timestamps are visible in the platform so you always know how current your information is.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support & Customization -->
+  <div class="faq-category" id="cat-support">
+    <div class="faq-category-title">Support &amp; Customization</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>What support options are available?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <ul>
+          <li><strong>Explorer</strong> — community forum and documentation</li>
+          <li><strong>Professional</strong> — email support (24-hour response), priority documentation, and video tutorials</li>
+          <li><strong>Enterprise</strong> — dedicated account manager, Slack/Teams channel, 4-hour SLA, onboarding sessions, and quarterly business reviews</li>
+        </ul>
+        <p>All plans include access to our <a href="https://github.com/PharmaSim — Pharmaceutical Market Simulation/PharmaSim">GitHub repository</a> for issue tracking and feature requests.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <h3>Can PharmaSim simulations be customized for specific therapeutic areas?</h3>
+        <div class="faq-icon">+</div>
+      </div>
+      <div class="faq-answer">
+        <p>Yes. PharmaSim includes pre-built models for <strong>15+ therapeutic areas</strong> (oncology, immunology, cardiology, neurology, rare diseases, etc.), each calibrated with area-specific market dynamics. Enterprise customers can:</p>
+        <ul>
+          <li>Customize evaluation weights across the 7 dimensions</li>
+          <li>Add proprietary therapeutic area models</li>
+          <li>Configure region-specific pricing and reimbursement rules</li>
+          <li>Build custom scenario templates for recurring analyses</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA -->
+<section style="text-align:center;padding:4rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,.1),transparent)">
+  <h2 style="font-size:1.8rem;margin-bottom:1rem">Still have questions?</h2>
+  <p style="color:#94a3b8;margin-bottom:2rem">Our team is here to help you get started with PharmaSim</p>
+  <a href="contact.html" style="display:inline-block;padding:.8rem 2rem;background:var(--accent,#6366f1);color:#fff;border-radius:8px;font-weight:600;text-decoration:none">Contact Us</a>
+</section>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a>
+    <a href="https://github.com/PharmaSim — Pharmaceutical Market Simulation/PharmaSim">GitHub</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="faq.html">FAQ</a>
+  </div>
+  <p>&copy; 2025 PharmaSim — Pharmaceutical Market Simulation</p>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  var item = el.parentElement;
+  var answer = item.querySelector('.faq-answer');
+  var isOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item.open').forEach(function(i) {
+    i.classList.remove('open');
+    i.querySelector('.faq-answer').style.display = 'none';
+  });
+  // Toggle current
+  if (!isOpen) {
+    item.classList.add('open');
+    answer.style.display = 'block';
+  }
+}
+// Open first item by default
+document.addEventListener('DOMContentLoaded', function() {
+  var first = document.querySelector('.faq-item');
+  if (first) {
+    first.classList.add('open');
+    first.querySelector('.faq-answer').style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>
