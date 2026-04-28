@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drug Comparison - PharmaSim</title>
+<meta name="description" content="Side-by-side drug comparison across all scoring dimensions.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c18;--bg2:#0c1124;--card:#111827;--card2:#1a2332;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#1e293b;--border2:#334155;--indigo:#6366f1;--indigo2:#818cf8;--cyan:#06b6d4;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899}
+body{background:var(--bg);color:var(--text2);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--indigo2);text-decoration:none}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,12,24,.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(30,41,59,.5);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.2rem;color:var(--text)}
+.nav-brand svg{width:28px;height:28px}
+.nav-links{display:flex;gap:.3rem}
+.nav-links a{padding:.4rem .9rem;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--dim);transition:all .25s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-links a.active{color:var(--indigo2);background:rgba(99,102,241,.1)}
+
+.content{padding:80px 2rem 3rem;max-width:1400px;margin:0 auto}
+h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.subtitle{color:var(--dim);margin-bottom:2rem;font-size:.95rem}
+
+/* SELECTOR */
+.selector-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem}
+.selector-panel h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem}
+.drug-selector{display:flex;gap:.6rem;flex-wrap:wrap}
+.drug-chip{padding:.4rem 1rem;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--dim);cursor:pointer;font-size:.82rem;font-weight:500;transition:all .25s;font-family:inherit;display:flex;align-items:center;gap:.4rem}
+.drug-chip:hover{border-color:var(--dim);color:var(--text)}
+.drug-chip.selected{border-color:var(--indigo);color:var(--indigo2);background:rgba(99,102,241,.1)}
+.drug-chip .dc-dot{width:8px;height:8px;border-radius:50%}
+.drug-chip .dc-x{font-size:.7rem;opacity:.5;margin-left:.2rem}
+.drug-chip .dc-x:hover{opacity:1}
+
+/* COMPARISON TABLE */
+.comp-table-wrap{overflow-x:auto;margin-bottom:2rem}
+.comp-table{width:100%;border-collapse:collapse;min-width:600px}
+.comp-table th{padding:.8rem 1rem;text-align:left;font-size:.78rem;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);font-weight:600;position:sticky;top:0;background:var(--bg)}
+.comp-table th:first-child{width:180px}
+.comp-table td{padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.03);font-size:.88rem}
+.comp-table td:first-child{font-weight:600;color:var(--dim);font-size:.82rem}
+.comp-table tr:hover td{background:rgba(99,102,241,.02)}
+.comp-table .highlight{color:var(--green);font-weight:700}
+.comp-table .low{color:var(--red)}
+.val-bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-left:.5rem;background:var(--indigo)}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.chart-card h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem}
+.chart-wrap{position:relative;height:320px}
+.chart-card.full{grid-column:1/-1}
+
+/* INSIGHTS */
+.insights{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem}
+.insights h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem}
+.insight-item{display:flex;gap:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.03);align-items:flex-start}
+.insight-item:last-child{border:none}
+.insight-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;flex-shrink:0}
+.insight-text{font-size:.88rem;color:var(--text2);line-height:1.6}
+.insight-text strong{color:var(--text)}
+.insight-tag{display:inline-block;font-size:.68rem;padding:.1rem .4rem;border-radius:4px;margin-left:.3rem;font-weight:600}
+.tag-advantage{background:rgba(16,185,129,.1);color:#10b981}
+.tag-risk{background:rgba(239,68,68,.1);color:#ef4444}
+
+@media(max-width:900px){
+  .charts-grid{grid-template-columns:1fr}
+  .chart-card.full{grid-column:auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="2" width="24" height="24" rx="6" fill="url(#g1)"/><path d="M9 10h10M9 14h10M9 18h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="g1" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs></svg>
+    PharmaSim
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="calculator.html">Calculator</a>
+    <a href="compare.html" class="active">Compare</a>
+  </div>
+</nav>
+
+<div class="content">
+  <h1>Drug Comparison Tool</h1>
+  <p class="subtitle">Select up to 5 drugs to compare across all evaluation dimensions</p>
+
+  <div class="selector-panel">
+    <h3>Select Drugs to Compare</h3>
+    <div class="drug-selector" id="drugSelector"></div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="comp-table-wrap">
+    <table class="comp-table" id="compTable"></table>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <h3>Dimension Radar Comparison</h3>
+      <div class="chart-wrap" style="height:400px"><canvas id="radarChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Score Breakdown by Dimension</h3>
+      <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Revenue & Price Comparison</h3>
+      <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="insights">
+    <h3>Automated Insights</h3>
+    <div id="insightsList"></div>
+  </div>
+</div>
+
+<script>
+const allDrugs = [
+  {id:1,name:"Keytruda",cn:"帕博利珠单抗",area:"肿瘤/免疫",company:"Merck",mechanism:"PD-1 mAb",score:0.691,rec:"Recommend",usPrice:15000,cnPrice:16800,revenue:25,pop:850000,or:44.8,pfs:4.3,os:11.2,ae:18,sample:1200,
+   dims:{epi:0.62,cli:0.78,mkt:0.71,price:0.65,pharm:0.68,pecon:0.60,ins:0.70}},
+  {id:2,name:"Opdivo",cn:"纳武利尤单抗",area:"肿瘤/免疫",company:"BMS",mechanism:"PD-1 mAb",score:0.671,rec:"Recommend",usPrice:13500,cnPrice:9200,revenue:8.8,pop:850000,or:42.1,pfs:3.9,os:9.2,ae:16,sample:1100,
+   dims:{epi:0.61,cli:0.75,mkt:0.69,price:0.58,pharm:0.66,pecon:0.59,ins:0.68}},
+  {id:3,name:"Tecentriq",cn:"阿替利珠单抗",area:"肿瘤/免疫",company:"Roche",mechanism:"PD-L1 mAb",score:0.673,rec:"Recommend",usPrice:14000,cnPrice:3200,revenue:3.6,pop:850000,or:38.5,pfs:4.1,os:13.9,ae:15,sample:1277,
+   dims:{epi:0.61,cli:0.74,mkt:0.68,price:0.62,pharm:0.65,pecon:0.63,ins:0.72}},
+  {id:4,name:"Tagrisso",cn:"奥希替尼",area:"肿瘤/免疫",company:"AstraZeneca",mechanism:"EGFR-TKI",score:0.688,rec:"Recommend",usPrice:16000,cnPrice:15300,revenue:5.4,pop:180000,or:null,pfs:65.8,os:null,ae:10,sample:682,
+   dims:{epi:0.55,cli:0.82,mkt:0.65,price:0.60,pharm:0.72,pecon:0.58,ins:0.68}},
+  {id:5,name:"Ibrance",cn:"哌柏西利",area:"肿瘤/免疫",company:"Pfizer",mechanism:"CDK4/6i",score:0.620,rec:"Conditional",usPrice:13500,cnPrice:13600,revenue:5.3,pop:350000,or:55,pfs:24.8,os:53.9,ae:60,sample:666,
+   dims:{epi:0.58,cli:0.72,mkt:0.55,price:0.52,pharm:0.65,pecon:0.55,ins:0.60}},
+  {id:6,name:"Ozempic",cn:"司美格鲁肽",area:"代谢/糖尿病",company:"Novo Nordisk",mechanism:"GLP-1RA",score:0.646,rec:"Conditional",usPrice:1000,cnPrice:1200,revenue:8.5,pop:140000000,or:null,pfs:null,os:null,ae:3,sample:8100,
+   dims:{epi:0.80,cli:0.65,mkt:0.72,price:0.55,pharm:0.58,pecon:0.52,ins:0.65}},
+  {id:7,name:"Mounjaro",cn:"替尔泊肽",area:"代谢/糖尿病",company:"Eli Lilly",mechanism:"GLP-1/GIP",score:0.635,rec:"Conditional",usPrice:1000,cnPrice:2500,revenue:5.2,pop:140000000,or:null,pfs:null,os:null,ae:5,sample:5400,
+   dims:{epi:0.78,cli:0.68,mkt:0.70,price:0.52,pharm:0.60,pecon:0.50,ins:0.58}},
+  {id:8,name:"Jardiance",cn:"恩格列净",area:"代谢/糖尿病",company:"BI/Lilly",mechanism:"SGLT2i",score:0.613,rec:"Conditional",usPrice:550,cnPrice:600,revenue:7,pop:140000000,or:null,pfs:null,os:null,ae:2,sample:14000,
+   dims:{epi:0.82,cli:0.60,mkt:0.65,price:0.48,pharm:0.52,pecon:0.55,ins:0.62}},
+  {id:9,name:"Eliquis",cn:"阿哌沙班",area:"心血管",company:"BMS/Pfizer",mechanism:"Xa inhibitor",score:0.628,rec:"Conditional",usPrice:500,cnPrice:380,revenue:11.8,pop:12000000,or:null,pfs:null,os:null,ae:2.1,sample:18201,
+   dims:{epi:0.68,cli:0.62,mkt:0.60,price:0.55,pharm:0.58,pecon:0.60,ins:0.65}},
+  {id:10,name:"Entresto",cn:"沙库巴曲缬沙坦",area:"心血管",company:"Novartis",mechanism:"ARNI",score:0.638,rec:"Conditional",usPrice:600,cnPrice:900,revenue:5.6,pop:10000000,or:null,pfs:null,os:null,ae:5,sample:8442,
+   dims:{epi:0.65,cli:0.68,mkt:0.58,price:0.55,pharm:0.60,pecon:0.62,ins:0.68}},
+  {id:11,name:"Humira",cn:"阿达木单抗",area:"自身免疫",company:"AbbVie",mechanism:"TNF-α mAb",score:0.704,rec:"Recommend",usPrice:5800,cnPrice:1200,revenue:21,pop:6000000,or:null,pfs:null,os:null,ae:5,sample:5400,
+   dims:{epi:0.60,cli:0.72,mkt:0.75,price:0.70,pharm:0.65,pecon:0.68,ins:0.72}},
+  {id:12,name:"Spinraza",cn:"诺西那生钠",area:"罕见病",company:"Biogen",mechanism:"ASO",score:0.562,rec:"Not Recommend",usPrice:62500,cnPrice:33000,revenue:2.1,pop:30000,or:null,pfs:null,os:null,ae:12,sample:175,
+   dims:{epi:0.35,cli:0.65,mkt:0.30,price:0.40,pharm:0.55,pecon:0.42,ins:0.48}},
+  {id:13,name:"Leqembi",cn:"Lecanemab",area:"神经科学",company:"Eisai/Biogen",mechanism:"Aβ mAb",score:0.541,rec:"Not Recommend",usPrice:2600,cnPrice:5000,revenue:0.8,pop:10000000,or:null,pfs:null,os:null,ae:14,sample:1795,
+   dims:{epi:0.55,cli:0.52,mkt:0.45,price:0.48,pharm:0.58,pecon:0.42,ins:0.40}},
+  {id:14,name:"Paxlovid",cn:"奈玛特韦",area:"感染性疾病",company:"Pfizer",mechanism:"3CL protease",score:0.580,rec:"Not Recommend",usPrice:530,cnPrice:2300,revenue:18.9,pop:0,or:null,pfs:null,os:null,ae:2,sample:2246,
+   dims:{epi:0.42,cli:0.60,mkt:0.55,price:0.52,pharm:0.55,pecon:0.58,ins:0.50}}
+];
+
+const dimLabels = ["Epidemiology","Clinical","Market","Pricing","Pharmacology","Pharmaecon","Insurance"];
+const dimKeys = ["epi","cli","mkt","price","pharm","pecon","ins"];
+const chartColors = ["#6366f1","#06b6d4","#10b981","#f59e0b","#ef4444","#ec4899","#8b5cf6"];
+
+let selected = [0,1,10]; // indices into allDrugs
+let radarChart, barChart, revenueChart;
+
+function renderSelector(){
+  const sel = document.getElementById("drugSelector");
+  sel.innerHTML = allDrugs.map((d,i)=>{
+    const isSelected = selected.includes(i);
+    const color = chartColors[i % chartColors.length];
+    return `<button class="drug-chip ${isSelected?'selected':''}" onclick="toggleDrug(${i})">
+      <span class="dc-dot" style="background:${color}"></span>
+      ${d.name}
+      ${isSelected?'<span class="dc-x">x</span>':''}
+    </button>`;
+  }).join('');
+}
+
+function toggleDrug(idx){
+  if(selected.includes(idx)){
+    selected = selected.filter(i=>i!==idx);
+  } else {
+    if(selected.length>=5) selected.shift();
+    selected.push(idx);
+  }
+  renderAll();
+}
+
+function renderAll(){
+  renderSelector();
+  renderTable();
+  renderRadar();
+  renderBar();
+  renderRevenue();
+  renderInsights();
+}
+
+function renderTable(){
+  const drugs = selected.map(i=>allDrugs[i]);
+  if(drugs.length===0){
+    document.getElementById("compTable").innerHTML='<tr><td style="color:var(--dim);padding:2rem;text-align:center" colspan="8">Select at least one drug to compare</td></tr>';
+    return;
+  }
+
+  const rows = [
+    {label:"Generic Name",fn:d=>d.cn},
+    {label:"Company",fn:d=>d.company},
+    {label:"Therapeutic Area",fn:d=>d.area},
+    {label:"Mechanism",fn:d=>d.mechanism},
+    {label:"Composite Score",fn:d=>d.score.toFixed(3),highlight:true},
+    {label:"Recommendation",fn:d=>d.rec},
+    {label:"US Price/mo",fn:d=>"$"+d.usPrice.toLocaleString()},
+    {label:"CN Price/mo",fn:d=>"¥"+d.cnPrice.toLocaleString()},
+    {label:"US Revenue ($B)",fn:d=>"$"+d.revenue+"B"},
+    {label:"Patient Pop (CN)",fn:d=>d.pop>0?d.pop.toLocaleString():"N/A"},
+    {label:"ORR (%)",fn:d=>d.or!=null?d.or+"%":"N/A"},
+    {label:"PFS (months)",fn:d=>d.pfs!=null?d.pfs:"N/A"},
+    {label:"OS (months)",fn:d=>d.os!=null?d.os:"N/A"},
+    {label:"Grade 3+ AE Rate",fn:d=>d.ae+"%"},
+    {label:"Trial Size",fn:d=>d.sample.toLocaleString()},
+    ...dimKeys.map((k,i)=>({label:dimLabels[i],fn:d=>d.dims[k].toFixed(2),highlight:true,bar:true}))
+  ];
+
+  const maxScores = {};
+  dimKeys.forEach(k=>{
+    maxScores[k] = Math.max(...drugs.map(d=>d.dims[k]));
+  });
+
+  document.getElementById("compTable").innerHTML = `
+    <thead>
+      <tr>
+        <th>Metric</th>
+        ${drugs.map((d,i)=>`<th style="color:${chartColors[selected[i]%chartColors.length]}">${d.name}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r=>`
+        <tr>
+          <td>${r.label}</td>
+          ${drugs.map((d,j)=>{
+            const val = r.fn(d);
+            let cls = '';
+            if(r.highlight && r.bar){
+              const v = d.dims[dimKeys[dimLabels.indexOf(r.label)]];
+              if(v===maxScores[dimKeys[dimLabels.indexOf(r.label)]]) cls='highlight';
+            } else if(r.highlight){
+              if(d.score===Math.max(...drugs.map(x=>x.score))) cls='highlight';
+            }
+            const barHtml = r.bar ? `<span class="val-bar" style="width:${d.dims[dimKeys[dimLabels.indexOf(r.label)]]*80}px"></span>` : '';
+            return `<td class="${cls}">${val}${barHtml}</td>`;
+          }).join('')}
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+function renderRadar(){
+  const drugs = selected.map(i=>allDrugs[i]);
+  const ctx = document.getElementById("radarChart").getContext("2d");
+  if(radarChart) radarChart.destroy();
+  if(drugs.length===0) return;
+
+  radarChart = new Chart(ctx,{
+    type:"radar",
+    data:{
+      labels:dimLabels,
+      datasets:drugs.map((d,i)=>({
+        label:d.name,
+        data:dimKeys.map(k=>d.dims[k]),
+        borderColor:chartColors[selected[i]%chartColors.length],
+        backgroundColor:chartColors[selected[i]%chartColors.length]+"22",
+        borderWidth:2,pointRadius:4,pointBackgroundColor:chartColors[selected[i]%chartColors.length]
+      }))
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{r:{min:0.2,max:1,ticks:{stepSize:0.2,color:"#64748b",backdropColor:"transparent",font:{size:10}},grid:{color:"rgba(30,41,59,.5)"},pointLabels:{color:"#94a3b8",font:{family:"Inter",size:11}}}},
+      plugins:{legend:{position:"bottom",labels:{color:"#94a3b8",font:{family:"Inter",size:12},padding:16,usePointStyle:true,pointStyleWidth:8}}}
+    }
+  });
+}
+
+function renderBar(){
+  const drugs = selected.map(i=>allDrugs[i]);
+  const ctx = document.getElementById("barChart").getContext("2d");
+  if(barChart) barChart.destroy();
+  if(drugs.length===0) return;
+
+  barChart = new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:dimLabels.map(l=>l.substring(0,5)),
+      datasets:drugs.map((d,i)=>({
+        label:d.name,
+        data:dimKeys.map(k=>d.dims[k]),
+        backgroundColor:chartColors[selected[i]%chartColors.length]+"aa",
+        borderRadius:4,borderSkipped:false
+      }))
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{color:"#94a3b8",font:{family:"Inter",size:10}},grid:{display:false}},
+        y:{min:0,max:1,ticks:{color:"#94a3b8",font:{family:"Inter"},stepSize:0.2},grid:{color:"rgba(30,41,59,.5)"}}
+      },
+      plugins:{legend:{position:"bottom",labels:{color:"#94a3b8",font:{family:"Inter",size:11},usePointStyle:true,pointStyleWidth:7}}}
+    }
+  });
+}
+
+function renderRevenue(){
+  const drugs = selected.map(i=>allDrugs[i]);
+  const ctx = document.getElementById("revenueChart").getContext("2d");
+  if(revenueChart) revenueChart.destroy();
+  if(drugs.length===0) return;
+
+  revenueChart = new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:drugs.map(d=>d.name),
+      datasets:[
+        {
+          label:"US Price ($/mo)",
+          data:drugs.map(d=>d.usPrice),
+          backgroundColor:"rgba(99,102,241,.6)",
+          borderRadius:6,borderSkipped:false,
+          yAxisID:"y"
+        },
+        {
+          label:"CN Price (CNY/mo)",
+          data:drugs.map(d=>d.cnPrice),
+          backgroundColor:"rgba(6,182,212,.6)",
+          borderRadius:6,borderSkipped:false,
+          yAxisID:"y"
+        },
+        {
+          label:"Revenue ($B)",
+          data:drugs.map(d=>d.revenue),
+          type:"line",
+          borderColor:"#10b981",
+          backgroundColor:"#10b98122",
+          borderWidth:2,pointRadius:5,pointBackgroundColor:"#10b981",
+          fill:false,yAxisID:"y1"
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{color:"#94a3b8",font:{family:"Inter"}},grid:{display:false}},
+        y:{position:"left",ticks:{color:"#94a3b8",font:{family:"Inter"},callback:v=>"$"+v.toLocaleString()},grid:{color:"rgba(30,41,59,.5)"},title:{display:true,text:"Price ($/mo)",color:"#64748b"}},
+        y1:{position:"right",ticks:{color:"#10b981",font:{family:"Inter"},callback:v=>v+"B"},grid:{display:false},title:{display:true,text:"Revenue ($B)",color:"#10b981"}}
+      },
+      plugins:{legend:{position:"bottom",labels:{color:"#94a3b8",font:{family:"Inter",size:11},usePointStyle:true,pointStyleWidth:7}}}
+    }
+  });
+}
+
+function renderInsights(){
+  const drugs = selected.map(i=>allDrugs[i]);
+  if(drugs.length<2){
+    document.getElementById("insightsList").innerHTML='<div class="insight-item"><div class="insight-text" style="color:var(--dim)">Select at least 2 drugs to see automated insights.</div></div>';
+    return;
+  }
+
+  const insights = [];
+  const sorted = [...drugs].sort((a,b)=>b.score-a.score);
+  const best = sorted[0];
+  const worst = sorted[sorted.length-1];
+
+  insights.push({
+    icon:"#",color:"#10b981",
+    text:`<strong>${best.name}</strong> has the highest composite score (${best.score.toFixed(3)}) among selected drugs. <span class="insight-tag tag-advantage">Best Overall</span>`
+  });
+
+  if(drugs.length>=2){
+    const scoreDiff = (best.score - worst.score).toFixed(3);
+    insights.push({
+      icon:"~",color:"#f59e0b",
+      text:`Score gap between top (${best.name}) and bottom (${worst.name}) is <strong>${scoreDiff}</strong>. ${parseFloat(scoreDiff)>0.1?'Significant differentiation.':'Drugs are closely matched.'}`
+    });
+  }
+
+  // Best dimension for each
+  dimKeys.forEach((k,i)=>{
+    const bestInDim = [...drugs].sort((a,b)=>b.dims[k]-a.dims[k])[0];
+    if(bestInDim.dims[k]>=0.75){
+      insights.push({
+        icon:">",color:chartColors[i],
+        text:`<strong>${bestInDim.name}</strong> leads in <strong>${dimLabels[i]}</strong> (${bestInDim.dims[k].toFixed(2)}).`
+      });
+    }
+  });
+
+  // Price comparison
+  const cheapest = [...drugs].sort((a,b)=>a.cnPrice-b.cnPrice)[0];
+  const mostExpensive = [...drugs].sort((a,b)=>b.cnPrice-a.cnPrice)[0];
+  if(cheapest.cnPrice !== mostExpensive.cnPrice){
+    insights.push({
+      icon:"$",color:"#06b6d4",
+      text:`CN price range: <strong>¥${cheapest.cnPrice.toLocaleString()}</strong> (${cheapest.name}) to <strong>¥${mostExpensive.cnPrice.toLocaleString()}</strong> (${mostExpensive.name}). ${mostExpensive.cnPrice/cheapest.cnPrice>5?'<span class="insight-tag tag-risk">Wide Price Gap</span>':''}`
+    });
+  }
+
+  // NRML overlap
+  const areas = [...new Set(drugs.map(d=>d.area))];
+  if(areas.length>1){
+    insights.push({
+      icon:"*",color:"#8b5cf6",
+      text:`Selected drugs span <strong>${areas.length} therapeutic areas</strong>: ${areas.join(", ")}. Cross-area comparison requires caution.`
+    });
+  }
+
+  document.getElementById("insightsList").innerHTML = insights.map(ins=>`
+    <div class="insight-item">
+      <div class="insight-icon" style="background:${ins.color}22;color:${ins.color}">${ins.icon}</div>
+      <div class="insight-text">${ins.text}</div>
+    </div>
+  `).join('');
+}
+
+// Init
+renderAll();
+</script>
+</body>
+</html>
