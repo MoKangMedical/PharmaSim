@@ -531,6 +531,98 @@ function drawDimensionCharts() {
     });
   }
 }
+
+
+// ═══ SIMULATION HISTORY (localStorage) ═══
+var HISTORY_KEY = 'pharmasim_history';
+var MAX_HISTORY = 20;
+
+function saveToHistory(result) {
+  var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  history.unshift({
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    drug: result.drug,
+    score: result.score,
+    recommendation: result.recommendation,
+    dims: result.dims.map(function(d){ return {name:d.name, score:d.score}; }),
+    config: result.config
+  });
+  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function getHistory() {
+  return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+}
+
+// ═══ REPORT EXPORT ═══
+function exportReport(format) {
+  if (!window._dims || !selectedDrug) {
+    alert('Please run a simulation first.');
+    return;
+  }
+  var dims = window._dims;
+  var avg = dims.reduce(function(s,x){return s+x.score},0)/dims.length;
+  var d = selectedDrug;
+  
+  if (format === 'json') {
+    var report = {
+      title: 'PharmaSim Simulation Report',
+      generated: new Date().toISOString(),
+      drug: { name: d.name, generic: d.generic, company: d.company, category: d.cat, mechanism: d.mechanism },
+      compositeScore: avg.toFixed(4),
+      recommendation: avg > 0.65 ? 'Recommended' : avg > 0.50 ? 'Conditional' : 'Not Recommended',
+      dimensions: dims.map(function(dim) {
+        return {
+          name: dim.name, score: dim.score.toFixed(4),
+          subDimensions: dim.sub.map(function(s) { return { name: s.n, score: s.s.toFixed(4), notes: s.items.join('; ') }; })
+        };
+      }),
+      config: { market: 'China', competitors: (document.getElementById('cfgCompetitors')||{}).value||'4', price: (document.getElementById('cfgPrice')||{}).value||'N/A' }
+    };
+    var blob = new Blob([JSON.stringify(report, null, 2)], {type:'application/json'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'pharmasim-' + d.name.replace(/\s+/g,'-') + '-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click(); URL.revokeObjectURL(a.href);
+    saveToHistory({drug:d.name, score:avg, recommendation:report.recommendation, dims:dims, config:report.config});
+  } else if (format === 'csv') {
+    var csv = 'Dimension,Score\n';
+    dims.forEach(function(dim) {
+      csv += '"' + dim.name + '",' + dim.score.toFixed(4) + '\n';
+      dim.sub.forEach(function(s) { csv += '"  ' + s.n + '",' + s.s.toFixed(4) + '\n'; });
+    });
+    var blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'pharmasim-' + d.name.replace(/\s+/g,'-') + '-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+    saveToHistory({drug:d.name, score:avg, recommendation:'Exported', dims:dims, config:{}});
+  }
+}
+
+// Add export buttons when results are shown
+var _origGo2 = go;
+go = function(page) {
+  _origGo2(page);
+  if (page === 'results' && window._dims) setTimeout(addExportButtons, 150);
+};
+
+function addExportButtons() {
+  if (document.getElementById('exportBtns')) return;
+  var div = document.createElement('div');
+  div.id = 'exportBtns';
+  div.style.cssText = 'display:flex;gap:.8rem;margin:1rem 0;flex-wrap:wrap';
+  var bs = 'padding:.55rem 1.1rem;border-radius:10px;border:1px solid rgba(51,65,85,.8);background:rgba(30,41,59,.6);color:#e2e8f0;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:Inter,sans-serif';
+  [['Export JSON',function(){exportReport('json')}],['Export CSV',function(){exportReport('csv')}]].forEach(function(b){
+    var btn = document.createElement('button');
+    btn.textContent = b[0]; btn.style.cssText = bs;
+    btn.onmouseenter = function(){this.style.borderColor='#06b6d4';this.style.color='#06b6d4'};
+    btn.onmouseleave = function(){this.style.borderColor='rgba(51,65,85,.8)';this.style.color='#e2e8f0'};
+    btn.onclick = b[1]; div.appendChild(btn);
+  });
+  var summary = document.getElementById('resultsSummary');
+  if (summary && summary.parentNode) summary.parentNode.insertBefore(div, summary.nextSibling);
+}
 </script>
 </body>
 </html>
