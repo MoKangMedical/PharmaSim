@@ -14,6 +14,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PharmaSim - AI Drug Lifecycle Simulation Platform</title>
 <meta name="description" content="Full lifecycle drug simulation from target to approval. 1,800 AI agents evaluate drugs across 7 dimensions for the Chinese pharmaceutical market.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PharmaSim",
+  "description": "AI Pharmaceutical Market Simulation Platform — Predict drug launch success with 1,801 AI agents simulating real market dynamics across 44+ FDA drugs and 7 expert dimensions.",
+  "url": "https://mokangmedical.github.io/PharmaSim/",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "MoKangMedical",
+    "url": "https://mokangmedical.github.io/opc-homepage/"
+  },
+  "featureList": [
+    "Drug Pipeline Visualization",
+    "Simulation Dashboard",
+    "Lifecycle Cost Calculator",
+    "Pipeline Comparison Tool",
+    "1,800 AI Agent Network",
+    "7-Dimension Scoring Framework"
+  ],
+  "softwareHelp": {
+    "@type": "CreativeWork",
+    "url": "https://github.com/MoKangMedical/PharmaSim"
+  }
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -113,6 +146,15 @@ section{padding:5rem 2rem;max-width:1200px;margin:0 auto}
 .dim-weight{font-size:.75rem;color:var(--dim)}
 
 /* CTA */
+.charts-section{margin:0 auto;max-width:1200px;padding:5rem 2rem}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:all .3s}
+.chart-card:hover{border-color:rgba(99,102,241,.3);box-shadow:var(--shadow)}
+.chart-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.3rem;color:var(--text)}
+.chart-card p{font-size:.85rem;color:var(--dim);margin-bottom:1.5rem}
+.chart-wrap{position:relative;width:100%;max-height:400px}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.chart-card{padding:1.2rem;border-radius:12px}}
 .cta-section{text-align:center;padding:5rem 2rem;position:relative}
 .cta-section::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:80%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
 .cta-section h2{font-size:2rem;font-weight:800;margin-bottom:.6rem;color:var(--text)}
@@ -190,6 +232,7 @@ footer a{color:var(--dim)}
   .btn-lg{width:100%;padding:.75rem 1rem}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body style="padding-top:56px!important;padding-bottom:60px">
 <nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
@@ -342,6 +385,26 @@ footer a{color:var(--dim)}
   </div>
 </section>
 
+<!-- INTERACTIVE CHARTS -->
+<section class="charts-section">
+  <div class="section-header">
+    <h2>Market Simulation Insights</h2>
+    <p>Interactive visualizations of drug market simulation results and expert evaluations</p>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Drug Market Simulation — Stacked Metrics</h3>
+      <p>Market share, revenue, growth rate, and patient reach for 5 leading drugs</p>
+      <div class="chart-wrap"><canvas id="marketChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>7-Dimension Expert Evaluation</h3>
+      <p>Radar profile across the expert scoring framework dimensions</p>
+      <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
 <!-- CTA -->
 <section class="cta-section">
   <h2>Explore the Platform</h2>
@@ -399,6 +462,164 @@ document.addEventListener('click',function(e){
     ham.classList.remove('active');
   }
 });
+// === Chart.js: Market Simulation Stacked Bar Chart ===
+(function(){
+  var ctx1 = document.getElementById('marketChart');
+  if (!ctx1) return;
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: ['Sintilimab', 'Camrelizumab', 'Tislelizumab', 'Toripalimab', 'Zimberelimab'],
+      datasets: [
+        {
+          label: 'Market Share (%)',
+          data: [28, 24, 18, 16, 14],
+          backgroundColor: 'rgba(99,102,241,0.8)',
+          borderColor: 'rgba(99,102,241,1)',
+          borderWidth: 1,
+          borderRadius: 2
+        },
+        {
+          label: 'Revenue (¥100M)',
+          data: [42, 35, 22, 19, 15],
+          backgroundColor: 'rgba(6,182,212,0.8)',
+          borderColor: 'rgba(6,182,212,1)',
+          borderWidth: 1,
+          borderRadius: 2
+        },
+        {
+          label: 'Growth Rate (%)',
+          data: [15, 22, 30, 18, 35],
+          backgroundColor: 'rgba(16,185,129,0.8)',
+          borderColor: 'rgba(16,185,129,1)',
+          borderWidth: 1,
+          borderRadius: 2
+        },
+        {
+          label: 'Patient Reach (K)',
+          data: [85, 72, 55, 48, 40],
+          backgroundColor: 'rgba(245,158,11,0.8)',
+          borderColor: 'rgba(245,158,11,1)',
+          borderWidth: 1,
+          borderRadius: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#94a3b8', padding: 16, usePointStyle: true, pointStyleWidth: 10, font: { size: 11, family: 'Inter' } }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17,24,39,0.95)',
+          titleColor: '#f1f5f9',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(99,102,241,0.3)',
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          titleFont: { family: 'Inter', weight: '600' },
+          bodyFont: { family: 'Inter' }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: { color: '#64748b', font: { size: 11, family: 'Inter' } },
+          grid: { color: 'rgba(30,41,59,0.5)' }
+        },
+        y: {
+          stacked: true,
+          ticks: { color: '#64748b', font: { size: 11, family: 'Inter' } },
+          grid: { color: 'rgba(30,41,59,0.5)' }
+        }
+      }
+    }
+  });
+})();
+
+// === Chart.js: 7-Dimension Expert Evaluation Radar Chart ===
+(function(){
+  var ctx2 = document.getElementById('radarChart');
+  if (!ctx2) return;
+  new Chart(ctx2, {
+    type: 'radar',
+    data: {
+      labels: ['Epidemiology', 'Clinical Evidence', 'Market Dynamics', 'Pricing & Access', 'Pharmacology', 'Pharmacoeconomics', 'Insurance Coverage'],
+      datasets: [
+        {
+          label: 'Sintilimab',
+          data: [82, 88, 76, 70, 85, 72, 68],
+          backgroundColor: 'rgba(99,102,241,0.15)',
+          borderColor: 'rgba(99,102,241,0.8)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(99,102,241,1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        },
+        {
+          label: 'Toripalimab',
+          data: [75, 92, 68, 65, 90, 78, 60],
+          backgroundColor: 'rgba(6,182,212,0.15)',
+          borderColor: 'rgba(6,182,212,0.8)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(6,182,212,1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        },
+        {
+          label: 'Industry Avg',
+          data: [70, 75, 72, 68, 73, 70, 65],
+          backgroundColor: 'rgba(148,163,184,0.08)',
+          borderColor: 'rgba(148,163,184,0.5)',
+          borderWidth: 1.5,
+          borderDash: [5, 5],
+          pointBackgroundColor: 'rgba(148,163,184,0.7)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          pointRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#94a3b8', padding: 16, usePointStyle: true, pointStyleWidth: 10, font: { size: 11, family: 'Inter' } }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17,24,39,0.95)',
+          titleColor: '#f1f5f9',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(99,102,241,0.3)',
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          titleFont: { family: 'Inter', weight: '600' },
+          bodyFont: { family: 'Inter' }
+        }
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { color: '#64748b', backdropColor: 'transparent', font: { size: 10, family: 'Inter' }, stepSize: 20 },
+          grid: { color: 'rgba(30,41,59,0.6)' },
+          angleLines: { color: 'rgba(30,41,59,0.6)' },
+          pointLabels: { color: '#94a3b8', font: { size: 11, family: 'Inter', weight: '500' } }
+        }
+      }
+    }
+  });
+})();
+
 <!-- MoKangMedical Ecosystem Bar -->
 <div id="mokang-eco-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:rgba(10,15,26,0.95);backdrop-filter:blur(12px);border-top:1px solid rgba(99,102,241,0.2);padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:rgba(255,255,255,0.7);flex-wrap:wrap">
   <span style="font-weight:600;color:rgba(255,255,255,0.9);white-space:nowrap">🌐 Part of MoKangMedical Ecosystem</span>
