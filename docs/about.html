@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About PharmaSim — Mission, Team &amp; Vision</title>
+<meta name="description" content="Learn about PharmaSim's mission to revolutionize pharmaceutical market prediction through AI agent-based simulation for the Chinese healthcare market.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c18;--bg2:#0c1124;--card:#111827;--card2:#1a2332;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#1e293b;--border2:#334155;--indigo:#6366f1;--indigo2:#818cf8;--cyan:#06b6d4;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;--shadow:0 4px 30px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text2);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--indigo2);text-decoration:none;transition:color .2s}
+a:hover{color:var(--cyan)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,12,24,.95);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(30,41,59,.5);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.2rem;color:var(--text)}
+.nav-brand svg{width:28px;height:28px}
+.nav-links{display:flex;gap:.3rem}
+.nav-links a{padding:.4rem .9rem;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--dim);transition:all .25s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-links a.active{color:var(--indigo2);background:rgba(99,102,241,.1)}
+.nav-cta{padding:.45rem 1.2rem;border-radius:8px;font-size:.83rem;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--indigo),#8b5cf6);border:none;cursor:pointer;transition:all .25s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(99,102,241,.3)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:110}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* PAGE HERO */
+.page-hero{padding:7rem 2rem 3rem;text-align:center;position:relative}
+.page-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;height:100%;background:radial-gradient(circle at 40% 50%,rgba(99,102,241,.06) 0%,transparent 60%),radial-gradient(circle at 60% 60%,rgba(6,182,212,.04) 0%,transparent 50%);pointer-events:none}
+.page-hero h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.03em;margin-bottom:.8rem;background:linear-gradient(135deg,#fff,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;position:relative}
+.page-hero p{color:var(--dim);max-width:600px;margin:0 auto;font-size:1.05rem;line-height:1.7;position:relative}
+
+/* CONTENT */
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem}
+
+/* MISSION SECTION */
+.mission{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:4rem}
+.mission-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:all .3s}
+.mission-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px);box-shadow:var(--shadow)}
+.mission-card h3{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.mission-card h3 span{font-size:1.3rem}
+.mission-card p{font-size:.9rem;color:var(--dim);line-height:1.7}
+
+/* STATS BANNER */
+.stats-banner{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:4rem}
+.stats-banner .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem 1.2rem;text-align:center;transition:all .3s}
+.stats-banner .stat:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
+.stats-banner .stat-num{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--indigo),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stats-banner .stat-label{font-size:.82rem;color:var(--dim);margin-top:.3rem}
+
+/* TEAM SECTION */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-bottom:4rem}
+.team-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;transition:all .3s}
+.team-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px);box-shadow:var(--shadow)}
+.team-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 1.2rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;border:2px solid rgba(99,102,241,.3)}
+.team-avatar.av1{background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.15));color:var(--indigo2)}
+.team-avatar.av2{background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(16,185,129,.15));color:var(--cyan)}
+.team-avatar.av3{background:linear-gradient(135deg,rgba(236,72,153,.15),rgba(245,158,11,.15));color:var(--pink)}
+.team-avatar.av4{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(99,102,241,.15));color:var(--green)}
+.team-card h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+.team-card .team-role{font-size:.82rem;color:var(--indigo2);margin-bottom:.6rem;font-weight:500}
+.team-card p{font-size:.85rem;color:var(--dim);line-height:1.6}
+
+/* VISION SECTION */
+.vision{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:3rem;margin-bottom:4rem;position:relative;overflow:hidden}
+.vision::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(99,102,241,.06) 0%,transparent 70%);pointer-events:none}
+.vision h2{font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:1.5rem;position:relative}
+.vision-list{list-style:none;position:relative}
+.vision-list li{padding:1rem 0;border-bottom:1px solid rgba(30,41,59,.4);display:flex;align-items:flex-start;gap:1rem;font-size:.95rem;color:var(--text2);line-height:1.7}
+.vision-list li:last-child{border-bottom:none}
+.vision-list .vl-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.15)}
+.vision-list .vl-text strong{color:var(--text);font-weight:700}
+
+/* TECH STACK */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:4rem}
+.tech-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;text-align:center;transition:all .3s}
+.tech-item:hover{border-color:rgba(99,102,241,.3)}
+.tech-item .tech-icon{font-size:1.6rem;margin-bottom:.5rem}
+.tech-item h4{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+.tech-item p{font-size:.78rem;color:var(--dim)}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:2rem;margin-bottom:4rem}
+.timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;padding-bottom:2rem}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-item::before{content:'';position:absolute;left:-2rem;top:6px;width:12px;height:12px;border-radius:50%;background:var(--indigo);border:2px solid var(--bg);z-index:1}
+.timeline-item h4{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.2rem}
+.timeline-item .tl-date{font-size:.78rem;color:var(--indigo2);margin-bottom:.3rem;font-weight:500}
+.timeline-item p{font-size:.85rem;color:var(--dim);line-height:1.6}
+
+/* CTA */
+.cta-box{text-align:center;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(6,182,212,.05));border:1px solid rgba(99,102,241,.15);border-radius:20px;padding:3rem}
+.cta-box h2{font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:.6rem}
+.cta-box p{color:var(--dim);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-lg{padding:.85rem 2.2rem;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;border:none}
+.btn-lg.primary{background:linear-gradient(135deg,var(--indigo),#8b5cf6);color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.25)}
+.btn-lg.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.4)}
+.btn-lg.secondary{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border2)}
+.btn-lg.secondary:hover{border-color:var(--indigo);color:var(--indigo2)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
+footer p{font-size:.83rem;color:var(--dim2)}
+footer a{color:var(--dim)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  nav{padding:0 1.2rem}
+  .nav-links.open{display:flex;flex-direction:column;position:fixed;top:60px;left:0;right:0;background:rgba(8,12,24,.98);backdrop-filter:blur(20px);padding:1rem;border-bottom:1px solid var(--border);gap:.2rem;z-index:99}
+  .nav-links.open a{padding:.75rem 1rem;border-radius:10px;font-size:.95rem}
+  .mission{grid-template-columns:1fr}
+  .stats-banner{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  nav{padding:0 1rem;height:56px}
+  .nav-brand{font-size:1.05rem}
+  .nav-brand svg{width:24px;height:24px}
+  .nav-cta{padding:.4rem .9rem;font-size:.78rem}
+  .page-hero{padding:5rem 1rem 2rem}
+  .page-hero h1{font-size:1.8rem}
+  .page-hero p{font-size:.92rem}
+  .content{padding:0 1rem 3rem}
+  .mission-card{padding:1.5rem;border-radius:12px}
+  .mission-card h3{font-size:1rem}
+  .mission-card p{font-size:.85rem}
+  .stats-banner .stat{padding:1.3rem .8rem;border-radius:12px}
+  .stats-banner .stat-num{font-size:1.8rem}
+  .stats-banner .stat-label{font-size:.78rem}
+  .team-grid{grid-template-columns:1fr}
+  .team-card{padding:1.5rem;border-radius:12px}
+  .team-avatar{width:60px;height:60px;font-size:1.3rem}
+  .vision{padding:2rem;border-radius:16px}
+  .vision h2{font-size:1.3rem}
+  .vision-list li{font-size:.88rem}
+  .tech-grid{grid-template-columns:repeat(2,1fr);gap:.75rem}
+  .tech-item{padding:1rem;border-radius:12px}
+  .tech-item .tech-icon{font-size:1.3rem}
+  .tech-item h4{font-size:.82rem}
+  .cta-box{padding:2rem;border-radius:16px}
+  .cta-box h2{font-size:1.3rem}
+  .cta-actions{flex-direction:column;align-items:stretch;width:100%;gap:.75rem}
+  .btn-lg{padding:.8rem 1.5rem;font-size:.92rem;text-align:center}
+  footer{padding:2rem 1rem}
+  footer p{font-size:.78rem}
+}
+@media(max-width:380px){
+  .stats-banner{grid-template-columns:1fr}
+  .tech-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="2" width="24" height="24" rx="6" fill="url(#g1)"/><path d="M9 10h10M9 14h10M9 18h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="g1" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs></svg>
+    PharmaSim
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="calculator.html">Calculator</a>
+    <a href="compare.html">Compare</a>
+    <a href="api.html">API</a>
+    <a href="about.html" class="active">About</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Launch App</a>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<section class="page-hero">
+  <h1>About PharmaSim</h1>
+  <p>Revolutionizing pharmaceutical market prediction through AI agent-based simulation — built for the complexity of China's healthcare landscape.</p>
+</section>
+
+<div class="content">
+
+  <!-- MISSION & VISION -->
+  <div class="mission">
+    <div class="mission-card">
+      <h3><span>🎯</span> Our Mission</h3>
+      <p>To replace intuition-driven drug launch decisions with data-driven, AI-powered market simulation. PharmaSim empowers pharmaceutical companies to predict drug adoption, pricing dynamics, and market success before investing billions in commercialization.</p>
+    </div>
+    <div class="mission-card">
+      <h3><span>🔭</span> Our Vision</h3>
+      <p>A world where every pharmaceutical decision — from R&amp;D investment to market access strategy — is informed by comprehensive, unbiased AI simulation. We envision PharmaSim as the industry standard for drug lifecycle analysis across global markets.</p>
+    </div>
+  </div>
+
+  <!-- KEY METRICS -->
+  <div class="stats-banner">
+    <div class="stat"><div class="stat-num">1,800</div><div class="stat-label">AI Agents in Network</div></div>
+    <div class="stat"><div class="stat-num">2,847</div><div class="stat-label">Simulations Completed</div></div>
+    <div class="stat"><div class="stat-num">14</div><div class="stat-label">Drugs Analyzed</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Scoring Dimensions</div></div>
+  </div>
+
+  <!-- TEAM -->
+  <div style="margin-bottom:1.5rem">
+    <h2 style="font-size:1.5rem;font-weight:800;color:var(--text);text-align:center;margin-bottom:.5rem">The Team</h2>
+    <p style="text-align:center;color:var(--dim);font-size:.95rem;margin-bottom:2rem">A multidisciplinary team combining AI research, pharmaceutical expertise, and product engineering</p>
+  </div>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar av1">AI</div>
+      <h3>AI Research Lead</h3>
+      <div class="team-role">Agent Network Architecture</div>
+      <p>Designs the 1,800-agent Watts-Strogatz network topology, diffusion models, and consensus algorithms that power the simulation engine.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar av2">RX</div>
+      <h3>Pharma Strategy</h3>
+      <div class="team-role">Drug Lifecycle &amp; Market Access</div>
+      <p>15+ years in pharmaceutical consulting. Shapes the 7-dimension scoring framework and calibrates simulation outputs against real market data.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar av3">UX</div>
+      <h3>Product &amp; Design</h3>
+      <div class="team-role">Frontend &amp; Data Visualization</div>
+      <p>Builds the interactive pipeline, dashboard, and comparison tools. Focused on making complex simulation data accessible and actionable.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar av4">MD</div>
+      <h3>Clinical Advisor</h3>
+      <div class="team-role">Epidemiology &amp; Clinical Evidence</div>
+      <p>Board-certified physician providing clinical domain expertise. Validates epidemiology data inputs and clinical scoring methodology.</p>
+    </div>
+  </div>
+
+  <!-- VISION DETAILS -->
+  <div class="vision">
+    <h2>What We're Building</h2>
+    <ul class="vision-list">
+      <li>
+        <div class="vl-icon">🧠</div>
+        <div class="vl-text"><strong>1,800-Agent Simulation Engine</strong> — A heterogeneous network of doctor, patient, and expert AI agents that simulate real-world prescribing behavior, information diffusion, and clinical decision-making across the Chinese healthcare system.</div>
+      </li>
+      <li>
+        <div class="vl-icon">📊</div>
+        <div class="vl-text"><strong>7-Dimension Scoring Framework</strong> — Each drug is evaluated across epidemiology, clinical evidence, market dynamics, pricing, pharmacology, pharmacoeconomics, and insurance access — with 28 weighted sub-dimensions providing granular insight.</div>
+      </li>
+      <li>
+        <div class="vl-icon">🔬</div>
+        <div class="vl-text"><strong>Full Lifecycle Coverage</strong> — From target identification through Phase 1/2/3 trials to NMPA approval and post-launch market access. Our platform tracks drugs across every stage of the development pipeline.</div>
+      </li>
+      <li>
+        <div class="vl-icon">🇨🇳</div>
+        <div class="vl-text"><strong>China-First Market Model</strong> — Purpose-built for the Chinese pharmaceutical market with NMPA regulatory pathways, NRDL reimbursement dynamics, volume-based procurement (VBP) impact, and region-specific epidemiological data.</div>
+      </li>
+      <li>
+        <div class="vl-icon">⚡</div>
+        <div class="vl-text"><strong>Real-Time Analytics Dashboard</strong> — Interactive visualizations with dimension breakdowns, agent consensus maps, competitive comparisons, and therapeutic area performance — all powered by live simulation data.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- TECH STACK -->
+  <div style="margin-bottom:1.5rem">
+    <h2 style="font-size:1.3rem;font-weight:800;color:var(--text);text-align:center;margin-bottom:.3rem">Technology Stack</h2>
+    <p style="text-align:center;color:var(--dim);font-size:.9rem;margin-bottom:1.5rem">Built with modern, scalable technologies</p>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-item">
+      <div class="tech-icon">🤖</div>
+      <h4>AI Agents</h4>
+      <p>LLM-powered agents with autonomous decision-making</p>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">🌐</div>
+      <h4>Network Science</h4>
+      <p>Watts-Strogatz small-world graph model</p>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">📈</div>
+      <h4>Data Viz</h4>
+      <p>D3.js interactive charts &amp; force-directed graphs</p>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">☁️</div>
+      <h4>Cloudflare</h4>
+      <p>Edge-deployed static site with Workers backend</p>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">🧪</div>
+      <h4>Simulation</h4>
+      <p>Monte Carlo methods with agent consensus modeling</p>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">💊</div>
+      <h4>Pharma Data</h4>
+      <p>NMPA registry, NRDL listings, clinical trial databases</p>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div style="margin-bottom:1.5rem">
+    <h2 style="font-size:1.3rem;font-weight:800;color:var(--text);text-align:center;margin-bottom:.3rem">Roadmap</h2>
+    <p style="text-align:center;color:var(--dim);font-size:.9rem;margin-bottom:2rem">Key milestones and upcoming features</p>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="tl-date">Q1 2025 — Completed</div>
+      <h4>Core Simulation Engine</h4>
+      <p>Built 1,800-agent network, 7-dimension scoring framework, and simulated 14 approved drugs across 7 therapeutic areas.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-date">Q2 2025 — Completed</div>
+      <h4>Interactive Platform Launch</h4>
+      <p>Released Pipeline visualization, Simulation Dashboard, Lifecycle Cost Calculator, and Drug Comparison tool.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-date">Q3 2025 — In Progress</div>
+      <h4>API &amp; Custom Simulations</h4>
+      <p>Public API for programmatic data access, custom drug parameter submission, and user-defined simulation runs.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-date">Q4 2025 — Planned</div>
+      <h4>Pipeline Drug Expansion</h4>
+      <p>Expand to 50+ pipeline drugs, add multi-region support (Japan, EU), and integrate real-time clinical trial data feeds.</p>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-date">2026 — Vision</div>
+      <h4>Enterprise &amp; Partnerships</h4>
+      <p>Enterprise API tier, pharma company integrations, white-label simulation engine, and ML-calibrated prediction models.</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <h2>Explore the Platform</h2>
+    <p>Dive into our interactive simulations, compare drug pipelines, and discover AI-powered pharmaceutical insights.</p>
+    <div class="cta-actions">
+      <a href="dashboard.html" class="btn-lg primary">Open Dashboard</a>
+      <a href="api.html" class="btn-lg secondary">API Documentation</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>PharmaSim &mdash; AI Pharmaceutical Simulation Platform &middot; <a href="https://github.com/mokangmedical/PharmaSim">GitHub</a></p>
+</footer>
+
+<script>
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('active');
+}
+document.addEventListener('click',function(e){
+  var links=document.getElementById('navLinks');
+  var ham=document.getElementById('hamburger');
+  if(links&&ham&&!links.contains(e.target)&&!ham.contains(e.target)){
+    links.classList.remove('open');
+    ham.classList.remove('active');
+  }
+});
+</script>
+</body>
+</html>
