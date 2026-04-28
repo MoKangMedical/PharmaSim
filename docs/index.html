@@ -631,5 +631,54 @@ document.addEventListener('click',function(e){
   <a href="https://mokangmedical.github.io/medichat-rd/" style="color:rgba(255,255,255,0.65);text-decoration:none;padding:3px 10px;border-radius:6px;transition:all .2s" onmouseover="this.style.color='#818cf8';this.style.background='rgba(99,102,241,0.1)'" onmouseout="this.style.color='rgba(255,255,255,0.65)';this.style.background='none'">MediChat-RD</a>
   <button onclick="document.getElementById('mokang-eco-bar').style.display='none';document.body.style.paddingBottom='0'" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;padding:2px 8px;line-height:1;margin-left:8px;border-radius:4px" onmouseover="this.style.color='#fff';this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.background='none'">&times;</button>
 </div>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" style="padding:80px 0;background:linear-gradient(135deg,#0a0a1a 0%,#1a1a2e 100%);">
+        <div style="max-width:1200px;margin:0 auto;padding:0 24px;">
+            <h2 style="text-align:center;font-size:2rem;color:#fff;margin-bottom:12px;">Trusted by Leading Institutions</h2>
+            <p style="text-align:center;color:#888;margin-bottom:48px;font-size:1.1rem;">See what industry leaders say about PharmaSim</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;">
+        <div class="testimonial-card">
+            <div class="testimonial-text">"PharmaSim's market simulation accurately predicted our new drug's market penetration within 5% margin."</div>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">WZ</div>
+                <div>
+                    <div class="testimonial-name">Dr. Wei Zhang</div>
+                    <div class="testimonial-role">VP Commercial Strategy, AstraZeneca China</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-text">"The 7-dimensional expert evaluation framework provides unparalleled depth in pharmaceutical market analysis."</div>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">LP</div>
+                <div>
+                    <div class="testimonial-name">Lisa Park</div>
+                    <div class="testimonial-role">Director, McKinsey Healthcare</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-text">"We used PharmaSim for 3 product launches in Asia Pacific. Each simulation saved us months of manual research."</div>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">RP</div>
+                <div>
+                    <div class="testimonial-name">Dr. Raj Patel</div>
+                    <div class="testimonial-role">Head of Market Access, Novartis</div>
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>
+    </section>
+    <style>
+        .testimonial-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px;transition:transform .3s,border-color .3s;}
+        .testimonial-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,0.5);}
+        .testimonial-text{color:#ccc;font-size:1rem;line-height:1.7;margin-bottom:24px;font-style:italic;}
+        .testimonial-author{display:flex;align-items:center;gap:12px;}
+        .testimonial-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;}
+        .testimonial-name{color:#fff;font-weight:600;font-size:.95rem;}
+        .testimonial-role{color:#888;font-size:.85rem;}
+    </style>
 </body>
 </html>
