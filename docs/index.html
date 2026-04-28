@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </head><body>
 <nav class="eco-nav"><a class="nav-brand" href="https://mokangmedical.github.io/PharmaSim/">PharmaSim</a>
-<div class="nav-links"><a href="index.html">Home</a><a href="#sim">Simulation</a><a href="https://github.com/MoKangMedical/PharmaSim"><a href="pricing.html">定价</a>
+<div class="nav-links"><a href="index.html">Home</a><a href="#sim">Simulation</a><a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a><a href="pricing.html">Pricing</a>
 <a href="https://github.com/MoKangMedical">GitHub</a></div></nav>
 
 <section class="hero"><div class="badge">Market Intelligence</div>
@@ -185,13 +185,50 @@ document.addEventListener('DOMContentLoaded', function() {
 <p style="color:#94a3b8;margin-bottom:2rem">Join leading organizations using PharmaSim</p>
 <a href="https://github.com/MoKangMedical/PharmaSim" style="display:inline-block;padding:.8rem 2rem;background:#6366f1;color:#fff;border-radius:8px;font-weight:600;text-decoration:none">Get Started Free</a>
 </section>
-<footer class="footer"><div class="footer-links"><a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a><a href="https://github.com/MoKangMedical/PharmaSim"><a href="pricing.html">定价</a>
+<footer class="footer"><div class="footer-links"><a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a><a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a><a href="pricing.html">Pricing</a>
 <a href="https://github.com/MoKangMedical">GitHub</a></div><p>&copy; 2025 MoKangMedical</p></footer>
 <script>
 function updateSim(){
-  // Simple demo simulation
-  document.getElementById('results')&&(document.getElementById('results').style.display='block');
+  var eff=+document.querySelectorAll('.sim-container input[type=range]')[0].value;
+  var safe=+document.querySelectorAll('.sim-container input[type=range]')[1].value;
+  var mkt=+document.querySelectorAll('.sim-container input[type=range]')[2].value;
+  var comp=+document.querySelectorAll('.sim-container input[type=range]')[3].value;
+  var price=+document.querySelectorAll('.sim-container input[type=range]')[4].value;
+  var reg=+document.querySelectorAll('.sim-container input[type=range]')[5].value;
+  document.getElementById('effVal').textContent=eff+'%';
+  document.getElementById('safeVal').textContent=safe+'%';
+  document.getElementById('mktVal').textContent='$'+(mkt/1000).toFixed(1)+'B';
+  document.getElementById('compVal').textContent=comp;
+  document.getElementById('priceVal').textContent='$'+price+'/mo';
+  var regLabels=['Very Low','Low','Medium','High','Very High'];
+  document.getElementById('regVal').textContent=regLabels[reg-1];
+  var baseRev=mkt*0.001;
+  var effFactor=eff/100;
+  var safeFactor=safe/100;
+  var priceFactor=Math.min(1.5,price/500);
+  var compFactor=Math.max(0.3,1-comp*0.08);
+  var regFactor=Math.max(0.4,1-reg*0.12);
+  var revenue=Math.round(baseRev*effFactor*safeFactor*priceFactor*compFactor*regFactor*1000);
+  var share=Math.round(effFactor*safeFactor*compFactor*regFactor*100*10)/10;
+  var roi=Math.round(revenue/((mkt*0.001)*500)*10)/10;
+  var prob=Math.round((eff*0.3+safe*0.3+(6-reg)*10*0.2+50*0.2)*10)/10;
+  document.getElementById('rev').textContent='$'+revenue+'M';
+  document.getElementById('share').textContent=Math.min(share,45)+'%';
+  document.getElementById('roi').textContent=Math.max(roi,0.5)+'x';
+  document.getElementById('prob').textContent=Math.min(prob,95)+'%';
+  // Update 7-dimension scores dynamically
+  var dims=document.querySelectorAll('.metric-row:last-of-type .metric .num');
+  if(dims.length>=7){
+    dims[0].textContent=((eff/100)*10).toFixed(1);
+    dims[1].textContent=((7+(6-reg)*0.5)).toFixed(1);
+    dims[2].textContent=((share/100*10).toFixed(1));
+    dims[3].textContent=((safe/100*10).toFixed(1));
+    dims[4].textContent=((7.5+Math.random()).toFixed(1));
+    dims[5].textContent=((priceFactor*5+3).toFixed(1));
+    dims[6].textContent=((eff*0.4+safe*0.4)/100*10).toFixed(1);
+  }
 }
+updateSim();
 </script>
 
 <section style="text-align:center;padding:4rem 2rem;background:linear-gradient(135deg,rgba(99,102,241,.1),transparent)">
