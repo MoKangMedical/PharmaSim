@@ -1,1150 +1,628 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PharmaSim — AI Pharmaceutical Market Simulation Platform</title>
-<meta name="description" content="Predict drug launch success with 1,801 AI agents. Multi-dimensional expert evaluation for the Chinese pharmaceutical market.">
+<title>PharmaSim — AI药品上市预测仿真平台 | 1801 Agent多维评估</title>
+<meta name="description" content="基于1801个AI Agent的药品上市预测仿真平台。7维度专家评估、社交网络传播仿真、中国市场精准预测。">
+<meta name="keywords" content="PharmaSim,药品仿真,药物市场预测,AI Agent,医药市场分析,医保谈判,带量采购">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PharmaSim",
+  "description": "AI-powered pharmaceutical market simulation with 1801 agents across 7 dimensions",
+  "url": "https://mokangmedical.github.io/PharmaSim/",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "provider": {"@type": "Organization", "name": "."}
+}
+</script>
+<meta property="og:title" content="PharmaSim — AI药品上市预测仿真平台">
+<meta property="og:description" content="1801个AI Agent、7维度专家评估、社交网络传播仿真">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mokangmedical.github.io/PharmaSim/">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0e1a;--bg2:#0d1220;--card:#111827;--card2:#1a2332;--card3:#1e293b;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#1e293b;--border2:#334155;--cyan:#06b6d4;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--orange:#f59e0b;--red:#ef4444;--pink:#ec4899;--grad1:linear-gradient(135deg,#06b6d4,#8b5cf6);--shadow:0 4px 30px rgba(0,0,0,.4)}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text2);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+:root{--bg:#0f172a;--bg2:#0c1124;--card:#1e293b;--card2:#162032;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#334155;--border2:#1e293b;--cyan:#06b6d4;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;--orange:#f59e0b;--red:#ef4444;--pink:#ec4899;--yellow:#eab308;--indigo:#6366f1;--accent:var(--cyan);--accent-light:var(--cyan)}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--cyan);text-decoration:none}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.88);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(30,41,59,.5);padding:0 2.5rem;height:64px;display:flex;align-items:center;justify-content:space-between}
-.nav-left{display:flex;align-items:center;gap:2rem}
-.logo{font-weight:800;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;gap:.5rem}
-.logo span{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-icon{width:32px;height:32px;background:var(--grad1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;-webkit-text-fill-color:white}
-.nav-tabs{display:flex;gap:.2rem}
-.nav-tab{padding:.45rem 1rem;border-radius:8px;font-size:.83rem;cursor:pointer;color:var(--dim);transition:all .25s;border:none;background:none;font-weight:500}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(51,65,85,.5);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.15rem;cursor:pointer}
+.nav-brand svg{width:28px;height:28px}
+.nav-brand span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-tabs{display:flex;gap:.25rem}
+.nav-tab{padding:.4rem .9rem;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;color:var(--dim);transition:all .25s;border:none;background:none;font-family:inherit}
 .nav-tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
-.nav-tab.active{color:var(--cyan);background:rgba(6,182,212,.08)}
-.nav-right{display:flex;align-items:center;gap:1rem}
-.btn-ghost{padding:.45rem 1rem;border-radius:8px;font-size:.83rem;cursor:pointer;color:var(--dim);border:1px solid var(--border2);background:none;transition:all .25s;font-weight:500}
-.btn-ghost:hover{color:var(--text);border-color:var(--dim)}
-.btn-primary{padding:.45rem 1.2rem;border-radius:8px;font-size:.83rem;cursor:pointer;color:#fff;border:none;background:var(--grad1);font-weight:600;transition:all .25s}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(6,182,212,.3)}
-.page{display:none;padding:80px 2.5rem 3rem;max-width:1400px;margin:0 auto;animation:fadeUp .5s ease}
-.page.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-h1{font-size:2.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
-h2{font-size:1.8rem;font-weight:700;margin-bottom:.5rem}
-.desc{color:var(--dim);margin-bottom:2rem;font-size:1rem;max-width:600px;line-height:1.7}
-.hero{text-align:center;padding:6rem 2rem 5rem;position:relative;min-height:85vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-.hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none}
-.hero-canvas canvas{width:100%;height:100%}
+.nav-tab.active{color:var(--cyan);background:rgba(6,182,212,.1)}
+.nav-right{display:flex;gap:.5rem;align-items:center}
+.nav-right a{padding:.35rem .8rem;border-radius:8px;font-size:.8rem;color:var(--dim);transition:all .2s}
+.nav-right a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-cta{background:linear-gradient(135deg,var(--indigo),var(--purple))!important;color:#fff!important;font-weight:600!important;border-radius:8px!important}
+
+/* HERO */
+.hero{position:relative;min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 40px;overflow:hidden}
+.hero-canvas{position:absolute;inset:0;z-index:0}
 .hero-content{position:relative;z-index:2}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:20px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.15);font-size:.8rem;color:var(--cyan);margin-bottom:2rem;font-weight:500}
-.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero h1 em{font-style:normal;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-sub{font-size:1.15rem;color:var(--dim);max-width:700px;margin:0 auto 3rem;line-height:1.8}
-.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
-.hero-btn{padding:.8rem 2rem;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s;border:none}
-.hero-btn.primary{background:var(--grad1);color:#fff;box-shadow:0 4px 20px rgba(6,182,212,.2)}
-.hero-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(6,182,212,.35)}
-.hero-btn.secondary{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border2)}
-.hero-btn.secondary:hover{border-color:var(--cyan);color:var(--cyan)}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:900px;margin:0 auto;padding:3rem 0}
-.stat-num{font-size:2.5rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-label{font-size:.85rem;color:var(--dim);margin-top:.2rem}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:4rem 0}
-.feature{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:all .3s}
-.feature:hover{border-color:rgba(6,182,212,.3);transform:translateY(-3px);box-shadow:var(--shadow)}
-.feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
-.feature h3{font-size:1.05rem;margin-bottom:.5rem;color:var(--text)}
-.feature p{font-size:.88rem;color:var(--dim);line-height:1.6}
-.drug-filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem}
-.drug-filters button{padding:.5rem 1rem;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.82rem;transition:all .25s;font-weight:500}
-.drug-filters button:hover,.drug-filters button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.06)}
-.search-box{width:100%;padding:.8rem 1.2rem;border-radius:14px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;margin-bottom:1.5rem;outline:none;transition:all .3s}
-.search-box:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,.1)}
-.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
-.drug-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
-.drug-card:hover{transform:translateY(-3px);border-color:rgba(6,182,212,.3);box-shadow:0 8px 30px rgba(0,0,0,.2)}
-.drug-card .dc-category{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;font-weight:500}
-.drug-card .dc-name{font-size:1.15rem;font-weight:700;margin-bottom:.2rem;color:var(--text)}
-.drug-card .dc-generic{font-size:.85rem;color:var(--dim);margin-bottom:.8rem}
-.drug-card .dc-tags{display:flex;flex-wrap:wrap;gap:.3rem}
-.drug-card .dc-tag{font-size:.7rem;padding:.2rem .5rem;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--dim)}
-.drug-card .dc-status{position:absolute;top:1.2rem;right:1.2rem;font-size:.7rem;padding:.25rem .6rem;border-radius:8px;font-weight:600}
-.drug-card .dc-fda{background:rgba(16,185,129,.1);color:#10b981}
-.drug-card .dc-china{background:rgba(245,158,11,.1);color:#f59e0b}
-.drug-card .dc-select{margin-top:1rem;padding:.5rem 0;border-radius:10px;background:var(--grad1);color:#fff;border:none;width:100%;font-size:.85rem;font-weight:600;cursor:pointer;opacity:0;transform:translateY(5px);transition:all .3s}
-.drug-card:hover .dc-select{opacity:1;transform:translateY(0)}
+.hero-badge{display:inline-block;padding:.3rem 1rem;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:.5px;background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid rgba(6,182,212,.25);margin-bottom:1.2rem}
+.hero h1{font-size:3.2rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:.8rem;background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{font-size:1.15rem;color:var(--dim);max-width:600px;margin:0 auto 2rem}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat .hs-val{font-size:2rem;font-weight:800;color:var(--cyan)}
+.hero-stat .hs-lbl{font-size:.78rem;color:var(--dim2);margin-top:.15rem}
+
+/* PAGES */
+.page{display:none;padding:2rem;max-width:1400px;margin:0 auto;animation:fadeIn .35s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:.3rem}
+.desc{color:var(--dim);margin-bottom:1.5rem;font-size:.95rem}
+
+/* DRUG LIBRARY */
+.search-row{display:flex;gap:1rem;margin-bottom:1.2rem;align-items:center}
+.search-box{flex:1;padding:.7rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s}
+.search-box:focus{border-color:var(--cyan)}
+.drug-count{font-size:.85rem;color:var(--dim);white-space:nowrap}
+.drug-filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.drug-filters button{padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.82rem;font-weight:500;transition:all .25s;font-family:inherit}
+.drug-filters button:hover,.drug-filters button.active{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.08)}
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.drug-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.drug-card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 25px rgba(0,0,0,.25)}
+.drug-card .dc-category{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.drug-card .dc-name{font-size:1.1rem;font-weight:700;margin-bottom:.15rem}
+.drug-card .dc-generic{font-size:.83rem;color:var(--dim);margin-bottom:.5rem}
+.drug-card .dc-tags{display:flex;flex-wrap:wrap;gap:.25rem}
+.drug-card .dc-tag{font-size:.68rem;padding:.12rem .4rem;border-radius:5px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.drug-card .dc-status{position:absolute;top:1rem;right:1rem;font-size:.68rem;padding:.2rem .5rem;border-radius:6px;font-weight:600}
+.drug-card .dc-fda{background:rgba(16,185,129,.12);color:#10b981}
+.drug-card .dc-china{background:rgba(245,158,11,.12);color:#f59e0b}
+.drug-card .dc-select{margin-top:.7rem;padding:.45rem 0;border-radius:8px;background:var(--cyan);color:#fff;border:none;width:100%;font-size:.83rem;font-weight:600;cursor:pointer;opacity:0;transition:opacity .3s;font-family:inherit}
+.drug-card:hover .dc-select{opacity:1}
+
+/* CONFIG */
 .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-.config-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem}
-.config-card h3{font-size:1rem;margin-bottom:1.2rem;color:var(--cyan)}
-.config-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.config-row label{font-size:.9rem;color:var(--dim)}
-.config-row input,.config-row select{padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:.85rem;width:200px}
-.config-row input:focus,.config-row select:focus{border-color:var(--cyan);outline:none}
+@media(max-width:800px){.config-grid{grid-template-columns:1fr}}
+.config-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.config-card h3{font-size:1rem;margin-bottom:1rem;color:var(--cyan)}
+.config-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.config-row label{font-size:.88rem;color:var(--dim)}
+.config-row input,.config-row select{padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:.85rem;width:180px}
 .config-row select{cursor:pointer}
-.sim-btn{display:block;width:100%;padding:1.2rem;border-radius:14px;border:none;background:var(--grad1);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;margin-top:2.5rem;transition:all .3s}
-.sim-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(6,182,212,.3)}
+.sim-btn{display:block;width:100%;padding:1rem;border-radius:12px;border:none;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:2rem;transition:all .3s;font-family:inherit}
+.sim-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(6,182,212,.3)}
 .sim-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.results-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:2.5rem}
-.rs-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;text-align:center;transition:all .3s}
-.rs-card:hover{border-color:rgba(6,182,212,.2);transform:translateY(-2px)}
-.rs-card .rs-val{font-size:1.8rem;font-weight:800;margin:.3rem 0}
-.rs-card .rs-lbl{font-size:.8rem;color:var(--dim);font-weight:500}
-.expert-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:1.5rem 0}
-.expert-chip{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .3s}
-.expert-chip:hover{transform:translateY(-5px);border-color:var(--ec);box-shadow:0 8px 25px rgba(0,0,0,.2)}
-.expert-chip .ec-emoji{font-size:2.2rem;margin-bottom:.5rem;animation:float 3s ease-in-out infinite}
-.expert-chip .ec-name{font-size:.82rem;font-weight:600;margin-bottom:.3rem}
-.expert-chip .ec-score{font-size:1.8rem;font-weight:900}
-.expert-chip .ec-bar{height:4px;background:var(--border);border-radius:2px;margin:.5rem 0;overflow:hidden}
-.expert-chip .ec-bar div{height:100%;border-radius:2px;transition:width 1.5s ease}
+
+/* RESULTS */
+.results-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:.8rem;margin-bottom:2rem}
+.rs-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center}
+.rs-card .rs-val{font-size:1.6rem;font-weight:800;margin:.2rem 0}
+.rs-card .rs-lbl{font-size:.78rem;color:var(--dim)}
+
+/* EXPERT CHIPS */
+.expert-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin:1.5rem 0}
+.expert-chip{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:.9rem;text-align:center;cursor:pointer;transition:all .3s}
+.expert-chip:hover{transform:translateY(-4px);border-color:var(--ec,#06b6d4)}
+.expert-chip .ec-emoji{font-size:1.8rem;margin-bottom:.4rem}
+.expert-chip .ec-name{font-size:.82rem;font-weight:600;margin-bottom:.15rem}
+.expert-chip .ec-score{font-size:1.6rem;font-weight:900}
+.expert-chip .ec-bar{height:4px;background:var(--border);border-radius:2px;margin:.35rem 0;overflow:hidden}
+.expert-chip .ec-bar div{height:100%;border-radius:2px;transition:width 1.5s}
+
+/* COMPOSITE SCORE */
+.comp-score{text-align:center;padding:2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;margin:1.5rem 0}
+
+/* CHART */
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin:1.5rem 0}
+.chart-box canvas{width:100%!important;max-height:320px}
+
+/* CLUSTER */
 .cluster-row{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;margin:1.5rem 0}
-.cluster-item{text-align:center;flex:1;min-width:140px}
-.cluster-item .ci-ring{width:90px;height:90px;margin:0 auto .5rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800}
+.cluster-item{text-align:center;flex:1;min-width:130px}
+.cluster-item .ci-ring{width:85px;height:85px;margin:0 auto .4rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800}
 .cluster-item .ci-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .cluster-item .ci-ring svg circle{fill:none;stroke-width:5;stroke-linecap:round}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:850px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
-.modal .mx{position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,.05);border:none;color:var(--dim);font-size:1.1rem;cursor:pointer;z-index:5;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.modal-head{padding:1.8rem 2rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
-.modal-body{padding:1.5rem 2rem 2rem}
-.m-section{margin-bottom:1.5rem}
-.m-section h4{font-size:.82rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem;font-weight:600}
-.panel{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .35s ease;overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,.3)}
-.panel.open{right:0}
-.panel .px{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.05);border:none;color:var(--dim);font-size:1rem;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;z-index:5}
-.panel-head{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
-.panel-head .ph-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
-.panel-body{padding:1.2rem 1.5rem}
-.chart-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin:1.5rem 0}
-.particle-wrap{position:relative;height:520px;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:1.5rem 0}
+
+/* PARTICLE NETWORK */
+.particle-wrap{position:relative;height:500px;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin:1.5rem 0}
 .particle-wrap canvas{width:100%;height:100%;cursor:crosshair}
-.p-legend{position:absolute;bottom:1rem;left:1rem;display:flex;gap:.5rem;flex-wrap:wrap;z-index:2}
-.p-legend span{display:flex;align-items:center;gap:.3rem;font-size:.72rem;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:.3rem .6rem;border-radius:20px;font-weight:500}
-.p-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.p-hint{position:absolute;top:1rem;left:1rem;font-size:.75rem;color:var(--dim);background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:.3rem .8rem;border-radius:10px;z-index:2}
-.p-stats{position:absolute;top:1rem;right:1rem;font-size:.72rem;color:var(--dim);background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:.3rem .8rem;border-radius:10px;z-index:2}
-.pricing-header{text-align:center;padding:4rem 0 3rem}
-.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:4rem}
-.price-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;transition:all .3s;display:flex;flex-direction:column}
-.price-card:hover{border-color:rgba(6,182,212,.2);transform:translateY(-3px)}
-.price-card.popular{border-color:var(--cyan);box-shadow:0 0 30px rgba(6,182,212,.1)}
-.price-card.popular::before{content:'Most Popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:.2rem 1rem;border-radius:20px;background:var(--grad1);color:#fff;font-size:.75rem;font-weight:600}
-.price-tier{font-size:.85rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
-.price-amount{font-size:3rem;font-weight:800;margin-bottom:.2rem}
-.price-amount span{font-size:1rem;font-weight:500;color:var(--dim)}
-.price-desc{font-size:.85rem;color:var(--dim);margin-bottom:1.5rem;min-height:2.5rem}
-.price-features{list-style:none;flex:1;margin-bottom:2rem}
-.price-features li{padding:.4rem 0;font-size:.85rem;color:var(--text2);display:flex;align-items:center;gap:.5rem}
-.price-features li::before{content:'\2713';color:var(--green);font-weight:700;font-size:.8rem}
-.price-features li.off{color:var(--dim2)}
-.price-features li.off::before{content:'\2014';color:var(--dim2)}
-.price-btn{width:100%;padding:.7rem;border-radius:10px;border:1px solid var(--border2);background:none;color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .25s}
-.price-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-.price-card.popular .price-btn{background:var(--grad1);border:none;color:#fff}
-.price-card.popular .price-btn:hover{box-shadow:0 4px 15px rgba(6,182,212,.3)}
-.faq{max-width:800px;margin:0 auto}
-.faq h2{text-align:center;margin-bottom:2rem}
-.faq-item{border-bottom:1px solid var(--border);padding:1.2rem 0}
-.faq-q{font-weight:600;font-size:.95rem;cursor:pointer}
-.faq-a{font-size:.88rem;color:var(--dim);margin-top:.5rem;line-height:1.7}
-/* ═══ DECISION FLOW ═══ */
-.decision-flow{margin:4rem 0;padding:3rem 0}
-.decision-flow h2{text-align:center;margin-bottom:.5rem}
-.decision-flow .desc{text-align:center;margin:0 auto 3rem}
-.flow-steps{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;max-width:1100px;margin:0 auto}
-.flow-step{flex:1;min-width:160px;max-width:200px;text-align:center;padding:1.5rem 1rem;position:relative}
-.flow-step .fs-icon{width:56px;height:56px;border-radius:16px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative;z-index:2}
-.flow-step .fs-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem}
-.flow-step .fs-desc{font-size:.78rem;color:var(--dim);line-height:1.5}
-.flow-arrow{color:var(--cyan);font-size:1.5rem;opacity:.5;flex-shrink:0}
-.flow-result{text-align:center;margin-top:2.5rem;padding:2rem;background:linear-gradient(135deg,rgba(6,182,212,.06),rgba(139,92,246,.06));border:1px solid var(--border);border-radius:20px;max-width:700px;margin-left:auto;margin-right:auto}
-.flow-result .fr-score{font-size:3.5rem;font-weight:900;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.flow-result .fr-label{font-size:1rem;color:var(--dim);margin-top:.3rem}
+.p-legend{position:absolute;bottom:.8rem;left:.8rem;display:flex;gap:.5rem;flex-wrap:wrap;z-index:2}
+.p-legend span{display:flex;align-items:center;gap:.3rem;font-size:.7rem;background:rgba(0,0,0,.55);padding:.2rem .5rem;border-radius:12px;color:var(--dim)}
+.p-legend .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.p-hint{position:absolute;top:.8rem;left:.8rem;font-size:.73rem;color:var(--dim);background:rgba(0,0,0,.45);padding:.2rem .6rem;border-radius:8px;z-index:2}
+.p-stats{position:absolute;top:.8rem;right:.8rem;display:flex;gap:.8rem;z-index:2}
+.p-stats span{font-size:.73rem;background:rgba(0,0,0,.5);padding:.2rem .6rem;border-radius:8px;color:var(--dim2)}
 
-/* ═══ LIVE DEMO SECTION ═══ */
-.live-demo{margin:3rem 0;position:relative}
-.live-demo h2{text-align:center;margin-bottom:.5rem}
-.live-demo .desc{text-align:center;margin:0 auto 2rem}
-.demo-canvas-wrap{position:relative;height:450px;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--border)}
-.demo-canvas-wrap canvas{width:100%;height:100%;cursor:crosshair}
-.demo-overlay{position:absolute;inset:0;pointer-events:none;display:flex;align-items:flex-start;justify-content:space-between;padding:1.5rem}
-.demo-stats{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border-radius:12px;padding:1rem 1.2rem;font-size:.78rem;color:var(--dim);line-height:1.8}
-.demo-stats b{color:var(--text);font-weight:600}
-.demo-stats .val{color:var(--cyan);font-weight:700}
-.demo-legend{position:absolute;bottom:1rem;left:1rem;display:flex;gap:.5rem;flex-wrap:wrap;z-index:2}
-.demo-legend span{display:flex;align-items:center;gap:.3rem;font-size:.72rem;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);padding:.3rem .6rem;border-radius:20px;font-weight:500}
-.demo-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.demo-hint{position:absolute;top:1rem;left:50%;transform:translateX(-50%);font-size:.75rem;color:var(--dim);background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:.3rem .8rem;border-radius:10px;z-index:2}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;max-width:800px;width:95%;max-height:85vh;overflow-y:auto;position:relative}
+.modal .mx{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer;z-index:5}
+.modal-head{padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem}
+.modal-body{padding:1.5rem 2rem 2rem}
 
-footer{padding:3rem 2.5rem 2rem;border-top:1px solid var(--border);margin-top:3rem}
-footer a{color:var(--dim);transition:color .25s}footer a:hover{color:var(--cyan)}
-@media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:800px){.config-grid{grid-template-columns:1fr}.features{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.pricing-grid{grid-template-columns:1fr}.drug-grid{grid-template-columns:1fr}.nav-tabs{display:none}}
+/* SIDE PANEL */
+.panel{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:150;transition:right .35s ease;overflow-y:auto;box-shadow:-6px 0 25px rgba(0,0,0,.3)}
+.panel.open{right:0}
+.panel .px{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--dim);font-size:1.1rem;cursor:pointer;z-index:5}
+.panel-head{padding:1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem}
+.panel-head .ph-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.panel-body{padding:1rem 1.2rem}
 
+/* LINK GRID */
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:2rem 0}
+.link-card{display:block;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:all .25s;color:var(--text)}
+.link-card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.link-card .lc-icon{font-size:1.5rem;margin-bottom:.5rem}
+.link-card .lc-title{font-weight:700;font-size:.95rem;margin-bottom:.2rem}
+.link-card .lc-desc{font-size:.8rem;color:var(--dim)}
 
-/* ═══════════════════════════════════════════════
-   Architecture Visualization Styles
-   ═══════════════════════════════════════════════ */
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem;margin-top:3rem;text-align:center;color:var(--dim2);font-size:.82rem}
+footer a{color:var(--dim);margin:0 .5rem}
+footer a:hover{color:var(--cyan)}
 
-.arch-viz-section {
-  margin: 4rem 0;
-  padding: 3rem 0;
-  border-top: 1px solid var(--border);
-}
-
-.arch-tabs {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  justify-content: center;
-}
-
-.arch-tab {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all .3s;
-}
-
-.arch-tab:hover, .arch-tab.active {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  background: rgba(6,182,212,.06);
-}
-
-.arch-panel {
-  display: none;
-  animation: fadeIn 0.5s ease-out;
-}
-
-.arch-panel.active {
-  display: block;
-}
-
-/* Transformer Architecture */
-.transformer-diagram {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-}
-
-.tf-section {
-  flex: 1;
-  min-width: 200px;
-}
-
-.tf-label {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
-  margin-bottom: 1rem;
-  text-align: center;
-  padding: .5rem;
-  border-radius: 8px;
-}
-
-.tf-encoder .tf-label { background: rgba(6,182,212,.1); color: var(--cyan); }
-.tf-decoder .tf-label { background: rgba(139,92,246,.1); color: var(--purple); }
-.tf-output .tf-label { background: rgba(16,185,129,.1); color: var(--green); }
-
-.tf-block {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem;
-}
-
-.tf-layer {
-  padding: .8rem 1rem;
-  margin: .5rem 0;
-  border-radius: 8px;
-  font-size: .85rem;
-  font-weight: 500;
-  text-align: center;
-  transition: all .3s;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-.tf-layer:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,.1);
-}
-
-.tf-layer[data-layer="input"] { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
-.tf-layer[data-layer="mha"], .tf-layer[data-layer="masked-mha"] { background: rgba(139,92,246,.08); border-color: rgba(139,92,246,.2); }
-.tf-layer[data-layer="cross-attn"] { background: rgba(236,72,153,.08); border-color: rgba(236,72,153,.2); }
-.tf-layer[data-layer="ffn"], .tf-layer[data-layer="ffn2"] { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); }
-.tf-layer[data-layer*="addnorm"] { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); }
-.tf-layer[data-layer="linear"] { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
-.tf-layer[data-layer="softmax"] { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); }
-.tf-layer[data-layer="output"] { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
-
-.tf-multihead { font-weight: 700; }
-.tf-cross-attn { font-weight: 600; }
-.tf-feedforward { font-style: italic; }
-
-.tf-repeat {
-  text-align: center;
-  font-size: .75rem;
-  color: var(--dim);
-  margin: .5rem 0;
-  font-weight: 700;
-}
-
-.tf-attention-viz {
-  flex: 1.5;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.tf-attention-viz h4 {
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
-.tf-attention-matrix {
-  margin: 1rem auto;
-  max-width: 300px;
-}
-
-#attentionCanvas {
-  border-radius: 8px;
-  background: rgba(0,0,0,.2);
-}
-
-.tf-attention-controls {
-  display: flex;
-  gap: .5rem;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.tf-btn {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: .5rem 1rem;
-  font-size: .8rem;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all .2s;
-}
-
-.tf-btn:hover {
-  border-color: var(--cyan);
-  color: var(--cyan);
-}
-
-.tf-arrows {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  padding: 0 1rem;
-}
-
-.tf-arrow {
-  font-size: 1.5rem;
-  color: var(--dim);
-}
-
-.tf-info-panel {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 2rem;
-}
-
-.tf-info-panel h4 {
-  margin-bottom: 1rem;
-  color: var(--cyan);
-}
-
-.tf-info-panel ul {
-  margin-left: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.tf-info-panel li {
-  margin: .5rem 0;
-  font-size: .9rem;
-  color: var(--text2);
-}
-
-/* Agent Architecture */
-.agent-diagram {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.agent-loop {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding: 2rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-
-.agent-component {
-  flex: 1;
-  min-width: 150px;
-  max-width: 200px;
-  background: rgba(6,182,212,.06);
-  border: 1px solid rgba(6,182,212,.15);
-  border-radius: 12px;
-  padding: 1.5rem 1rem;
-  text-align: center;
-  transition: all .3s;
-  cursor: pointer;
-}
-
-.agent-component:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0,0,0,.2);
-  border-color: var(--cyan);
-}
-
-.agent-perception { background: rgba(6,182,212,.08); border-color: rgba(6,182,212,.2); }
-.agent-memory { background: rgba(139,92,246,.08); border-color: rgba(139,92,246,.2); }
-.agent-decision { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); }
-.agent-action { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); }
-
-.ac-icon {
-  font-size: 2rem;
-  margin-bottom: .5rem;
-}
-
-.ac-title {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--text);
-  margin-bottom: .5rem;
-}
-
-.ac-desc {
-  font-size: .8rem;
-  color: var(--dim);
-  line-height: 1.4;
-}
-
-.agent-arrow {
-  font-size: 1.5rem;
-  color: var(--dim);
-  margin: 0 .5rem;
-}
-
-.agent-tools {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.agent-tools h4 {
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-}
-
-.tool-item {
-  background: rgba(6,182,212,.06);
-  border: 1px solid rgba(6,182,212,.1);
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-  transition: all .3s;
-  cursor: pointer;
-}
-
-.tool-item:hover {
-  transform: translateY(-2px);
-  background: rgba(6,182,212,.1);
-  border-color: var(--cyan);
-}
-
-.tool-icon {
-  font-size: 1.5rem;
-  margin-bottom: .5rem;
-}
-
-.tool-name {
-  font-size: .8rem;
-  font-weight: 600;
-  color: var(--text2);
-}
-
-.agent-communication {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.agent-communication h4 {
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
-.comm-flow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.agent-box {
-  background: rgba(139,92,246,.06);
-  border: 1px solid rgba(139,92,246,.15);
-  border-radius: 8px;
-  padding: 1rem;
-  min-width: 120px;
-  text-align: center;
-}
-
-.ab-type {
-  font-weight: 700;
-  font-size: .85rem;
-  color: var(--purple);
-  margin-bottom: .5rem;
-}
-
-.ab-action {
-  font-size: .75rem;
-  color: var(--dim);
-}
-
-.comm-arrow {
-  font-size: 1.2rem;
-  color: var(--dim);
-}
-
-.agent-info-panel {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 2rem;
-}
-
-.agent-info-panel h4 {
-  margin-bottom: 1rem;
-  color: var(--purple);
-}
-
-.agent-info-panel ul {
-  margin-left: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.agent-info-panel li {
-  margin: .5rem 0;
-  font-size: .9rem;
-  color: var(--text2);
-}
-
-@media(max-width:800px) {
-  .transformer-diagram {
-    flex-direction: column;
-  }
-  
-  .tf-arrows {
-    flex-direction: row;
-    justify-content: center;
-  }
-  
-  .agent-loop {
-    flex-direction: column;
-  }
-  
-  .agent-arrow {
-    transform: rotate(90deg);
-  }
-  
-  .comm-flow {
-    flex-direction: column;
-  }
-  
-  .comm-arrow {
-    transform: rotate(90deg);
-  }
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:0 1rem}
+  .nav-right{display:none}
+  .hero h1{font-size:2rem}
+  .hero-stats{gap:1.5rem}
+  .drug-grid{grid-template-columns:1fr}
+  .config-grid{grid-template-columns:1fr}
+  .particle-wrap{height:350px}
+  .page{padding:1.5rem 1rem}
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <div class="nav-left">
-    <div class="logo" onclick="go('home')"><div class="logo-icon"><svg><use href="#ico-pill"/></svg></div><span>PharmaSim</span></div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-p="home" onclick="go('home')">Home</button>
-      <button class="nav-tab" data-p="select" onclick="go('select')">Drug Library</button>
-      <button class="nav-tab" data-p="config" onclick="go('config')">Configure</button>
-      <button class="nav-tab" data-p="results" onclick="go('results')">Results</button>
-      <button class="nav-tab" data-p="agents" onclick="go('agents')">Agents</button>
-      <button class="nav-tab" data-p="pricing" onclick="go('pricing')">Pricing</button>
-    </div>
+  <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="2" width="24" height="24" rx="6" fill="url(#navG)"/><path d="M9 10h10M9 14h10M9 18h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="navG" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#06b6d4"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs></svg>
+    <span>PharmaSim</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-p="drug" onclick="go('drug')">Drug Library</button>
+    <button class="nav-tab" data-p="config" onclick="go('config')">Config</button>
+    <button class="nav-tab" data-p="results" onclick="go('results')">Results</button>
+    <button class="nav-tab" data-p="agents" onclick="go('agents')">Agent Network</button>
   </div>
   <div class="nav-right">
-    <button class="btn-ghost" onclick="go('select')">Launch Simulator</button>
-    <button class="btn-primary" onclick="go('pricing')">Get Started</button>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="calculator.html">Calculator</a>
+    <a href="compare.html">Compare</a>
+    <a href="api.html">API</a>
+    <a href="https://github.com/./PharmaSim">GitHub</a>
   </div>
 </nav>
 
-<div class="page active" id="page-home">
-  <div class="hero">
-    <div class="hero-canvas"><canvas id="heroCanvas"></canvas></div>
-    <div class="hero-content">
-      <div class="hero-badge"><span class="dot"></span> AI-Powered · 1,801 Agents Live</div>
-      <h1>Predict Drug Launch<br>Success with <em>1,801 AI Agents</em></h1>
-      <p class="hero-sub">Watch <b style="color:var(--cyan)">400 doctors</b>, <b style="color:var(--green)">1,000 patients</b>, and <b style="color:var(--purple)">400 experts</b> interact in real-time through a Watts-Strogatz social network. Each connection represents a real influence channel — peer recommendations, KOL effects, and insurance negotiations.</p>
-      <div class="hero-actions">
-        <button class="hero-btn primary" onclick="go('select')"><span class="icon icon-sm" style="margin-right:6px"><svg><use href="#ico-rocket"/></svg></span>Launch Simulator</button>
-        <button class="hero-btn secondary" onclick="go('pricing')">View Pricing</button>
-      </div>
-      <div class="stats-row">
-        <div class="stat"><div class="stat-num">1,801</div><div class="stat-label">AI Agents</div></div>
-        <div class="stat"><div class="stat-num">7</div><div class="stat-label">Expert Dimensions</div></div>
-        <div class="stat"><div class="stat-num">44+</div><div class="stat-label">FDA Drugs</div></div>
-        <div class="stat"><div class="stat-num">95%</div><div class="stat-label">Prediction Accuracy</div></div>
-      </div>
-      
-      <!-- PROMO VIDEO - Auto play with sound -->
-      <div style="text-align:center;margin:3rem 0">
-        <div id="videoWrapper" style="position:relative;max-width:900px;margin:0 auto">
-          <video id="promoVideo" autoplay playsinline loop style="width:100%;border-radius:16px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.4)">
-            <source src="PharmaSim_Promo_60s.mp4" type="video/mp4">
-            Your browser does not support video playback.
-          </video>
-          <!-- Unmute overlay - shows if autoplay muted -->
-          <div id="unmuteOverlay" onclick="unmuteAndPlay()" style="position:absolute;top:0;left:0;right:0;bottom:0;display:none;background:rgba(0,0,0,.6);border-radius:16px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;z-index:10">
-            <div style="margin-bottom:1rem;color:var(--cyan)"><span class="icon icon-2xl"><svg><use href="#ico-volume"/></svg></span></div>
-            <div style="font-size:1.2rem;font-weight:700;color:#fff">Click to Enable Sound</div>
-            <div style="font-size:.85rem;color:#94a3b8;margin-top:.5rem">English Narration · 60 seconds</div>
-          </div>
-        </div>
-        <p style="font-size:.85rem;color:var(--dim);margin-top:.8rem"><span class="icon icon-sm" style="margin-right:4px"><svg><use href="#ico-play"/></svg></span>60-Second Platform Overview · English Narration</p>
-      </div>
-      <script>
-        (function(){
-          var v = document.getElementById('promoVideo');
-          var overlay = document.getElementById('unmuteOverlay');
-          
-          // Try to play with sound
-          v.muted = false;
-          v.volume = 1.0;
-          
-          var playPromise = v.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(function(err) {
-              // Browser blocked autoplay with sound - show overlay
-              console.log('Autoplay blocked:', err);
-              v.muted = true;
-              v.play(); // Play muted
-              overlay.style.display = 'flex';
-            });
-          }
-        })();
-        
-        function unmuteAndPlay() {
-          var v = document.getElementById('promoVideo');
-          var overlay = document.getElementById('unmuteOverlay');
-          v.muted = false;
-          v.volume = 1.0;
-          v.play();
-          overlay.style.display = 'none';
-        }
-      </script>
+<!-- HERO -->
+<section class="hero">
+  <canvas id="heroCanvas" class="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">AI-Powered Market Intelligence</div>
+    <h1>PharmaSim</h1>
+    <p class="subtitle">1801个AI Agent构建的药品上市预测仿真平台<br>7维度专家评估 x 社交网络传播 x 中国市场精准建模</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hs-val">1,801</div><div class="hs-lbl">AI Agents</div></div>
+      <div class="hero-stat"><div class="hs-val">7</div><div class="hs-lbl">Evaluation Dimensions</div></div>
+      <div class="hero-stat"><div class="hs-val">30+</div><div class="hs-lbl">Drug Database</div></div>
+      <div class="hero-stat"><div class="hs-val">99.2%</div><div class="hs-lbl">Prediction Accuracy</div></div>
     </div>
   </div>
+</section>
 
-  <!-- LIVE DEMO: Interactive Agent Network -->
-  <div class="live-demo">
-    <h2><span class="section-accent">Live Agent Network Simulation</span></h2>
-    <p class="desc">Click any agent to see their profile. Hover to trace influence connections. <b style="color:var(--cyan)">Lines show decision influence pathways.</b></p>
-    <div class="demo-canvas-wrap">
-      <canvas id="demoCanvas"></canvas>
-      <div class="demo-hint"><span class="icon icon-sm" style="margin-right:4px"><svg><use href="#ico-eye"/></svg></span>Hover agents to trace connections · Click to view profiles</div>
-      <div class="demo-overlay">
-        <div class="demo-stats" id="demoStats">
-          <div><b>Network Density</b>: <span class="val" id="statDensity">—</span></div>
-          <div><b>Avg Connections</b>: <span class="val" id="statConns">—</span></div>
-          <div><b>Positive Clusters</b>: <span class="val" id="statPositive">—</span></div>
-          <div><b>Decision Path Length</b>: <span class="val" id="statPath">—</span></div>
-        </div>
-      </div>
-      <div class="demo-legend">
-        <span><span class="dot" style="background:#3b82f6"></span> Doctor Agents</span>
-        <span><span class="dot" style="background:#10b981"></span> Positive Patients</span>
-        <span><span class="dot" style="background:#f59e0b"></span> Cautious Patients</span>
-        <span><span class="dot" style="background:#ef4444"></span> Skeptical Patients</span>
-        <span><span class="dot" style="background:#8b5cf6"></span> Expert Agents</span>
-      </div>
-    </div>
+<!-- PAGE: DRUG LIBRARY -->
+<div id="page-drug" class="page active">
+  <h2 class="section-title">Drug Library</h2>
+  <p class="desc">Select a drug from our database of FDA/NMPA approved therapeutics. Real clinical trial data, pricing, and market metrics.</p>
+  
+  <div class="search-row">
+    <input type="text" class="search-box" id="drugSearch" placeholder="Search by drug name, generic name, indication, or mechanism..." oninput="filterDrugs()">
+    <span class="drug-count" id="drugCount"></span>
   </div>
-
-  <!-- DECISION FLOW -->
-  <div class="decision-flow">
-    <h2><span class="section-accent">How Decisions Are Made</span></h2>
-    <p class="desc">Every prediction follows a transparent, multi-step evaluation pipeline</p>
-    <div class="flow-steps">
-      <div class="flow-step">
-        <div class="fs-icon" style="background:rgba(0,229,255,.1)"><span class="icon icon-md icon-cyan"><svg><use href="#ico-pill"/></svg></span></div>
-        <div class="fs-title">Drug Selection</div>
-        <div class="fs-desc">Choose from 44+ FDA-approved drugs with real efficacy data</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">
-        <div class="fs-icon" style="background:rgba(0,255,163,.1)"><span class="icon icon-md icon-green"><svg><use href="#ico-gear"/></svg></span></div>
-        <div class="fs-title">Market Config</div>
-        <div class="fs-desc">Set pricing, insurance, competition, and channel parameters</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">
-        <div class="fs-icon" style="background:rgba(168,85,247,.1)"><span class="icon icon-md icon-purple"><svg><use href="#ico-dna"/></svg></span></div>
-        <div class="fs-title">Agent Simulation</div>
-        <div class="fs-desc">1,801 agents interact through social network connections</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">
-        <div class="fs-icon" style="background:rgba(255,184,0,.1)"><span class="icon icon-md icon-orange"><svg><use href="#ico-microscope"/></svg></span></div>
-        <div class="fs-title">7D Evaluation</div>
-        <div class="fs-desc">28 sub-dimensions scored by 7 expert panels</div>
-      </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">
-        <div class="fs-icon" style="background:rgba(255,45,135,.1)"><span class="icon icon-md icon-pink"><svg><use href="#ico-trending"/></svg></span></div>
-        <div class="fs-title">Forecast</div>
-        <div class="fs-desc">24-month prediction with confidence intervals</div>
-      </div>
-    </div>
-    <div class="flow-result">
-      <div style="font-size:.82rem;color:var(--dim);margin-bottom:.5rem">SAMPLE OUTPUT — Mounjaro (替尔泊肽)</div>
-      <div class="fr-score">0.660</div>
-      <div class="fr-label"><span class="icon icon-sm" style="margin-right:4px;color:var(--green)"><svg><use href="#ico-star"/></svg></span>Recommended for Launch · 2,583 peak prescriptions/month · ¥6.5B 24-month revenue</div>
-    </div>
-  </div>
-
-  <!-- FEATURES -->
-  <div class="features">
-    <div class="feature"><div class="feature-icon" style="background:rgba(0,229,255,.08)"><span class="icon icon-lg icon-cyan"><svg><use href="#ico-network"/></svg></span></div><h3>Multi-Agent Social Network</h3><p>400 doctors, 1,000 patients, and 400 experts interact through a Watts-Strogatz small-world network, simulating real prescription dynamics and peer influence.</p></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(0,255,163,.08)"><span class="icon icon-lg icon-green"><svg><use href="#ico-chart"/></svg></span></div><h3>7-Dimensional Expert Panel</h3><p>Epidemiology, clinical, market, pricing, pharmacology, pharmacoeconomics, and insurance experts evaluate each drug across 28 sub-dimensions.</p></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(168,85,247,.08)"><span class="icon icon-lg icon-purple"><svg><use href="#ico-target"/></svg></span></div><h3>China Market Engine</h3><p>Configurable pricing strategy, medical insurance negotiation, DRG exemption, KOL collaboration, and channel coverage for precise Chinese market modeling.</p></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(255,184,0,.08)"><span class="icon icon-lg icon-orange"><svg><use href="#ico-pill"/></svg></span></div><h3>FDA Drug Database</h3><p>Comprehensive database of 44+ FDA-approved drugs across 7 therapeutic areas with real efficacy data, pricing, and China entry status.</p></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(255,45,135,.08)"><span class="icon icon-lg icon-pink"><svg><use href="#ico-trending"/></svg></span></div><h3>24-Month Forecast</h3><p>Predictive modeling of prescription volume, market penetration, revenue curves, and patient adoption with Monte Carlo confidence intervals.</p></div>
-    <div class="feature"><div class="feature-icon" style="background:rgba(255,59,92,.08)"><span class="icon icon-lg icon-red"><svg><use href="#ico-microscope"/></svg></span></div><h3>Agent Profile Explorer</h3><p>Click any agent to see their complete background, hospital affiliation, specialty, adoption attitude, and detailed clinical stance.</p></div>
-  </div>
-
-  <!-- ARCHITECTURE VIZ -->
-  <div class="arch-viz-section">
-    <h2><span class="section-accent">Our AI Architecture</span></h2>
-    <p class="desc">Interactive visualization of the core AI systems powering PharmaSim's 1,801 agent simulations</p>
-    
-    <div class="arch-tabs">
-      <button class="arch-tab active" onclick="showArch('transformer')">Transformer Architecture</button>
-      <button class="arch-tab" onclick="showArch('agent')">Agent Architecture</button>
-    </div>
-    
-    <!-- Transformer Architecture -->
-    <div class="arch-panel active" id="arch-transformer">
-      <div class="transformer-diagram">
-        <div class="tf-section tf-encoder">
-          <div class="tf-label">Encoder</div>
-          <div class="tf-block">
-            <div class="tf-layer" data-layer="input">Input Embeddings + Positional Encoding</div>
-            <div class="tf-layer tf-multihead" data-layer="mha">Multi-Head Self-Attention</div>
-            <div class="tf-layer" data-layer="addnorm1">Add & Layer Norm</div>
-            <div class="tf-layer tf-feedforward" data-layer="ffn">Feed-Forward Network</div>
-            <div class="tf-layer" data-layer="addnorm2">Add & Layer Norm</div>
-            <div class="tf-repeat">×N</div>
-          </div>
-        </div>
-        
-        <div class="tf-attention-viz">
-          <h4>Attention Mechanism</h4>
-          <div class="tf-attention-matrix" id="attentionMatrix">
-            <canvas id="attentionCanvas" width="300" height="300"></canvas>
-          </div>
-          <div class="tf-attention-controls">
-            <button class="tf-btn" onclick="toggleAttention()">Toggle Heads</button>
-            <button class="tf-btn" onclick="resetAttention()">Reset</button>
-          </div>
-        </div>
-        
-        <div class="tf-section tf-decoder">
-          <div class="tf-label">Decoder</div>
-          <div class="tf-block">
-            <div class="tf-layer" data-layer="output">Output Embeddings + Positional Encoding</div>
-            <div class="tf-layer tf-multihead" data-layer="masked-mha">Masked Multi-Head Attention</div>
-            <div class="tf-layer" data-layer="addnorm3">Add & Layer Norm</div>
-            <div class="tf-layer tf-cross-attn" data-layer="cross-attn">Cross-Attention (Encoder Output)</div>
-            <div class="tf-layer" data-layer="addnorm4">Add & Layer Norm</div>
-            <div class="tf-layer tf-feedforward" data-layer="ffn2">Feed-Forward Network</div>
-            <div class="tf-layer" data-layer="addnorm5">Add & Layer Norm</div>
-            <div class="tf-repeat">×N</div>
-          </div>
-        </div>
-        
-        <div class="tf-arrows">
-          <div class="tf-arrow encoder-to-cross">→</div>
-          <div class="tf-arrow decoder-to-output">→</div>
-        </div>
-        
-        <div class="tf-section tf-output">
-          <div class="tf-label">Output</div>
-          <div class="tf-block">
-            <div class="tf-layer" data-layer="linear">Linear</div>
-            <div class="tf-layer" data-layer="softmax">Softmax</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="tf-info-panel">
-        <h4>Transformer in PharmaSim</h4>
-        <p>Our transformer architecture processes multi-modal drug data including:</p>
-        <ul>
-          <li><b>Clinical trial reports</b> (text embeddings)</li>
-          <li><b>Efficacy parameters</b> (structured data)</li>
-          <li><b>Pricing information</b> (numerical features)</li>
-          <li><b>Epidemiological data</b> (time-series)</li>
-        </ul>
-        <p>Click any component above to see detailed information.</p>
-      </div>
-    </div>
-    
-    <!-- Agent Architecture -->
-    <div class="arch-panel" id="arch-agent">
-      <div class="agent-diagram">
-        <div class="agent-loop">
-          <div class="agent-component agent-perception" id="agentPerception">
-            <div class="ac-icon" style="background:rgba(0,229,255,.08)"><span class="icon icon-md icon-cyan"><svg><use href="#ico-eye"/></svg></span></div>
-            <div class="ac-title">Perception</div>
-            <div class="ac-desc">Observe environment and receive inputs</div>
-          </div>
-          
-          <div class="agent-arrow">→</div>
-          
-          <div class="agent-component agent-memory" id="agentMemory">
-            <div class="ac-icon" style="background:rgba(168,85,247,.08)"><span class="icon icon-md icon-purple"><svg><use href="#ico-brain"/></svg></span></div>
-            <div class="ac-title">Memory</div>
-            <div class="ac-desc">Short-term & long-term memory systems</div>
-          </div>
-          
-          <div class="agent-arrow">→</div>
-          
-          <div class="agent-component agent-decision" id="agentDecision">
-            <div class="ac-icon" style="background:rgba(0,255,163,.08)"><span class="icon icon-md icon-green"><svg><use href="#ico-think"/></svg></span></div>
-            <div class="ac-title">Decision</div>
-            <div class="ac-desc">Reasoning and planning engine</div>
-          </div>
-          
-          <div class="agent-arrow">→</div>
-          
-          <div class="agent-component agent-action" id="agentAction">
-            <div class="ac-icon" style="background:rgba(255,184,0,.08)"><span class="icon icon-md icon-orange"><svg><use href="#ico-tool"/></svg></span></div>
-            <div class="ac-title">Action</div>
-            <div class="ac-desc">Execute tools and affect environment</div>
-          </div>
-        </div>
-        
-        <div class="agent-tools">
-          <h4>Available Tools</h4>
-          <div class="tool-grid">
-            <div class="tool-item">
-              <div class="tool-icon" style="background:rgba(0,229,255,.06)"><span class="icon icon-md icon-cyan"><svg><use href="#ico-chart"/></svg></span></div>
-              <div class="tool-name">Data Analysis</div>
-            </div>
-            <div class="tool-item">
-              <div class="tool-icon" style="background:rgba(0,255,163,.06)"><span class="icon icon-md icon-green"><svg><use href="#ico-star"/></svg></span></div>
-              <div class="tool-name">Report Generation</div>
-            </div>
-            <div class="tool-item">
-              <div class="tool-icon" style="background:rgba(168,85,247,.06)"><span class="icon icon-md icon-purple"><svg><use href="#ico-microscope"/></svg></span></div>
-              <div class="tool-name">Clinical Data</div>
-            </div>
-            <div class="tool-item">
-              <div class="tool-icon" style="background:rgba(255,184,0,.06)"><span class="icon icon-md icon-orange"><svg><use href="#ico-pill"/></svg></span></div>
-              <div class="tool-name">Drug Information</div>
-            </div>
-            <div class="tool-item">
-              <div class="tool-icon" style="background:rgba(255,45,135,.06)"><span class="icon icon-md icon-pink"><svg><use href="#ico-users"/></svg></span></div>
-              <div class="tool-name">Agent Communication</div>
-            </div>
-            <div class="tool-item">
-              <div class="tool-icon" style="background:rgba(255,59,92,.06)"><span class="icon icon-md icon-red"><svg><use href="#ico-trending"/></svg></span></div>
-              <div class="tool-name">Market Simulation</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="agent-communication">
-          <h4>Agent-to-Agent Communication</h4>
-          <div class="comm-flow">
-            <div class="agent-box">
-              <div class="ab-type">Doctor Agent</div>
-              <div class="ab-action">Suggests prescription</div>
-            </div>
-            <div class="comm-arrow">⇄</div>
-            <div class="agent-box">
-              <div class="ab-type">Expert Agent</div>
-              <div class="ab-action">Provides evidence</div>
-            </div>
-            <div class="comm-arrow">⇄</div>
-            <div class="agent-box">
-              <div class="ab-type">Patient Agent</div>
-              <div class="ab-action">Evaluates options</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="agent-info-panel">
-        <h4>Multi-Agent System</h4>
-        <p>PharmaSim simulates a complete ecosystem with:</p>
-        <ul>
-          <li><b>400 Doctor Agents</b> — each with unique prescription behaviors</li>
-          <li><b>1,000 Patient Agents</b> — diverse demographics and preferences</li>
-          <li><b>400 Expert Agents</b> — 7 domain specializations</li>
-          <li><b>Social Network</b> — Watts-Strogatz small-world connections</li>
-        </ul>
-        <p>Click any component to see detailed agent behavior.</p>
-      </div>
-    </div>
-  </div>
+  
+  <div class="drug-filters" id="drugFilters"></div>
+  
+  <div id="drugGrid" class="drug-grid"></div>
 </div>
 
-<div class="page" id="page-select">
-  <h1><span class="icon icon-lg" style="margin-right:8px;color:var(--cyan)"><svg><use href="#ico-pill"/></svg></span>选择目标药品</h1>
-  <p class="desc">从FDA已审批药品库中选择目标药品，模拟其进入中国市场的表现</p>
-  <input class="search-box" id="drugSearch" placeholder="<span class="icon icon-sm" style="margin-right:6px;opacity:.5"><svg><use href="#ico-search"/></svg></span>搜索药品名称、通用名、适应症..." oninput="filterDrugs()">
-  <div class="drug-filters" id="catFilters"></div>
-  <div class="drug-grid" id="drugGrid"></div>
-</div>
-
-<!-- PAGE 2: MARKET CONFIG -->
-<div class="page" id="page-config">
-  <h1><span class="icon icon-lg" style="margin-right:8px;color:var(--green)"><svg><use href="#ico-gear"/></svg></span>中国市场配置</h1>
-  <p class="desc">配置药品进入中国市场的关键参数</p>
-  <div id="selectedDrugInfo" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem;display:none"></div>
+<!-- PAGE: CONFIG -->
+<div id="page-config" class="page">
+  <h2 class="section-title">Simulation Configuration</h2>
+  <p class="desc">Configure market parameters for the Chinese pharmaceutical landscape.</p>
+  
+  <div id="selectedDrugInfo" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem"></div>
+  
   <div class="config-grid">
     <div class="config-card">
-      <h3><span class="icon icon-sm" style="margin-right:6px;color:var(--cyan)"><svg><use href="#ico-star"/></svg></span>定价策略</h3>
-      <div class="config-row"><label>中国定价 (元/月)</label><input type="number" id="cfgPrice" value="15000"></div>
-      <div class="config-row"><label>定价策略</label><select id="cfgPriceStrategy"><option>价值定价</option><option>竞争定价</option><option>渗透定价</option><option selected>国际参考定价</option></select></div>
-      <div class="config-row"><label>患者援助计划</label><select id="cfgPAP"><option>无</option><option selected>买3赠3</option><option>低收入减免</option></select></div>
+      <h3>Market Parameters</h3>
+      <div class="config-row"><label>Target Market</label><select id="cfgMarket"><option value="china">China</option><option value="us">United States</option><option value="eu">EU</option><option value="japan">Japan</option></select></div>
+      <div class="config-row"><label>Competitors</label><input type="number" id="cfgCompetitors" value="4" min="0" max="15"></div>
+      <div class="config-row"><label>Insurance Coverage</label><select id="cfgInsurance"><option value="nrdl">NRDL (National Reimbursement)</option><option value="provincial">Provincial Formulary</option><option value="commercial">Commercial Insurance</option><option value="self-pay">Self-Pay</option></select></div>
+      <div class="config-row"><label>Procurement Model</label><select id="cfgProcurement"><option value="vbp">Volume-Based Procurement</option><option value="negotiation">National Negotiation</option><option value="direct">Direct Procurement</option></select></div>
     </div>
     <div class="config-card">
-      <h3><span class="icon icon-sm" style="margin-right:6px;color:var(--green)"><svg><use href="#ico-shield"/></svg></span>医保策略</h3>
-      <div class="config-row"><label>目标医保类型</label><select id="cfgInsurance"><option selected>国家医保目录</option><option>地方补充医保</option><option>商业保险</option><option>自费市场</option></select></div>
-      <div class="config-row"><label>预期谈判降幅</label><select id="cfgDiscount"><option>10-20%</option><option selected>20-30%</option><option>30-40%</option><option>40-50%</option></select></div>
-      <div class="config-row"><label>DRG豁免申请</label><select id="cfgDRG"><option>否</option><option selected>是</option></select></div>
-    </div>
-    <div class="config-card">
-      <h3><span class="icon icon-sm" style="margin-right:6px;color:var(--purple)"><svg><use href="#ico-chart"/></svg></span>市场环境</h3>
-      <div class="config-row"><label>竞品数量</label><input type="number" id="cfgCompetitors" value="4"></div>
-      <div class="config-row"><label>目标科室</label><input type="text" id="cfgSpecialties" value="肿瘤科,呼吸科"></div>
-      <div class="config-row"><label>上市时间</label><select id="cfgLaunch"><option>2025Q3</option><option selected>2025Q4</option><option>2026Q1</option><option>2026Q2</option></select></div>
-    </div>
-    <div class="config-card">
-      <h3><span class="icon icon-sm" style="margin-right:6px;color:var(--orange)"><svg><use href="#ico-target"/></svg></span>推广策略</h3>
-      <div class="config-row"><label>学术推广力度</label><select id="cfgPromo"><option>低</option><option>中</option><option selected>高</option></select></div>
-      <div class="config-row"><label>KOL合作</label><select id="cfgKOL"><option>无</option><option selected>区域KOL</option><option>全国KOL</option></select></div>
-      <div class="config-row"><label>渠道覆盖</label><select id="cfgChannel"><option>一线城市</option><option>二线+一线城市</option><option selected>全国覆盖</option></select></div>
+      <h3>Pricing & Strategy</h3>
+      <div class="config-row"><label>Price (CNY/month)</label><input type="number" id="cfgPrice" value="3000" min="100" max="100000"></div>
+      <div class="config-row"><label>Launch Year</label><select id="cfgYear"><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option><option value="2028">2028</option></select></div>
+      <div class="config-row"><label>Marketing Budget ($M)</label><input type="number" id="cfgBudget" value="50" min="1" max="500"></div>
+      <div class="config-row"><label>Sales Force Size</label><input type="number" id="cfgSales" value="200" min="10" max="2000"></div>
     </div>
   </div>
-  <button class="sim-btn" onclick="runSimulation()"><span class="icon icon-sm" style="margin-right:6px"><svg><use href="#ico-rocket"/></svg></span>启动1801 Agent仿真</button>
+  
+  <button class="sim-btn" onclick="runSimulation()">Launch 1801-Agent Simulation</button>
 </div>
 
-<!-- PAGE 3: RESULTS -->
-<div class="page" id="page-results">
-  <h1><span class="icon icon-lg" style="margin-right:8px;color:var(--cyan)"><svg><use href="#ico-trending"/></svg></span>仿真结果</h1>
-  <p class="desc" id="resultDrugDesc">基于1801个Agent的多维度社交仿真</p>
-  <div class="results-summary" id="resultsSummary"></div>
-  <h2><span class="icon icon-md" style="margin-right:6px;color:var(--purple)"><svg><use href="#ico-dna"/></svg></span>7维专家评估</h2>
-  <p class="desc">点击任意维度查看详细画像</p>
-  <div class="expert-row" id="expertRow"></div>
-  <div style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(139,92,246,.08));border:1px solid var(--border);border-radius:16px;margin:1.5rem 0" id="compScore"></div>
-  <h2 style="margin-top:2rem"><span class="icon icon-md" style="margin-right:6px;color:var(--green)"><svg><use href="#ico-users"/></svg></span>1000用户Agent意见分布</h2>
-  <div class="cluster-row" id="clusterRow"></div>
-  <h2 style="margin-top:2rem"><span class="icon icon-md" style="margin-right:6px;color:var(--orange)"><svg><use href="#ico-trending"/></svg></span>24个月市场预测</h2>
-  <div class="chart-box"><canvas id="chartC" width="1200" height="320" style="width:100%"></canvas></div>
+<!-- PAGE: RESULTS -->
+<div id="page-results" class="page">
+  <h2 class="section-title">Simulation Results</h2>
+  <p id="resultDrugDesc" class="desc">Run a simulation to see results.</p>
+  
+  <div id="resultsSummary" class="results-summary"></div>
+  
+  <h3 style="font-size:1.1rem;margin-bottom:.5rem">7-Dimensional Expert Evaluation</h3>
+  
+  <div class="config-grid" style="margin-bottom:1rem">
+    <div class="chart-box" style="margin:0">
+      <h3 style="font-size:.95rem;margin-bottom:.5rem;text-align:center">7-Dimension Radar</h3>
+      <canvas id="radarChart" width="400" height="350"></canvas>
+    </div>
+    <div class="chart-box" style="margin:0">
+      <h3 style="font-size:.95rem;margin-bottom:.5rem;text-align:center">Dimension Breakdown</h3>
+      <canvas id="barChart" width="400" height="350"></canvas>
+    </div>
+  </div>
+  
+  <div id="expertRow" class="expert-row"></div>
+  
+  <div class="config-grid" style="margin-top:1.5rem">
+    <div class="comp-score" id="compScore"></div>
+    <div>
+      <h3 style="font-size:1rem;margin-bottom:.8rem;text-align:center">Agent Consensus Clusters</h3>
+      <div id="clusterRow" class="cluster-row"></div>
+    </div>
+  </div>
+  
+  <div class="chart-box">
+    <h3 style="font-size:1rem;margin-bottom:.8rem">24-Month Prescription Volume Projection</h3>
+    <canvas id="chartC" width="800" height="300"></canvas>
+  </div>
 </div>
 
-<!-- PAGE 4: AGENTS -->
-<div class="page" id="page-agents">
-  <h1><span class="icon icon-lg" style="margin-right:8px;color:var(--purple)"><svg><use href="#ico-eye"/></svg></span>Agent画像探索</h1>
-  <p class="desc">点击任意光点查看该Agent的完整背景、观点和立场</p>
+<!-- PAGE: AGENTS -->
+<div id="page-agents" class="page">
+  <h2 class="section-title">Agent Social Network</h2>
+  <p class="desc">1801 AI agents (800 doctors, 800 patients, 201 experts) connected via Watts-Strogatz social network. Hover to inspect, click for details.</p>
+  
   <div class="particle-wrap">
     <canvas id="pCanvas"></canvas>
-    <div class="p-hint"><span class="icon icon-sm" style="margin-right:4px"><svg><use href="#ico-eye"/></svg></span>点击任意Agent光点查看画像</div>
+    <div class="p-hint">Hover over agents to inspect / Click for detailed profile</div>
     <div class="p-legend">
-      <span><span class="dot" style="background:#10b981"></span>积极采纳</span>
-      <span><span class="dot" style="background:#f59e0b"></span>谨慎观望</span>
-      <span><span class="dot" style="background:#ef4444"></span>怀疑犹豫</span>
-      <span><span class="dot" style="background:#3b82f6"></span>医生Agent</span>
-      <span><span class="dot" style="background:var(--purple)"></span>专家Agent</span>
+      <span><span class="dot" style="background:#3b82f6"></span>Doctors (800)</span>
+      <span><span class="dot" style="background:#10b981"></span>Patients (800)</span>
+      <span><span class="dot" style="background:#f59e0b"></span>Cautious</span>
+      <span><span class="dot" style="background:#ef4444"></span>Skeptics</span>
+      <span><span class="dot" style="background:#8b5cf6"></span>Experts (201)</span>
     </div>
   </div>
 </div>
 
-<div class="page" id="page-pricing">
-  <div class="pricing-header">
-    <h1>Simple, Transparent Pricing</h1>
-    <p class="desc" style="margin:0 auto">Start free, scale as you grow. All plans include our core simulation engine.</p>
-  </div>
-  <div class="pricing-grid">
-    <div class="price-card">
-      <div class="price-tier">Free Trial</div>
-      <div class="price-amount">$0</div>
-      <div class="price-desc">Explore PharmaSim with limited simulations</div>
-      <ul class="price-features">
-        <li>3 simulations per month</li>
-        <li>5 FDA drugs access</li>
-        <li>Basic 7-dimension results</li>
-        <li>1 user seat</li>
-        <li class="off">Agent explorer</li>
-        <li class="off">API access</li>
-        <li class="off">Custom drug profiles</li>
-        <li class="off">Priority support</li>
-      </ul>
-      <button class="price-btn" data-creem-plan="free" onclick="go('select')">Start Free</button>
-    </div>
-    <div class="price-card">
-      <div class="price-tier">Professional</div>
-      <div class="price-amount">$199<span>/mo</span></div>
-      <div class="price-desc">For pharma teams doing market analysis</div>
-      <ul class="price-features">
-        <li>50 simulations per month</li>
-        <li>Full FDA drug database</li>
-        <li>7-dimension + sub-dimensions</li>
-        <li>5 user seats</li>
-        <li>Agent profile explorer</li>
-        <li>Export reports (PDF/Excel)</li>
-        <li class="off">API access</li>
-        <li class="off">Custom drug profiles</li>
-      </ul>
-      <button class="price-btn" data-creem-plan="pro">Upgrade to Pro</button>
-    </div>
-    <div class="price-card popular">
-      <div class="price-tier">Enterprise</div>
-      <div class="price-amount">$799<span>/mo</span></div>
-      <div class="price-desc">For organizations with advanced needs</div>
-      <ul class="price-features">
-        <li>Unlimited simulations</li>
-        <li>Full drug database + pipeline</li>
-        <li>All dimensions + custom weights</li>
-        <li>Unlimited seats</li>
-        <li>Full agent network explorer</li>
-        <li>REST API access</li>
-        <li>Custom drug profiles</li>
-        <li>Dedicated account manager</li>
-      </ul>
-      <button class="price-btn" data-creem-plan="enterprise">Contact Sales</button>
-    </div>
-    <div class="price-card">
-      <div class="price-tier">Research</div>
-      <div class="price-amount">$99<span>/mo</span></div>
-      <div class="price-desc">For academic & research institutions</div>
-      <ul class="price-features">
-        <li>30 simulations per month</li>
-        <li>Full FDA drug database</li>
-        <li>All dimensions</li>
-        <li>3 user seats</li>
-        <li>Agent explorer</li>
-        <li>Citation-ready reports</li>
-        <li class="off">API access</li>
-        <li class="off">Custom drug profiles</li>
-      </ul>
-      <button class="price-btn" data-creem-plan="research">Apply for Research</button>
-    </div>
-  </div>
-  <div class="faq">
-    <h2>Frequently Asked Questions</h2>
-    <div class="faq-item"><div class="faq-q">How accurate are the simulations?</div><div class="faq-a">Our multi-agent simulation achieves 95%+ correlation with actual drug launch outcomes across 200+ historical case studies. The 7-dimensional expert panel and Watts-Strogatz social network model capture real-world prescription dynamics including peer influence, insurance negotiation, and market competition effects.</div></div>
-    <div class="faq-item"><div class="faq-q">Can I add custom drugs to the database?</div><div class="faq-a">Enterprise plans include custom drug profile creation. You can add investigational drugs, biosimilars, or pipeline products with custom efficacy parameters, pricing targets, and market positioning data.</div></div>
-    <div class="faq-item"><div class="faq-q">Is the data based on real clinical evidence?</div><div class="faq-a">Yes. Our drug database includes real FDA-approved efficacy data, actual US pricing, and verified China entry status. The simulation parameters are calibrated against published pharmacoeconomic models and real-world evidence studies.</div></div>
-    <div class="faq-item"><div class="faq-q">Do you support markets beyond China?</div><div class="faq-a">Currently we focus on the Chinese pharmaceutical market. Expansion to Japan, EU, and US markets is on our 2026 roadmap. Enterprise customers can request early access to beta market modules.</div></div>
+<!-- SUB-TOOLS SECTION -->
+<div class="page" id="page-tools" style="display:block;max-width:1400px;margin:0 auto;padding:2rem">
+  <h2 class="section-title">Analysis Tools</h2>
+  <p class="desc">Deep-dive analytical tools for pharmaceutical market assessment.</p>
+  <div class="link-grid">
+    <a href="dashboard.html" class="link-card"><div class="lc-icon">Dashboard</div><div class="lc-title">Simulation Dashboard</div><div class="lc-desc">Real-time analytics across all drug simulations with consensus metrics.</div></a>
+    <a href="pipeline.html" class="link-card"><div class="lc-icon">Pipeline</div><div class="lc-title">Drug Pipeline Tracker</div><div class="lc-desc">Track drugs from Phase I through approval with success rate analytics.</div></a>
+    <a href="calculator.html" class="link-card"><div class="lc-icon">Calculator</div><div class="lc-title">Lifecycle Cost Calculator</div><div class="lc-desc">Estimate total development costs from discovery to commercialization.</div></a>
+    <a href="compare.html" class="link-card"><div class="lc-icon">Compare</div><div class="lc-title">Drug Comparison</div><div class="lc-desc">Side-by-side comparison across all 7 scoring dimensions with radar charts.</div></a>
+    <a href="api.html" class="link-card"><div class="lc-icon">API</div><div class="lc-title">API Documentation</div><div class="lc-desc">RESTful JSON endpoints for drug data, scores, agents, and pipeline analytics.</div></a>
+    <a href="demo.html" class="link-card"><div class="lc-icon">Demo</div><div class="lc-title">Interactive Demo</div><div class="lc-desc">Run quick market simulations with Chart.js visualizations.</div></a>
   </div>
 </div>
 
 <!-- MODAL -->
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal"><button class="mx" onclick="closeModal()">✕</button><div class="modal-head" id="mHead"></div><div class="modal-body" id="mBody"></div></div>
+<div id="modalBg" class="modal-bg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="mx" onclick="closeModal()">&times;</button>
+    <div class="modal-head" id="mHead"></div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
 </div>
 
-<!-- PANEL -->
-<div class="panel" id="panel"><button class="px" onclick="closePanel()">✕</button><div class="panel-head" id="pHead"></div><div class="panel-body" id="pBody"></div></div>
+<!-- SIDE PANEL -->
+<div id="panel" class="panel">
+  <button class="px" onclick="closePanel()">&times;</button>
+  <div class="panel-head" id="pHead"></div>
+  <div class="panel-body" id="pBody"></div>
+</div>
 
-
+<!-- FOOTER -->
 <footer>
-  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;text-align:left;margin-bottom:2rem">
-    <div>
-      <div style="font-size:1.2rem;font-weight:700;margin-bottom:.5rem;color:var(--text)"><span class="icon icon-sm" style="margin-right:4px"><svg><use href="#ico-pill"/></svg></span>PharmaSim</div>
-      <p style="font-size:.85rem;line-height:1.7;max-width:300px;color:var(--dim)">AI-powered pharmaceutical market simulation platform. Predict drug launch success with unprecedented accuracy.</p>
-    </div>
-    <div>
-      <div style="font-weight:600;margin-bottom:.8rem;color:var(--text)">Product</div>
-      <div style="font-size:.85rem;line-height:2.2"><a href="#" onclick="go('select');return false">Drug Library</a><br><a href="#" onclick="go('agents');return false">Agent Explorer</a><br><a href="#" onclick="go('pricing');return false">Pricing</a></div>
-    </div>
-    <div>
-      <div style="font-weight:600;margin-bottom:.8rem;color:var(--text)">Company</div>
-      <div style="font-size:.85rem;line-height:2.2"><a href="#">About</a><br><a href="#">Blog</a><br><a href="#">Careers</a></div>
-    </div>
-    <div>
-      <div style="font-weight:600;margin-bottom:.8rem;color:var(--text)">Legal</div>
-      <div style="font-size:.85rem;line-height:2.2"><a href="#">Privacy Policy</a><br><a href="#">Terms of Service</a><br><a href="#">Security</a></div>
-    </div>
-  </div>
-  <div style="border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;font-size:.82rem">
-    <span>© 2026 PharmaSim. All rights reserved.</span>
-    <span><a href="https://github.com/MoKangMedical/PharmaSim">GitHub</a> · <a href="#">Documentation</a> · <a href="#">API</a></span>
+  <p style="margin-bottom:.5rem">&copy; 2025 .. PharmaSim v3.2</p>
+  <div>
+    <a href="about.html">About</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://github.com/./PharmaSim">GitHub</a>
+    <a href="https://mokangmedical.github.io/opc-homepage/">OPC Ecosystem</a>
   </div>
 </footer>
 
 <script src="app.js"></script>
-<script src="creem-integration.js"></script>
 <script>
-// Real data loader — replaces hardcoded DRUGS with database exports
-var CATEGORIES=[];var selectedDrug=null,currentCat='全部';
-function initDrugPage(){
-  CATEGORIES=[...new Set(window.DRUGS.map(function(d){return d.cat}))];
-  var f=document.getElementById("catFilters");
-  f.innerHTML="<button class="active" onclick="filterCat('\u5168\u90e8',this)">\u5168\u90e8 ("+DRUGS.length+")</button>";
-  CATEGORIES.forEach(function(c){var n=DRUGS.filter(function(d){return d.cat===c}).length;f.innerHTML+="<button onclick="filterCat('"+c+"',this)">"+c+" ("+n+")</button>"});
+// SPA state - must be declared before app.js uses them
+var selectedDrug = null;
+var currentCat = '全部';
+
+// Initialize drug library after data loads
+loadData(function() {
+  buildFilters();
   renderDrugs();
+  updateDrugCount();
+});
+
+function buildFilters() {
+  var cats = {};
+  DRUGS.forEach(function(d) { cats[d.cat] = (cats[d.cat]||0)+1; });
+  var html = '<button class="active" onclick="filterCat(\'全部\',this)">全部 (' + DRUGS.length + ')</button>';
+  Object.keys(cats).sort().forEach(function(c) {
+    var safeName = c.replace(/'/g, "\\'");
+    html += '<button onclick="filterCat(\'' + safeName + '\',this)">' + c + ' (' + cats[c] + ')</button>';
+  });
+  document.getElementById('drugFilters').innerHTML = html;
 }
-// Load real data from JSON exports, then initialize
-loadData(function(){ initDrugPage(); });
+
+function updateDrugCount() {
+  var visible = document.querySelectorAll('.drug-card').length;
+  document.getElementById('drugCount').textContent = visible + ' drugs';
+}
+
+// Monkey-patch renderDrugs to also update count
+var _origRenderDrugs = typeof renderDrugs === 'function' ? renderDrugs : null;
+if (_origRenderDrugs) {
+  var _patchedRenderDrugs = function() {
+    _origRenderDrugs();
+    setTimeout(updateDrugCount, 50);
+  };
+  renderDrugs = _patchedRenderDrugs;
+}
+
+// Override filterCat to use '全部' as default
+var _origFilterCat = typeof filterCat === 'function' ? filterCat : null;
+filterCat = function(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.drug-filters button').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  renderDrugs();
+};
+
+// ═══ RADAR & BAR CHART RENDERING ═══
+var _radarChart = null, _barChart = null;
+
+var _origGenerateResults = typeof generateResults === 'function' ? generateResults : null;
+if (_origGenerateResults) {
+  generateResults = function() {
+    _origGenerateResults();
+    // Draw charts after results are generated
+    setTimeout(drawDimensionCharts, 100);
+  };
+}
+
+function drawDimensionCharts() {
+  if (!window._dims || !window._dims.length) return;
+  var dims = window._dims;
+  var labels = dims.map(function(d){ return d.name; });
+  var scores = dims.map(function(d){ return d.score; });
+  var colors = dims.map(function(d){ return d.color; });
+  
+  // Radar Chart
+  var radarEl = document.getElementById('radarChart');
+  if (radarEl && typeof Chart !== 'undefined') {
+    if (_radarChart) _radarChart.destroy();
+    _radarChart = new Chart(radarEl.getContext('2d'), {
+      type: 'radar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Dimension Score',
+          data: scores,
+          backgroundColor: 'rgba(6,182,212,0.15)',
+          borderColor: '#06b6d4',
+          borderWidth: 2,
+          pointBackgroundColor: colors,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          pointRadius: 5,
+          pointHoverRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 1,
+            ticks: { 
+              color: '#64748b', 
+              backdropColor: 'transparent',
+              font: { family: 'Inter', size: 10 },
+              stepSize: 0.2
+            },
+            grid: { color: 'rgba(51,65,85,0.4)' },
+            angleLines: { color: 'rgba(51,65,85,0.4)' },
+            pointLabels: { 
+              color: '#e2e8f0', 
+              font: { family: 'Inter', size: 12, weight: '600' }
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.label + ': ' + ctx.raw.toFixed(3);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Bar Chart (horizontal)
+  var barEl = document.getElementById('barChart');
+  if (barEl && typeof Chart !== 'undefined') {
+    if (_barChart) _barChart.destroy();
+    _barChart = new Chart(barEl.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Score',
+          data: scores,
+          backgroundColor: colors.map(function(c){ return c + '99'; }),
+          borderColor: colors,
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          x: {
+            beginAtZero: true, max: 1,
+            ticks: { color: '#64748b', font: { family: 'Inter', size: 10 } },
+            grid: { color: 'rgba(51,65,85,0.3)' }
+          },
+          y: {
+            ticks: { color: '#e2e8f0', font: { family: 'Inter', size: 11, weight: '600' } },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.label + ': ' + ctx.raw.toFixed(3);
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+
+// ═══ SIMULATION HISTORY (localStorage) ═══
+var HISTORY_KEY = 'pharmasim_history';
+var MAX_HISTORY = 20;
+
+function saveToHistory(result) {
+  var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  history.unshift({
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    drug: result.drug,
+    score: result.score,
+    recommendation: result.recommendation,
+    dims: result.dims.map(function(d){ return {name:d.name, score:d.score}; }),
+    config: result.config
+  });
+  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function getHistory() {
+  return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+}
+
+// ═══ REPORT EXPORT ═══
+function exportReport(format) {
+  if (!window._dims || !selectedDrug) {
+    alert('Please run a simulation first.');
+    return;
+  }
+  var dims = window._dims;
+  var avg = dims.reduce(function(s,x){return s+x.score},0)/dims.length;
+  var d = selectedDrug;
+  
+  if (format === 'json') {
+    var report = {
+      title: 'PharmaSim Simulation Report',
+      generated: new Date().toISOString(),
+      drug: { name: d.name, generic: d.generic, company: d.company, category: d.cat, mechanism: d.mechanism },
+      compositeScore: avg.toFixed(4),
+      recommendation: avg > 0.65 ? 'Recommended' : avg > 0.50 ? 'Conditional' : 'Not Recommended',
+      dimensions: dims.map(function(dim) {
+        return {
+          name: dim.name, score: dim.score.toFixed(4),
+          subDimensions: dim.sub.map(function(s) { return { name: s.n, score: s.s.toFixed(4), notes: s.items.join('; ') }; })
+        };
+      }),
+      config: { market: 'China', competitors: (document.getElementById('cfgCompetitors')||{}).value||'4', price: (document.getElementById('cfgPrice')||{}).value||'N/A' }
+    };
+    var blob = new Blob([JSON.stringify(report, null, 2)], {type:'application/json'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'pharmasim-' + d.name.replace(/\s+/g,'-') + '-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click(); URL.revokeObjectURL(a.href);
+    saveToHistory({drug:d.name, score:avg, recommendation:report.recommendation, dims:dims, config:report.config});
+  } else if (format === 'csv') {
+    var csv = 'Dimension,Score\n';
+    dims.forEach(function(dim) {
+      csv += '"' + dim.name + '",' + dim.score.toFixed(4) + '\n';
+      dim.sub.forEach(function(s) { csv += '"  ' + s.n + '",' + s.s.toFixed(4) + '\n'; });
+    });
+    var blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'pharmasim-' + d.name.replace(/\s+/g,'-') + '-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+    saveToHistory({drug:d.name, score:avg, recommendation:'Exported', dims:dims, config:{}});
+  }
+}
+
+// Add export buttons when results are shown
+var _origGo2 = go;
+go = function(page) {
+  _origGo2(page);
+  if (page === 'results' && window._dims) setTimeout(addExportButtons, 150);
+};
+
+function addExportButtons() {
+  if (document.getElementById('exportBtns')) return;
+  var div = document.createElement('div');
+  div.id = 'exportBtns';
+  div.style.cssText = 'display:flex;gap:.8rem;margin:1rem 0;flex-wrap:wrap';
+  var bs = 'padding:.55rem 1.1rem;border-radius:10px;border:1px solid rgba(51,65,85,.8);background:rgba(30,41,59,.6);color:#e2e8f0;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:Inter,sans-serif';
+  [['Export JSON',function(){exportReport('json')}],['Export CSV',function(){exportReport('csv')}]].forEach(function(b){
+    var btn = document.createElement('button');
+    btn.textContent = b[0]; btn.style.cssText = bs;
+    btn.onmouseenter = function(){this.style.borderColor='#06b6d4';this.style.color='#06b6d4'};
+    btn.onmouseleave = function(){this.style.borderColor='rgba(51,65,85,.8)';this.style.color='#e2e8f0'};
+    btn.onclick = b[1]; div.appendChild(btn);
+  });
+  var summary = document.getElementById('resultsSummary');
+  if (summary && summary.parentNode) summary.parentNode.insertBefore(div, summary.nextSibling);
+}
 </script>
 </body>
 </html>
