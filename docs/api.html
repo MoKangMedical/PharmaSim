@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaSim API Documentation</title>
+<meta name="description" content="PharmaSim API documentation — access drug data, simulation scores, agent networks, and pipeline analytics via RESTful JSON endpoints.">
+    <meta property="og:title" content="PharmaSim API Documentation">
+    <meta property="og:description" content="RESTful JSON endpoints for drug data, simulation scores, agent networks, and pipeline analytics.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mokangmedical.github.io/PharmaSim/api.html">
+    <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c18;--bg2:#0c1124;--card:#111827;--card2:#1a2332;--text:#f1f5f9;--text2:#e2e8f0;--dim:#94a3b8;--dim2:#64748b;--border:#1e293b;--border2:#334155;--indigo:#6366f1;--indigo2:#818cf8;--cyan:#06b6d4;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;--shadow:0 4px 30px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text2);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--indigo2);text-decoration:none;transition:color .2s}
+a:hover{color:var(--cyan)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,12,24,.95);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(30,41,59,.5);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.2rem;color:var(--text)}
+.nav-brand svg{width:28px;height:28px}
+.nav-links{display:flex;gap:.3rem}
+.nav-links a{padding:.4rem .9rem;border-radius:8px;font-size:.83rem;font-weight:500;color:var(--dim);transition:all .25s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-links a.active{color:var(--indigo2);background:rgba(99,102,241,.1)}
+.nav-cta{padding:.45rem 1.2rem;border-radius:8px;font-size:.83rem;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--indigo),#8b5cf6);border:none;cursor:pointer;transition:all .25s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(99,102,241,.3)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:110}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* PAGE HERO */
+.page-hero{padding:7rem 2rem 3rem;text-align:center;position:relative}
+.page-hero h1{font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.03em;margin-bottom:.8rem;background:linear-gradient(135deg,#fff,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-hero p{color:var(--dim);max-width:600px;margin:0 auto;font-size:1.05rem;line-height:1.7}
+
+/* CONTENT */
+.content{max-width:960px;margin:0 auto;padding:0 2rem 4rem}
+
+/* ENDPOINT CARD */
+.endpoint{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:1.5rem;overflow:hidden;transition:all .3s}
+.endpoint:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px);box-shadow:var(--shadow)}
+.endpoint-header{display:flex;align-items:center;gap:1rem;padding:1.5rem 2rem;cursor:pointer;user-select:none}
+.method{padding:.25rem .7rem;border-radius:6px;font-size:.75rem;font-weight:700;font-family:'JetBrains Mono',monospace;text-transform:uppercase;min-width:52px;text-align:center}
+.method.get{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+.method.post{background:rgba(99,102,241,.12);color:var(--indigo2);border:1px solid rgba(99,102,241,.25)}
+.endpoint-url{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--text);font-weight:500}
+.endpoint-desc{margin-left:auto;color:var(--dim);font-size:.85rem;text-align:right}
+.endpoint-body{display:none;padding:0 2rem 1.5rem;border-top:1px solid var(--border)}
+.endpoint-body.open{display:block}
+.endpoint-body h4{font-size:.85rem;font-weight:600;color:var(--text);margin:1rem 0 .5rem}
+.endpoint-body p{font-size:.88rem;color:var(--dim);line-height:1.7}
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--cyan);overflow-x:auto;margin:.8rem 0;line-height:1.8;white-space:pre}
+.code-block .key{color:var(--indigo2)}
+.code-block .str{color:var(--green)}
+.code-block .num{color:var(--amber)}
+.param-table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.85rem}
+.param-table th{text-align:left;padding:.5rem .8rem;border-bottom:1px solid var(--border);color:var(--dim);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.param-table td{padding:.5rem .8rem;border-bottom:1px solid rgba(30,41,59,.3);color:var(--text2)}
+.param-table td:first-child{font-family:'JetBrains Mono',monospace;color:var(--indigo2);font-size:.82rem}
+.tag{display:inline-block;padding:.15rem .5rem;border-radius:6px;font-size:.7rem;font-weight:600;margin-right:.3rem}
+.tag-json{background:rgba(6,182,212,.1);color:var(--cyan);border:1px solid rgba(6,182,212,.2)}
+.tag-array{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.tag-free{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+
+/* OVERVIEW BOX */
+.overview-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:3rem}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem;margin-top:1.5rem}
+.ov-item{text-align:center;padding:1rem;border-radius:12px;background:rgba(99,102,241,.04);border:1px solid rgba(99,102,241,.1)}
+.ov-num{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--indigo),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ov-label{font-size:.82rem;color:var(--dim);margin-top:.2rem}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
+footer p{font-size:.83rem;color:var(--dim2)}
+footer a{color:var(--dim)}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  nav{padding:0 1.2rem}
+  .nav-links.open{display:flex;flex-direction:column;position:fixed;top:60px;left:0;right:0;background:rgba(8,12,24,.98);backdrop-filter:blur(20px);padding:1rem;border-bottom:1px solid var(--border);gap:.2rem;z-index:99}
+  .nav-links.open a{padding:.75rem 1rem;border-radius:10px;font-size:.95rem}
+}
+@media(max-width:600px){
+  nav{padding:0 1rem;height:56px}
+  .nav-brand{font-size:1.05rem}
+  .nav-brand svg{width:24px;height:24px}
+  .nav-cta{padding:.4rem .9rem;font-size:.78rem}
+  .page-hero{padding:5rem 1rem 2rem}
+  .page-hero h1{font-size:1.8rem}
+  .page-hero p{font-size:.92rem}
+  .content{padding:0 1rem 3rem}
+  .overview-box{padding:1.5rem}
+  .overview-grid{grid-template-columns:1fr 1fr;gap:1rem}
+  .ov-num{font-size:1.5rem}
+  .endpoint-header{padding:1rem 1.2rem;flex-wrap:wrap;gap:.5rem}
+  .endpoint-url{font-size:.8rem}
+  .endpoint-desc{margin-left:0;text-align:left;width:100%;font-size:.8rem}
+  .endpoint-body{padding:0 1.2rem 1.2rem}
+  .code-block{font-size:.72rem;padding:.8rem}
+  .param-table{font-size:.78rem}
+  footer{padding:2rem 1rem}
+  footer p{font-size:.78rem}
+}
+@media(max-width:380px){
+  .overview-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body style="padding-top:56px!important"><nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:700;font-size:15px">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="url(#ng1)" stroke-width="2.5"/><path d="M10 16h12M16 10v12" stroke="url(#ng1)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="ng1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs></svg>
+    <span style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">PharmaSim — Pharmaceutical Market Simulation</span>
+  </a>
+  <div style="display:flex;gap:6px;align-items:center">
+    <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">生态首页</a>
+    <a href="https://github.com/PharmaSim — Pharmaceutical Market Simulation" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">GitHub</a>
+    <a href="https://mokangmedical.github.io/opc-alliance/" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">OPC Hub</a>
+  </div>
+</nav>
+
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none"><rect x="2" y="2" width="24" height="24" rx="6" fill="url(#g1)"/><path d="M9 10h10M9 14h10M9 18h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="g1" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs></svg>
+    PharmaSim
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="calculator.html">Calculator</a>
+    <a href="compare.html">Compare</a>
+    <a href="api.html" class="active">API</a>
+    <a href="about.html">About</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Launch App</a>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<section class="page-hero">
+  <h1>API Documentation</h1>
+  <p>Access PharmaSim simulation data through our RESTful JSON endpoints. All endpoints are publicly available, require no authentication, and return structured JSON data.</p>
+</section>
+
+<div class="content">
+
+  <!-- OVERVIEW -->
+  <div class="overview-box">
+    <h2 style="font-size:1.2rem;font-weight:700;color:var(--text)">API Overview</h2>
+    <p style="color:var(--dim);font-size:.9rem;margin-top:.3rem">Base URL: <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace">https://pharmasim.pages.dev/api/</code></p>
+    <div class="overview-grid">
+      <div class="ov-item"><div class="ov-num">9</div><div class="ov-label">Endpoints</div></div>
+      <div class="ov-item"><div class="ov-num">14</div><div class="ov-label">Drugs Indexed</div></div>
+      <div class="ov-item"><div class="ov-num">1,800</div><div class="ov-label">AI Agents</div></div>
+      <div class="ov-item"><div class="ov-num">28</div><div class="ov-label">Sub-dimensions</div></div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 1: drugs -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/drugs.json</span>
+      <span class="endpoint-desc">All drug profiles with scores &amp; metadata</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Returns the complete list of 14 approved drugs in the simulation database. Each entry includes drug name, generic name, Chinese name, company, therapeutic area, indication, approval status, NMPA ID, and associated simulation scores.</p>
+      <h4>Response Fields</h4>
+      <table class="param-table">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td>id</td><td><span class="tag tag-json">number</span></td><td>Unique drug identifier</td></tr>
+        <tr><td>name</td><td><span class="tag tag-json">string</span></td><td>Brand name</td></tr>
+        <tr><td>generic_name</td><td><span class="tag tag-json">string</span></td><td>INN generic name</td></tr>
+        <tr><td>chinese_name</td><td><span class="tag tag-json">string</span></td><td>Chinese drug name</td></tr>
+        <tr><td>therapeutic_area</td><td><span class="tag tag-json">string</span></td><td>Category (e.g., oncology, metabolism)</td></tr>
+        <tr><td>indication</td><td><span class="tag tag-json">string</span></td><td>Primary approved indication</td></tr>
+        <tr><td>company</td><td><span class="tag tag-json">string</span></td><td>Manufacturer / sponsor</td></tr>
+      </table>
+      <h4>Example Response</h4>
+      <div class="code-block">[
+  {
+    <span class="key">"id"</span>: <span class="num">1</span>,
+    <span class="key">"name"</span>: <span class="str">"Keytruda"</span>,
+    <span class="key">"generic_name"</span>: <span class="str">"pembrolizumab"</span>,
+    <span class="key">"chinese_name"</span>: <span class="str">"帕博利珠单抗"</span>,
+    <span class="key">"therapeutic_area"</span>: <span class="str">"肿瘤/免疫"</span>,
+    <span class="key">"indication"</span>: <span class="str">"非小细胞肺癌"</span>
+  },
+  ...
+]</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 2: scores -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/scores.json</span>
+      <span class="endpoint-desc">Dimension-level scores for every drug</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Returns detailed scoring data across all 7 dimensions (and 28 sub-dimensions) for each simulated drug. Includes composite scores, dimension weights, and agent consensus metrics.</p>
+      <h4>Response Structure</h4>
+      <div class="code-block">[
+  {
+    <span class="key">"drug_id"</span>: <span class="num">1</span>,
+    <span class="key">"composite_score"</span>: <span class="num">0.691</span>,
+    <span class="key">"dimensions"</span>: {
+      <span class="key">"epidemiology"</span>: <span class="num">0.72</span>,
+      <span class="key">"clinical"</span>: <span class="num">0.81</span>,
+      <span class="key">"market"</span>: <span class="num">0.65</span>,
+      <span class="key">"pricing"</span>: <span class="num">0.58</span>,
+      <span class="key">"pharmacology"</span>: <span class="num">0.73</span>,
+      <span class="key">"pharmacoeconomics"</span>: <span class="num">0.61</span>,
+      <span class="key">"insurance"</span>: <span class="num">0.67</span>
+    }
+  },
+  ...
+]</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 3: summary -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/summary.json</span>
+      <span class="endpoint-desc">High-level simulation summary &amp; rankings</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Provides an aggregated summary of all simulation runs. Includes total drug count, average scores, top-performing drugs by composite score, recommendation distribution (approve / conditional / reject), and therapeutic area breakdowns.</p>
+      <h4>Key Fields</h4>
+      <div class="code-block">{
+  <span class="key">"total_drugs"</span>: <span class="num">14</span>,
+  <span class="key">"avg_composite_score"</span>: <span class="num">0.633</span>,
+  <span class="key">"recommendations"</span>: {
+    <span class="key">"approve"</span>: <span class="num">6</span>,
+    <span class="key">"conditional"</span>: <span class="num">5</span>,
+    <span class="key">"reject"</span>: <span class="num">3</span>
+  },
+  <span class="key">"top_score"</span>: <span class="num">0.704</span>,
+  <span class="key">"simulation_count"</span>: <span class="num">2847</span>
+}</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 4: agents -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/agents.json</span>
+      <span class="endpoint-desc">AI agent network definitions &amp; attributes</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Returns metadata about the 1,800 AI agent network: 400 doctor agents, 1,000 patient agents, and 400 expert agents. Each agent has attributes including specialty, region, influence score, and network connectivity.</p>
+      <h4>Response Structure</h4>
+      <div class="code-block">{
+  <span class="key">"total_agents"</span>: <span class="num">1800</span>,
+  <span class="key">"types"</span>: {
+    <span class="key">"doctors"</span>: <span class="num">400</span>,
+    <span class="key">"patients"</span>: <span class="num">1000</span>,
+    <span class="key">"experts"</span>: <span class="num">400</span>
+  },
+  <span class="key">"network_model"</span>: <span class="str">"Watts-Strogatz"</span>,
+  <span class="key">"avg_connections"</span>: <span class="num">8.3</span>
+}</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 5: connections -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/connections.json</span>
+      <span class="endpoint-desc">Agent network edge list &amp; graph topology</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Full edge list for the Watts-Strogatz small-world network connecting all 1,800 agents. Used for information diffusion modeling and visualization in the Pipeline view.</p>
+      <h4>Response Structure</h4>
+      <div class="code-block">[
+  { <span class="key">"source"</span>: <span class="num">0</span>, <span class="key">"target"</span>: <span class="num">1</span>, <span class="key">"weight"</span>: <span class="num">0.82</span> },
+  { <span class="key">"source"</span>: <span class="num">0</span>, <span class="key">"target"</span>: <span class="num">5</span>, <span class="key">"weight"</span>: <span class="num">0.64</span> },
+  ...
+]</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 6: dimensions -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/dimensions.json</span>
+      <span class="endpoint-desc">7-dimension &amp; 28-subdimension framework</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Complete scoring framework metadata: 7 main dimensions and 28 sub-dimensions with weights, descriptions, and scoring methodology used by the simulation engine.</p>
+      <h4>Dimensions</h4>
+      <table class="param-table">
+        <tr><th>Dimension</th><th>Weight</th><th>Sub-dims</th></tr>
+        <tr><td>Epidemiology</td><td>15%</td><td>4</td></tr>
+        <tr><td>Clinical Evidence</td><td>25%</td><td>5</td></tr>
+        <tr><td>Market Dynamics</td><td>15%</td><td>4</td></tr>
+        <tr><td>Pricing &amp; Access</td><td>15%</td><td>4</td></tr>
+        <tr><td>Pharmacology</td><td>10%</td><td>4</td></tr>
+        <tr><td>Pharmacoeconomics</td><td>10%</td><td>4</td></tr>
+        <tr><td>Insurance Access</td><td>10%</td><td>3</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 7: epidemiology -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/epidemiology.json</span>
+      <span class="endpoint-desc">Disease burden &amp; epidemiological data</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Chinese epidemiological data by disease area: prevalence, incidence, DALY, mortality rates, patient population size, and demographic distributions. Used as input for the epidemiology scoring dimension.</p>
+      <h4>Response Structure</h4>
+      <div class="code-block">[
+  {
+    <span class="key">"disease_area"</span>: <span class="str">"非小细胞肺癌"</span>,
+    <span class="key">"prevalence_cn"</span>: <span class="num">820000</span>,
+    <span class="key">"incidence_per_100k"</span>: <span class="num">57.3</span>,
+    <span class="key">"mortality_rate"</span>: <span class="num">0.46</span>,
+    <span class="key">"dalys_millions"</span>: <span class="num">12.4</span>
+  },
+  ...
+]</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 8: pipeline -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-url">/api/pipeline.json</span>
+      <span class="endpoint-desc">Drug pipeline stages &amp; trial timelines</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Pipeline data for 8 drugs currently in simulation. Includes current phase, trial start/end dates, NDA filing status, estimated approval timeline, and competitive landscape analysis.</p>
+      <h4>Response Structure</h4>
+      <div class="code-block">[
+  {
+    <span class="key">"drug_id"</span>: <span class="num">1</span>,
+    <span class="key">"name"</span>: <span class="str">"Tirzepatide"</span>,
+    <span class="key">"phase"</span>: <span class="str">"Phase 3"</span>,
+    <span class="key">"indication"</span>: <span class="str">"T2D / Obesity"</span>,
+    <span class="key">"est_approval"</span>: <span class="str">"2025-Q4"</span>,
+    <span class="key">"nda_filed"</span>: <span class="num">true</span>
+  },
+  ...
+]</div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT 9: batch query -->
+  <div class="endpoint" onclick="toggleBody(this)">
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="endpoint-url">/api/simulate</span>
+      <span class="endpoint-desc">Run custom simulation (coming soon)</span>
+    </div>
+    <div class="endpoint-body">
+      <h4>Description</h4>
+      <p>Submit custom drug parameters to run a simulation against the 1,800-agent network. Returns predicted composite scores, dimension breakdowns, and recommendation consensus. <strong>Currently in beta — available through the Dashboard UI.</strong></p>
+      <h4>Request Body</h4>
+      <div class="code-block">{
+  <span class="key">"drug_name"</span>: <span class="str">"Custom Drug A"</span>,
+  <span class="key">"therapeutic_area"</span>: <span class="str">"Oncology"</span>,
+  <span class="key">"phase"</span>: <span class="str">"Phase 2"</span>,
+  <span class="key">"params"</span>: {
+    <span class="key">"efficacy_score"</span>: <span class="num">0.8</span>,
+    <span class="key">"safety_profile"</span>: <span class="num">0.75</span>,
+    <span class="key">"price_range"</span>: <span class="str">"high"</span>
+  }
+}</div>
+      <p style="margin-top:1rem"><span class="tag tag-free">Free</span> All simulation endpoints are free to use with no rate limits.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>PharmaSim &mdash; AI Pharmaceutical Simulation Platform &middot; <a href="https://github.com/mokangmedical/PharmaSim">GitHub</a></p>
+</footer>
+
+<script>
+function toggleBody(el){
+  var body=el.querySelector('.endpoint-body');
+  body.classList.toggle('open');
+}
+function toggleNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('active');
+}
+document.addEventListener('click',function(e){
+  var links=document.getElementById('navLinks');
+  var ham=document.getElementById('hamburger');
+  if(links&&ham&&!links.contains(e.target)&&!ham.contains(e.target)){
+    links.classList.remove('open');
+    ham.classList.remove('active');
+  }
+});
+</script>
+<body>
+<script src="shared-nav.js"></script>
+</html>
