@@ -61,21 +61,32 @@ class AgentFactory:
         self.num_agents = num_agents
         random.seed(random_seed)
 
-        # Agent分配 (1000患者Agent + 400医生 + 400专家 + 1医保)
+        # 按比例分配Agent (总数=num_agents)
+        # 基础比例: 医生22%, 患者56%, 各类专家共22%
+        if num_agents < 100:
+            num_agents = 100  # 最低保障
+
+        n_patients = max(10, int(num_agents * 0.56))
+        n_doctors = max(5, int(num_agents * 0.22))
+        n_pharma = max(2, int(num_agents * 0.044))
+        n_epi = max(2, int(num_agents * 0.044))
+        n_heor = max(2, int(num_agents * 0.044))
+        n_ins = max(1, int(num_agents * 0.022))
+        n_clin = max(1, int(num_agents * 0.022))
+        n_price = max(1, int(num_agents * 0.022))
+        n_mkt = max(1, int(num_agents * 0.022))
+
         self.allocation = {
-            "doctors": 400,              # 医生Agent
-            "patients": 1000,            # 1000用户Agent
-            "pharmacology": 80,          # 药物学专家
-            "epidemiology": 80,          # 流行病学专家
-            "pharmacoeconomics": 80,     # 药物经济学专家
-            "insurance": 40,             # 医保专家
-            "clinical": 40,              # 临床专家
-            "pricing": 40,               # 定价专家
-            "market": 40,                # 市场专家
+            "doctors": n_doctors,
+            "patients": n_patients,
+            "pharmacology": n_pharma,
+            "epidemiology": n_epi,
+            "pharmacoeconomics": n_heor,
+            "insurance": n_ins,
+            "clinical": n_clin,
+            "pricing": n_price,
+            "market": n_mkt,
         }
-        # 差额补齐到总数
-        allocated = sum(self.allocation.values())
-        self.allocation["doctors"] += (num_agents - allocated)
         self.allocation["payer"] = 1
 
     def create_all_agents(self) -> dict:
