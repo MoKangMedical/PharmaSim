@@ -104,12 +104,10 @@ class DrugCreate(BaseModel):
 class SimulationRequest(BaseModel):
     drug_id: Optional[str] = None
     drug: Optional[DrugCreate] = None
-    num_doctors: int = 500
-    num_patients: int = 5000
+    num_agents: int = 1800
     simulation_months: int = 24
+    random_seed: int = 42
     regions: List[str] = ["北京", "上海", "广州", "深圳", "成都", "武汉"]
-    include_competitors: bool = True
-    enable_insurance_simulation: bool = True
     agent_reasoning: bool = True
 
 class AgentMessage(BaseModel):
@@ -313,215 +311,68 @@ async def agent_reason(role: str, task: str, context: dict) -> dict:
         return {"success": False, "error": str(e), "role": role}
 
 # ──────────────────────────────────────────────
-# 完整模拟引擎（增强版）
+# 增强模拟引擎（正确对接SimulationEngine）
 # ──────────────────────────────────────────────
-class EnhancedSimulationEngine(SimulationEngine):
-    """增强版模拟引擎 - 带Agent推理和完整输出"""
-    
-    def __init__(self, config, enable_reasoning=True):
-        super().__init__(config)
+class EnhancedSimulationEngine:
+    """增强版模拟引擎 - 调用真实SimulationEngine + 可选LLM推理"""
+
+    def __init__(self, drug: dict, config: SimulationConfig, enable_reasoning: bool = True):
+        self.drug = drug
+        self.sim_config = config
         self.enable_reasoning = enable_reasoning
         self.agent_messages = []
-        self.competitor_actions = []
-        self.regional_results = {}
-    
-    async def run_with_agents(self) -> dict:
-        """带Agent推理的完整模拟"""
-        sim_id = str(uuid.uuid4())[:12]
-        
-        # 1. 市场分析Agent - 分析竞争格局
+
+    async def run(self) -> dict:
+        """运行完整模拟 + 可选LLM Agent推理"""
+        # 1. 先运行核心模拟引擎
+        engine = SimulationEngine(self.sim_config)
+        result = engine.run()
+
+        # 2. 可选: LLM Agent推理增强
         if self.enable_reasoning:
-            market_analysis = await agent_reason("market_analyst", 
-                "分析目标药品的竞争格局和市场机会", {
-                    "drug": self.drug,
-                    "competitors": self.drug.get("competitor_prices", []),
-                })
+            await self._run_llm_analysis(result)
+
+        return result
+
+    async def _run_llm_analysis(self, result: dict):
+        """用LLM为模拟结果生成深度分析"""
+        import asyncio
+        tasks = [
+            ("market_analyst", "分析竞争格局和市场机会", {
+                "drug_name": self.drug.get("name", ""),
+                "summary": result.get("summary", {}),
+                "dimension_results": {k: v.get("avg_score", 0) for k, v in result.get("dimension_results", {}).items()},
+            }),
+            ("clinical_expert", "评估临床价值和处方行为", {
+                "drug_name": self.drug.get("name", ""),
+                "efficacy": self.drug.get("efficacy", {}),
+                "safety": self.drug.get("safety", {}),
+            }),
+            ("health_economist", "评估药物经济学价值和医保准入", {
+                "drug_name": self.drug.get("name", ""),
+                "price": self.drug.get("price", 0),
+                "indication": self.drug.get("indication", ""),
+                "payer_decision": result.get("payer_decision", {}),
+            }),
+            ("orchestrator", "综合所有分析生成最终预测报告", {
+                "drug_name": self.drug.get("name", ""),
+                "summary": result.get("summary", {}),
+                "multidim_summary": result.get("multidim_summary", {}),
+            }),
+        ]
+
+        results_list = await asyncio.gather(*[
+            agent_reason(role, task, ctx) for role, task, ctx in tasks
+        ])
+
+        for r in results_list:
             self.agent_messages.append({
-                "role": "market_analyst",
-                "content": market_analysis.get("reasoning", "市场分析完成"),
+                "role": r.get("role", ""),
+                "content": r.get("reasoning", r.get("error", "分析完成")),
                 "timestamp": datetime.now().isoformat(),
             })
-        
-        # 2. 临床专家Agent - 评估处方行为
-        if self.enable_reasoning:
-            clinical_analysis = await agent_reason("clinical_expert",
-                "评估目标药品在医生群体中的处方意愿和采纳模式", {
-                    "drug": self.drug,
-                    "efficacy": self.drug.get("efficacy", {}),
-                    "safety": self.drug.get("safety", {}),
-                })
-            self.agent_messages.append({
-                "role": "clinical_expert",
-                "content": clinical_analysis.get("reasoning", "临床评估完成"),
-                "timestamp": datetime.now().isoformat(),
-            })
-        
-        # 3. 药物经济学Agent - 医保评估
-        if self.enable_reasoning:
-            heor_analysis = await agent_reason("health_economist",
-                "评估医保准入概率和药物经济学价值", {
-                    "drug": self.drug,
-                    "price": self.drug.get("price", 0),
-                    "indication": self.drug.get("indication", ""),
-                })
-            self.agent_messages.append({
-                "role": "health_economist",
-                "content": heor_analysis.get("reasoning", "药物经济学评估完成"),
-                "timestamp": datetime.now().isoformat(),
-            })
-        
-        # 4. 运行基础模拟
-        self.initialize_agents()
-        
-        # 医保评估
-        payer_decision = self.payer.evaluate_reimbursement(self.drug)
-        insurance_coverage_month = 6
-        
-        # 医生初始评估
-        initial_adopters = set()
-        adopted_doctors = set()
-        
-        for month in range(1, self.config.simulation_months + 1):
-            # 逐月模拟
-            snapshot = self._simulate_month(
-                month=month,
-                adopted_doctors=adopted_doctors,
-                insurance_active=(month >= insurance_coverage_month and payer_decision["will_cover"]),
-                payer_decision=payer_decision,
-            )
-            self.results.append(snapshot)
-            
-            # 模拟竞品行为
-            competitor_action = self._simulate_competitor_response(month, snapshot.market_penetration)
-            if competitor_action:
-                self.competitor_actions.append({
-                    "month": month,
-                    "action": competitor_action,
-                    "market_penetration": snapshot.market_penetration,
-                })
-        
-        # 5. 患者行为Agent - 分析患者采纳
-        if self.enable_reasoning:
-            patient_analysis = await agent_reason("patient_analyst",
-                "分析患者群体的用药决策模式和依从性", {
-                    "drug": self.drug,
-                    "patient_population": len(self.patients),
-                    "reimbursement": payer_decision,
-                })
-            self.agent_messages.append({
-                "role": "patient_analyst",
-                "content": patient_analysis.get("reasoning", "患者行为分析完成"),
-                "timestamp": datetime.now().isoformat(),
-            })
-        
-        # 6. 渠道策略Agent
-        if self.enable_reasoning:
-            channel_analysis = await agent_reason("channel_strategist",
-                "分析药品渠道策略和分销模式", {
-                    "drug": self.drug,
-                    "adoption_rate": self.results[-1].doctor_adoption_rate if self.results else 0,
-                    "regions": self.config.region_focus,
-                })
-            self.agent_messages.append({
-                "role": "channel_strategist",
-                "content": channel_analysis.get("reasoning", "渠道策略分析完成"),
-                "timestamp": datetime.now().isoformat(),
-            })
-        
-        # 7. 政策分析Agent
-        if self.enable_reasoning:
-            regulatory_analysis = await agent_reason("regulatory_analyst",
-                "分析当前医药政策对该药品市场的影响", {
-                    "drug": self.drug,
-                    "indication": self.drug.get("indication_category", ""),
-                    "is_novel": self.drug.get("is_novel_mechanism", False),
-                })
-            self.agent_messages.append({
-                "role": "regulatory_analyst",
-                "content": regulatory_analysis.get("reasoning", "政策分析完成"),
-                "timestamp": datetime.now().isoformat(),
-            })
-        
-        # 8. 模拟编排Agent - 生成最终报告
-        summary = self._generate_summary()
-        if self.enable_reasoning:
-            final_report = await agent_reason("orchestrator",
-                "综合所有Agent分析，生成最终的药品上市预测报告", {
-                    "drug_name": self.drug.get("name", ""),
-                    "summary": summary,
-                    "payer_decision": payer_decision,
-                    "competitor_actions": self.competitor_actions,
-                    "total_agent_analyses": len(self.agent_messages),
-                })
-            self.agent_messages.append({
-                "role": "orchestrator",
-                "content": final_report.get("reasoning", "报告生成完成"),
-                "timestamp": datetime.now().isoformat(),
-            })
-        
-        # 区域分析
-        self.regional_results = self._simulate_regional()
-        
-        return {
-            "id": sim_id,
-            "drug_name": self.drug.get("name", "未知"),
-            "simulation_months": self.config.simulation_months,
-            "monthly_snapshots": [self._snapshot_to_dict(s) for s in self.results],
-            "summary": summary,
-            "payer_decision": payer_decision,
-            "agent_messages": self.agent_messages,
-            "competitor_actions": self.competitor_actions,
-            "regional_results": self.regional_results,
-            "doctor_adoption_curve": self._get_adoption_curve(),
-            "revenue_projection": self._get_revenue_projection(),
-            "config": {
-                "num_doctors": self.config.num_doctors,
-                "num_patients": self.config.num_patients,
-                "random_seed": self.config.random_seed,
-            }
-        }
-    
-    def _simulate_regional(self) -> dict:
-        """区域差异化模拟"""
-        regions = {}
-        region_multipliers = {
-            "北京": {"adoption": 1.2, "price_sensitivity": 0.8, "insurance": 1.1},
-            "上海": {"adoption": 1.15, "price_sensitivity": 0.85, "insurance": 1.05},
-            "广州": {"adoption": 1.1, "price_sensitivity": 0.9, "insurance": 1.0},
-            "深圳": {"adoption": 1.1, "price_sensitivity": 0.9, "insurance": 1.0},
-            "成都": {"adoption": 0.95, "price_sensitivity": 1.1, "insurance": 0.95},
-            "武汉": {"adoption": 0.9, "price_sensitivity": 1.15, "insurance": 0.9},
-        }
-        
-        for region, multipliers in region_multipliers.items():
-            if self.results:
-                final = self.results[-1]
-                regions[region] = {
-                    "adoption_rate": round(final.doctor_adoption_rate * multipliers["adoption"], 4),
-                    "market_penetration": round(final.market_penetration * multipliers["adoption"], 4),
-                    "effective_price": round(self.drug.get("price", 0) * multipliers["price_sensitivity"], 2),
-                    "revenue_share": round(multipliers["adoption"] * multipliers["insurance"] / 6, 4),
-                }
-        return regions
-    
-    def _get_adoption_curve(self) -> list:
-        """医生采纳曲线"""
-        return [{"month": s.month, "rate": s.doctor_adoption_rate, "cumulative": s.cumulative_prescribers} 
-                for s in self.results]
-    
-    def _get_revenue_projection(self) -> dict:
-        """收入预测"""
-        if not self.results:
-            return {}
-        y1 = sum(s.revenue for s in self.results[:12])
-        y2 = sum(s.revenue for s in self.results[12:24]) if len(self.results) >= 24 else 0
-        y3 = int(y2 * 1.15) if y2 > 0 else 0  # 第三年增长15%
-        y4 = int(y2 * 1.25) if y2 > 0 else 0
-        y5 = int(y2 * 1.30) if y2 > 0 else 0
-        return {
-            "year1": y1, "year2": y2, "year3": y3, "year4": y4, "year5": y5,
-            "total_5yr": y1 + y2 + y3 + y4 + y5,
-        }
+
+        result["agent_messages"] = self.agent_messages
 
 # ──────────────────────────────────────────────
 # FastAPI App
@@ -616,7 +467,7 @@ async def create_drug(drug: DrugCreate):
 async def create_simulation(req: SimulationRequest):
     """创建并运行模拟"""
     sim_id = str(uuid.uuid4())[:12]
-    
+
     # 获取药品数据
     if req.drug_id:
         conn = get_db()
@@ -629,21 +480,27 @@ async def create_simulation(req: SimulationRequest):
         drug_data = req.drug.model_dump()
     else:
         raise HTTPException(400, "需要提供drug_id或drug数据")
-    
-    # 构建模拟配置
+
+    # 构建模拟配置 (匹配SimulationEngine的真实接口)
     config = SimulationConfig(
         drug=drug_data,
-        num_doctors=req.num_doctors,
-        num_patients=req.num_patients,
+        num_agents=req.num_agents,
         simulation_months=req.simulation_months,
-        random_seed=42,
+        random_seed=req.random_seed,
         region_focus=req.regions,
     )
-    
+
     # 运行增强模拟
-    engine = EnhancedSimulationEngine(config, enable_reasoning=req.agent_reasoning)
-    result = await engine.run_with_agents()
-    
+    engine = EnhancedSimulationEngine(
+        drug=drug_data,
+        config=config,
+        enable_reasoning=req.agent_reasoning,
+    )
+    result = await engine.run()
+
+    # 添加sim_id
+    result["id"] = sim_id
+
     # 保存结果
     conn = get_db()
     conn.execute(
@@ -661,7 +518,7 @@ async def create_simulation(req: SimulationRequest):
         )
     conn.commit()
     conn.close()
-    
+
     return result
 
 @app.get("/api/simulations")
@@ -711,12 +568,19 @@ async def list_agents():
 
 # 挂载前端静态文件
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "frontend")
+ASSETS_DIR = os.path.join(FRONTEND_DIR, "assets")
+
+os.makedirs(ASSETS_DIR, exist_ok=True)
+
 if os.path.exists(FRONTEND_DIR):
-    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
-    
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
+
     @app.get("/")
     async def serve_frontend():
-        return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+        index_path = os.path.join(FRONTEND_DIR, "index.html")
+        if os.path.exists(index_path) and os.path.getsize(index_path) > 0:
+            return FileResponse(index_path)
+        return JSONResponse({"message": "PharmaSim API is running. Frontend not yet built.", "docs": "/docs"})
 
 if __name__ == "__main__":
     import uvicorn

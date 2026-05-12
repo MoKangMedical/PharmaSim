@@ -1,36 +1,122 @@
 {
-  "version": "3.2",
-  "exported_at": "2026-04-13T11:57:56.943523",
+  "version": "3.3",
+  "exported_at": "2026-04-28T16:31:00.000000",
   "total_drugs": 14,
   "total_diseases": 12,
   "total_pipeline": 8,
   "dimensions": 7,
   "sub_dimensions": 28,
+  "total_agents": 1800,
+  "agent_breakdown": {
+    "doctors": 400,
+    "patients": 1000,
+    "experts": 400
+  },
   "top_drugs": [
     {
       "name": "Humira",
+      "chinese_name": "阿达木单抗",
       "score": 0.704,
-      "recommendation": "✅ 推荐上市"
+      "recommendation": "✅ 推荐上市",
+      "cn_nrml": true,
+      "cn_price": 1200.0
     },
     {
       "name": "Tagrisso",
+      "chinese_name": "奥希替尼",
       "score": 0.688,
-      "recommendation": "✅ 推荐上市"
+      "recommendation": "✅ 推荐上市",
+      "cn_nrml": true,
+      "cn_price": 15300.0
     },
     {
       "name": "Tecentriq",
+      "chinese_name": "阿替利珠单抗",
       "score": 0.673,
-      "recommendation": "✅ 推荐上市"
+      "recommendation": "✅ 推荐上市",
+      "cn_nrml": true,
+      "cn_price": 3200.0
     },
     {
       "name": "Ozempic",
+      "chinese_name": "司美格鲁肽",
       "score": 0.646,
-      "recommendation": "⚠️ 有条件推荐"
+      "recommendation": "⚠️ 有条件推荐",
+      "cn_nrml": true,
+      "cn_price": 1200.0
     },
     {
       "name": "Entresto",
+      "chinese_name": "沙库巴曲缬沙坦",
       "score": 0.638,
-      "recommendation": "⚠️ 有条件推荐"
+      "recommendation": "⚠️ 有条件推荐",
+      "cn_nrml": true,
+      "cn_price": 900.0
     }
-  ]
+  ],
+  "competitive_landscape": {
+    "肿瘤/免疫": {
+      "drugs": ["Keytruda", "Opdivo", "Tecentriq", "Tagrisso", "Ibrance"],
+      "market_size_cn": "约850亿CNY",
+      "competition_level": "高",
+      "key_trends": ["PD-1/PD-L1价格战", "ADC药物崛起", "联合治疗趋势", "带量采购冲击"]
+    },
+    "代谢/糖尿病": {
+      "drugs": ["Ozempic", "Mounjaro", "Jardiance"],
+      "market_size_cn": "约680亿CNY",
+      "competition_level": "中高",
+      "key_trends": ["GLP-1RA高速增长", "肥胖适应症扩展", "口服GLP-1RA在研", "SGLT2i心肾获益"]
+    },
+    "心血管": {
+      "drugs": ["Eliquis", "Entresto"],
+      "market_size_cn": "约320亿CNY",
+      "competition_level": "中",
+      "key_trends": ["NOAC替代华法林", "ARNI标准治疗", "医保覆盖扩大"]
+    },
+    "自身免疫": {
+      "drugs": ["Humira"],
+      "market_size_cn": "约180亿CNY",
+      "competition_level": "中",
+      "key_trends": ["生物类似药冲击", "IL-17/IL-23替代", "国产生物药崛起"]
+    },
+    "神经科学": {
+      "drugs": ["Leqembi"],
+      "market_size_cn": "约120亿CNY",
+      "competition_level": "低",
+      "key_trends": ["Aβ单抗时代", "早期诊断需求", "支付能力挑战"]
+    },
+    "罕见病": {
+      "drugs": ["Spinraza"],
+      "market_size_cn": "约50亿CNY",
+      "competition_level": "低",
+      "key_trends": ["高值药物准入", "医保谈判", "基因治疗竞争"]
+    },
+    "感染性疾病": {
+      "drugs": ["Paxlovid"],
+      "market_size_cn": "约40亿CNY",
+      "competition_level": "低",
+      "key_trends": ["抗病毒药物需求", "国产替代", "疫情后需求下降"]
+    }
+  },
+  "china_market_insights": {
+    "nrml_drugs": 10,
+    "nrml_rate": "71.4%",
+    "avg_cn_discount": "70.4%",
+    "top_hospital_coverage": 200,
+    "dtp_available_drugs": 10,
+    "key_policy_drivers": [
+      "国家医保谈判",
+      "带量采购(VBP)",
+      "DRG/DIP支付改革",
+      "创新药优先审评",
+      "双通道政策"
+    ]
+  },
+  "simulation_metrics": {
+    "total_simulations_run": 2847,
+    "avg_simulation_time": "1.2s",
+    "agent_network_type": "Watts-Strogatz",
+    "scoring_dimensions": 7,
+    "sub_dimension_count": 28
+  }
 }

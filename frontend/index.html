@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaSim - AI Drug Launch Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0f1a;--bg2:#111827;--bg3:#16213e;--accent:#e94560;--accent2:#ff6b81;--text:#e0e0e0;--text2:#94a3b8;--border:#1e293b;--success:#10b981;--warn:#f59e0b;--info:#3b82f6}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;height:60px;background:#0d1117;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:1000;backdrop-filter:blur(12px)}
+.nav-logo{font-family:'Space Grotesk';font-size:20px;font-weight:700;color:var(--accent);margin-right:40px;cursor:pointer;letter-spacing:-0.5px}
+.nav-logo span{color:var(--text);font-weight:400;font-size:14px;margin-left:8px}
+.nav-items{display:flex;gap:4px}
+.nav-item{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;border:none;background:none}
+.nav-item:hover{color:var(--text);background:rgba(233,69,96,0.08)}
+.nav-item.active{color:var(--accent);background:rgba(233,69,96,0.12)}
+
+/* MAIN */
+.main{margin-top:60px;padding:32px 40px;max-width:1400px;margin-left:auto;margin-right:auto}
+.page{display:none}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .25s}
+.card:hover{border-color:rgba(233,69,96,0.3);box-shadow:0 0 20px rgba(233,69,96,0.06)}
+
+/* DRUG GRID */
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:24px}
+.drug-card{position:relative;overflow:hidden}
+.drug-card .badge{position:absolute;top:16px;right:16px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-肿瘤{background:rgba(233,69,96,0.15);color:var(--accent)}
+.badge-代谢{background:rgba(16,185,129,0.15);color:var(--success)}
+.badge-感染{background:rgba(59,130,246,0.15);color:var(--info)}
+.badge-血液肿瘤{background:rgba(168,85,247,0.15);color:#a855f7}
+.badge-罕见病{background:rgba(245,158,11,0.15);color:var(--warn)}
+.drug-name{font-size:17px;font-weight:600;margin-bottom:4px}
+.drug-company{font-size:13px;color:var(--text2);margin-bottom:12px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.drug-meta .tag{padding:3px 10px;background:var(--bg3);border-radius:6px;font-size:12px;color:var(--text2)}
+.drug-price{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:16px}
+.drug-price .unit{font-size:13px;font-weight:400;color:var(--text2)}
+.drug-efficacy{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.eff-item{background:var(--bg);border-radius:8px;padding:8px 12px}
+.eff-label{font-size:11px;color:var(--text2)}
+.eff-value{font-size:16px;font-weight:600}
+.btn-select{width:100%;padding:10px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-select:hover{background:var(--accent);color:#fff}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:13px;cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* CONFIG PAGE */
+.config-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.config-section{margin-bottom:24px}
+.config-section h3{font-size:16px;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+.config-section h3 svg{width:18px;height:18px;color:var(--accent)}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px}
+.form-input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:Inter;outline:none;transition:border .2s}
+.form-input:focus{border-color:var(--accent)}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--bg3);border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer}
+.range-val{display:inline-block;min-width:50px;text-align:right;font-weight:600;color:var(--accent);font-size:15px}
+.region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.region-check{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:8px;cursor:pointer;border:1px solid var(--border);transition:all .2s}
+.region-check:hover{border-color:var(--accent)}
+.region-check.selected{border-color:var(--accent);background:rgba(233,69,96,0.08)}
+.region-check input{accent-color:var(--accent)}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);border-radius:8px}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .slider{position:absolute;inset:0;background:var(--bg3);border-radius:12px;transition:.3s}
+.toggle .slider::before{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.3s}
+.toggle input:checked+.slider{background:var(--accent)}
+.toggle input:checked+.slider::before{transform:translateX(20px)}
+.btn-run{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Space Grotesk'}
+.btn-run:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-run:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+/* RESULTS PAGE */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.metric-card{text-align:center;padding:20px}
+.metric-value{font-size:28px;font-weight:700;font-family:'Space Grotesk'}
+.metric-value.green{color:var(--success)}
+.metric-value.red{color:var(--accent)}
+.metric-value.blue{color:var(--info)}
+.metric-value.yellow{color:var(--warn)}
+.metric-label{font-size:13px;color:var(--text2);margin-top:4px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.chart-box{padding:20px}
+.chart-box h3{font-size:15px;margin-bottom:16px}
+canvas{width:100%!important;border-radius:8px}
+
+/* AGENT PAGE */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-top:24px}
+.agent-card{cursor:pointer}
+.agent-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.agent-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.agent-icon.market{background:rgba(59,130,246,0.15)}
+.agent-icon.clinical{background:rgba(16,185,129,0.15)}
+.agent-icon.health{background:rgba(245,158,11,0.15)}
+.agent-icon.patient{background:rgba(168,85,247,0.15)}
+.agent-icon.channel{background:rgba(233,69,96,0.15)}
+.agent-icon.regulatory{background:rgba(6,182,212,0.15)}
+.agent-icon.calibrator{background:rgba(107,114,128,0.15)}
+.agent-icon.orchestrator{background:rgba(233,69,96,0.2)}
+.agent-name{font-weight:600;font-size:15px}
+.agent-desc{font-size:13px;color:var(--text2);line-height:1.6}
+.agent-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.agent-card.expanded .agent-detail{display:block}
+.agent-role{padding:8px 12px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text2);margin-top:8px}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(10,15,26,0.92);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column}
+.loading-overlay.active{display:flex}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{margin-top:16px;font-size:15px;color:var(--text2)}
+.loading-sub{margin-top:8px;font-size:13px;color:var(--text2);opacity:0.6}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty svg{width:64px;height:64px;margin-bottom:16px;opacity:0.3}
+.empty h3{font-size:18px;margin-bottom:8px;color:var(--text)}
+.empty p{font-size:14px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:14px;z-index:3000;transform:translateY(80px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:var(--success)}
+.toast.error{border-color:var(--accent)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+.main{padding:20px 16px}
+.config-layout,.chart-row{grid-template-columns:1fr}
+.metrics-grid{grid-template-columns:repeat(2,1fr)}
+.drug-grid{grid-template-columns:1fr}
+.region-grid{grid-template-columns:repeat(2,1fr)}
+.nav{padding:0 12px}
+.nav-logo span{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo" onclick="navigate('drugs')">PharmaSim<span>v2.0</span></div>
+  <div class="nav-items">
+    <button class="nav-item active" data-page="drugs" onclick="navigate('drugs')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z"/><path d="M12 8v8m-4-4h8"/></svg>
+      药品选择
+    </button>
+    <button class="nav-item" data-page="config" onclick="navigate('config')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      市场配置
+    </button>
+    <button class="nav-item" data-page="results" onclick="navigate('results')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M18 20V10m-6 10V4M6 20v-6"/></svg>
+      仿真结果
+    </button>
+    <button class="nav-item" data-page="agents" onclick="navigate('agents')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/></svg>
+      Agent探索
+    </button>
+  </div>
+</nav>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">正在运行1000+ Agent仿真...</div>
+  <div class="loading-sub" id="loadingSub">多维度专家评估 | 社交网络协商 | 月度市场仿真</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PAGE: DRUGS -->
+<div class="main">
+<div class="page active" id="page-drugs">
+  <h2 style="font-size:24px;margin-bottom:4px">药品选择</h2>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:20px">选择目标药品进行上市表现仿真模拟</p>
+  <div class="filters" id="categoryFilters"></div>
+  <div class="drug-grid" id="drugGrid"></div>
+</div>
+
+<!-- PAGE: CONFIG -->
+<div class="page" id="page-config">
+  <h2 style="font-size:24px;margin-bottom:4px">市场配置</h2>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:20px">设定仿真参数，启动多Agent模拟</p>
+  <div id="selectedDrugBanner" style="display:none" class="card" style="margin-bottom:24px"></div>
+  <div class="config-layout">
+    <div>
+      <div class="config-section">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10m-6 10V4M18 20v-4"/></svg>
+          模拟参数
+        </h3>
+        <div class="form-group">
+          <label class="form-label">Agent数量 <span class="range-val" id="agentCountVal">1800</span></label>
+          <input type="range" id="agentCount" min="100" max="2000" step="100" value="1800" oninput="document.getElementById('agentCountVal').textContent=this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">模拟月数 <span class="range-val" id="monthsVal">24</span></label>
+          <input type="range" id="simMonths" min="6" max="60" step="6" value="24" oninput="document.getElementById('monthsVal').textContent=this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">随机种子</label>
+          <input type="number" class="form-input" id="randomSeed" value="42">
+        </div>
+        <div class="toggle-wrap" style="margin-top:16px">
+          <div>
+            <div style="font-size:14px;font-weight:500">LLM推理增强</div>
+            <div style="font-size:12px;color:var(--text2)">启用AI Agent深度分析（较慢）</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="enableLLM"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="config-section">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          目标区域
+        </h3>
+        <div class="region-grid" id="regionGrid"></div>
+      </div>
+      <button class="btn-run" id="btnRun" onclick="runSimulation()" style="margin-top:16px">
+        启动仿真模拟
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: RESULTS -->
+<div class="page" id="page-results">
+  <div id="resultsContent">
+    <div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10m-6 10V4M6 20v-6"/></svg>
+      <h3>暂无仿真结果</h3>
+      <p>请先选择药品并运行仿真模拟</p>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: AGENTS -->
+<div class="page" id="page-agents">
+  <h2 style="font-size:24px;margin-bottom:4px">Agent探索</h2>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:20px">了解PharmaSim的8类专业Agent及其决策逻辑</p>
+  <div class="agent-grid" id="agentGrid"></div>
+</div>
+</div>
+
+<script>
+// ========== STATE ==========
+const S = {
+  drugs: [],
+  agents: [],
+  selectedDrug: null,
+  simResult: null,
+  config: { num_agents: 1800, simulation_months: 24, random_seed: 42, regions: ['北京','上海','广州','深圳','成都','武汉'], agent_reasoning: false },
+  currentFilter: 'all'
+};
+
+const REGIONS = ['北京','上海','广州','深圳','成都','武汉','杭州','南京','重庆','天津','西安','长沙'];
+
+const AGENT_ICONS = {
+  market_analyst: { cls:'market', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M18 20V10m-6 10V4M6 20v-6"/></svg>' },
+  clinical_expert: { cls:'clinical', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>' },
+  health_economist: { cls:'health', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-3-9h6a2 2 0 010 4h-6m0 0h5a2 2 0 010 4H9"/></svg>' },
+  patient_analyst: { cls:'patient', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+  channel_strategist: { cls:'channel', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e94560" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>' },
+  regulatory_analyst: { cls:'regulatory', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8m8 4H8m2-8H8"/></svg>' },
+  calibrator: { cls:'calibrator', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9H21a2 2 0 010 4h-.09"/></svg>' },
+  orchestrator: { cls:'orchestrator', svg:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e94560" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>' }
+};
+
+const AGENT_DETAILS = {
+  market_analyst: { role: '分析竞争格局、市场规模、定价策略和渠道结构', logic: '基于历史市场份额数据、竞品定价和市场集中度，使用S-curve模型预测市场渗透率' },
+  clinical_expert: { role: '评估临床疗效、安全性和医生处方意愿', logic: '对比关键临床终点(OS/PFS/ORR)，评估NNT/NNH，分析指南推荐级别' },
+  health_economist: { role: '分析药物经济学价值和医保准入概率', logic: '计算ICER/QALY，对比预算影响，评估医保谈判价格区间' },
+  patient_analyst: { role: '模拟患者就医路径和用药决策', logic: '基于疾病认知、经济能力、信息渠道等因素建模患者行为' },
+  channel_strategist: { role: '分析医院/药房/电商渠道布局策略', logic: '评估DTP药房覆盖率、双通道政策、互联网医院渗透率' },
+  regulatory_analyst: { role: '分析DRG/DIP、集采和监管政策影响', logic: '监测政策动态，评估集采风险、医保目录调整和适应症扩展' },
+  calibrator: { role: '基于真实世界数据校准模拟参数', logic: '使用NHANES/SEER/医院HIS数据拟合模型参数，确保仿真可信度' },
+  orchestrator: { role: '协调多Agent协作，生成最终预测报告', logic: '加权汇总7维评估，综合社交网络协商结果，输出Go/No-Go建议' }
+};
+
+// ========== API ==========
+async function api(path, opts) {
+  const r = await fetch('/api' + path, { headers: {'Content-Type':'application/json'}, ...opts });
+  if (!r.ok) throw new Error(`API ${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+// ========== NAV ==========
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+  window.location.hash = page;
+  if (page === 'results' && S.simResult) renderResults();
+}
+
+// ========== DRUGS PAGE ==========
+async function loadDrugs() {
+  try {
+    const data = await api('/drugs');
+    S.drugs = data.drugs || [];
+    renderFilters();
+    renderDrugs();
+  } catch (e) {
+    document.getElementById('drugGrid').innerHTML = '<div class="empty"><h3>加载失败</h3><p>'+e.message+'</p></div>';
+  }
+}
+
+function renderFilters() {
+  const cats = ['all', ...new Set(S.drugs.map(d => d.indication_category).filter(Boolean))];
+  const labels = { all:'全部', '肿瘤':'肿瘤', '代谢':'代谢', '感染':'感染', '血液肿瘤':'血液肿瘤', '罕见病':'罕见病' };
+  document.getElementById('categoryFilters').innerHTML = cats.map(c =>
+    `<button class="filter-btn ${c===S.currentFilter?'active':''}" onclick="filterDrugs('${c}')">${labels[c]||c}</button>`
+  ).join('');
+}
+
+function filterDrugs(cat) {
+  S.currentFilter = cat;
+  renderFilters();
+  renderDrugs();
+}
+
+function renderDrugs() {
+  const filtered = S.currentFilter === 'all' ? S.drugs : S.drugs.filter(d => d.indication_category === S.currentFilter);
+  if (!filtered.length) {
+    document.getElementById('drugGrid').innerHTML = '<div class="empty"><h3>暂无药品</h3><p>该分类下没有药品数据</p></div>';
+    return;
+  }
+  document.getElementById('drugGrid').innerHTML = filtered.map(d => {
+    const data = d.data || {};
+    const eff = data.efficacy || {};
+    const effHtml = Object.entries(eff).slice(0,4).map(([k,v]) => {
+      const labels = {orr:'ORR', pfs_months:'PFS', os_months:'OS', hba1c_reduction:'HbA1c', weight_loss_kg:'减重', viral_clearance_days:'病毒清除', motor_improvement:'运动改善'};
+      return `<div class="eff-item"><div class="eff-label">${labels[k]||k}</div><div class="eff-value">${v}${typeof v==='number'&&!String(v).includes('%')&&(k.includes('months')||k.includes('days'))?'月':''}</div></div>`;
+    }).join('');
+    return `<div class="card drug-card">
+      <span class="badge badge-${d.indication_category||''}">${d.indication_category||''}</span>
+      <div class="drug-name">${d.name}</div>
+      <div class="drug-company">${d.company||''} | ${d.generic_name||''}</div>
+      <div class="drug-meta">
+        <span class="tag">${d.mechanism||''}</span>
+        <span class="tag">${d.phase||''}</span>
+        <span class="tag">${d.indication||''}</span>
+      </div>
+      <div class="drug-price">${d.price ? '¥'+Number(d.price).toLocaleString() : '--'} <span class="unit">/疗程</span></div>
+      <div class="drug-efficacy">${effHtml}</div>
+      <button class="btn-select" onclick="selectDrug('${d.id}')">选择并配置仿真</button>
+    </div>`;
+  }).join('');
+}
+
+function selectDrug(id) {
+  S.selectedDrug = S.drugs.find(d => d.id === id);
+  if (!S.selectedDrug) return;
+  toast('已选择: ' + S.selectedDrug.name, 'success');
+  navigate('config');
+  renderSelectedDrugBanner();
+}
+
+// ========== CONFIG PAGE ==========
+function renderSelectedDrugBanner() {
+  const el = document.getElementById('selectedDrugBanner');
+  if (!S.selectedDrug) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  const d = S.selectedDrug;
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="width:4px;height:48px;background:var(--accent);border-radius:2px"></div>
+      <div style="flex:1">
+        <div style="font-size:16px;font-weight:600">${d.name}</div>
+        <div style="font-size:13px;color:var(--text2)">${d.company} | ${d.mechanism} | ${d.indication}</div>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:var(--accent)">${d.price ? '¥'+Number(d.price).toLocaleString() : '--'}</div>
+    </div>`;
+}
+
+function initRegions() {
+  document.getElementById('regionGrid').innerHTML = REGIONS.map(r =>
+    `<label class="region-check ${S.config.regions.includes(r)?'selected':''}">
+      <input type="checkbox" ${S.config.regions.includes(r)?'checked':''} onchange="toggleRegion('${r}',this.checked)">
+      ${r}
+    </label>`
+  ).join('');
+}
+
+function toggleRegion(r, checked) {
+  if (checked) { if (!S.config.regions.includes(r)) S.config.regions.push(r); }
+  else { S.config.regions = S.config.regions.filter(x => x !== r); }
+  initRegions();
+}
+
+async function runSimulation() {
+  if (!S.selectedDrug) { toast('请先选择药品', 'error'); navigate('drugs'); return; }
+  S.config.num_agents = parseInt(document.getElementById('agentCount').value);
+  S.config.simulation_months = parseInt(document.getElementById('simMonths').value);
+  S.config.random_seed = parseInt(document.getElementById('randomSeed').value);
+  S.config.agent_reasoning = document.getElementById('enableLLM').checked;
+
+  const btn = document.getElementById('btnRun');
+  btn.disabled = true; btn.textContent = '仿真运行中...';
+  showLoading(true);
+
+  try {
+    const result = await api('/simulations', {
+      method: 'POST',
+      body: JSON.stringify({
+        drug_id: S.selectedDrug.id,
+        num_agents: S.config.num_agents,
+        simulation_months: S.config.simulation_months,
+        random_seed: S.config.random_seed,
+        regions: S.config.regions,
+        agent_reasoning: S.config.agent_reasoning
+      })
+    });
+    S.simResult = result;
+    sessionStorage.setItem('pharmasim_result', JSON.stringify(result));
+    toast('仿真完成!', 'success');
+    navigate('results');
+  } catch (e) {
+    toast('仿真失败: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '启动仿真模拟';
+    showLoading(false);
+  }
+}
+
+function showLoading(show) {
+  document.getElementById('loadingOverlay').classList.toggle('active', show);
+}
+
+// ========== RESULTS PAGE ==========
+function renderResults() {
+  const r = S.simResult;
+  if (!r) return;
+  const s = r.summary || {};
+  const md = r.multidim_summary || {};
+  const pd = r.payer_decision || {};
+  const dr = r.dimension_results || {};
+  const ds = r.deliberation_summary || {};
+
+  // Overall score
+  const overall = md['综合评估']?.overall_score || 0;
+  const recommendation = md['综合评估']?.recommendation || '--';
+  const recColor = overall > 0.65 ? 'green' : overall > 0.5 ? 'yellow' : 'red';
+
+  // Revenue
+  const y1 = s.year1_revenue || 0;
+  const y2 = s.year2_revenue || 0;
+  const totalRev = s.total_revenue || 0;
+
+  let html = `
+    <h2 style="font-size:24px;margin-bottom:4px">仿真结果</h2>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:24px">${r.drug_name} | ${r.simulation_months}个月 | ${r.num_agents?.total||'--'}个Agent</p>
+    <div class="metrics-grid">
+      <div class="card metric-card">
+        <div class="metric-value ${recColor}">${(overall*100).toFixed(1)}%</div>
+        <div class="metric-label">综合评分 - ${recommendation}</div>
+      </div>
+      <div class="card metric-card">
+        <div class="metric-value ${pd.will_cover?'green':'red'}">${pd.will_cover?'通过':'未通过'}</div>
+        <div class="metric-label">医保准入 ${pd.negotiation_price ? '(谈判价: ¥'+Number(pd.negotiation_price).toLocaleString()+')' : ''}</div>
+      </div>
+      <div class="card metric-card">
+        <div class="metric-value blue">${formatMoney(totalRev)}</div>
+        <div class="metric-label">累计收入 (Y1+Y2)</div>
+      </div>
+      <div class="card metric-card">
+        <div class="metric-value yellow">${(s.final_adoption_rate*100).toFixed(1)}%</div>
+        <div class="metric-label">医生采纳率</div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="card chart-box">
+        <h3>7维专家评估</h3>
+        <canvas id="radarChart" width="400" height="400"></canvas>
+      </div>
+      <div class="card chart-box">
+        <h3>月度趋势</h3>
+        <canvas id="lineChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="card" style="padding:20px">
+        <h3 style="margin-bottom:16px">社交网络协商</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px">
+            <div style="font-size:20px;font-weight:700;color:var(--info)">${ds.num_rounds||0}</div>
+            <div style="font-size:12px;color:var(--text2)">协商轮次</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px">
+            <div style="font-size:20px;font-weight:700;color:${ds.convergence_achieved?'var(--success)':'var(--accent)'}">${ds.convergence_achieved?'已收敛':'未收敛'}</div>
+            <div style="font-size:12px;color:var(--text2)">收敛状态</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px">
+            <div style="font-size:20px;font-weight:700;color:var(--warn)">${((ds.final_avg_willingness||0)*100).toFixed(1)}%</div>
+            <div style="font-size:12px;color:var(--text2)">平均意愿</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--text2)">
+          意愿分布: 积极 ${((ds.willingness_distribution?.high||0)*100).toFixed(1)}% | 中立 ${((ds.willingness_distribution?.medium||0)*100).toFixed(1)}% | 怀疑 ${((ds.willingness_distribution?.low||0)*100).toFixed(1)}%
+        </div>
+      </div>
+      <div class="card" style="padding:20px">
+        <h3 style="margin-bottom:16px">医保决策</h3>
+        <div style="font-size:14px;line-height:2">
+          <div>准入结果: <strong style="color:${pd.will_cover?'var(--success)':'var(--accent)'}">${pd.will_cover?'通过':'未通过'}</strong></div>
+          <div>谈判价格: <strong>${pd.negotiation_price?'¥'+Number(pd.negotiation_price).toLocaleString():'--'}</strong></div>
+          <div>报销比例: <strong>${pd.reimbursement_ratio?pd.reimbursement_ratio*100+'%':'--'}</strong></div>
+          <div>限制条件: <strong>${pd.restrictions||'无'}</strong></div>
+          <div>置信度: <strong>${pd.confidence?(pd.confidence*100).toFixed(0)+'%':'--'}</strong></div>
+        </div>
+      </div>
+    </div>`;
+
+  // Agent messages
+  const msgs = r.agent_messages || [];
+  if (msgs.length) {
+    html += `<div class="card" style="padding:20px;margin-bottom:24px">
+      <h3 style="margin-bottom:16px">AI Agent分析报告</h3>
+      ${msgs.map(m => `
+        <div style="padding:12px;background:var(--bg);border-radius:8px;margin-bottom:8px;border-left:3px solid var(--accent)">
+          <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px">${m.role}</div>
+          <div style="font-size:13px;line-height:1.6;color:var(--text2)">${m.content?.substring(0,500)}${m.content?.length>500?'...':''}</div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  html += `<div style="text-align:center;margin-top:24px">
+    <button class="btn-run" style="max-width:300px" onclick="navigate('drugs')">开始新仿真</button>
+  </div>`;
+
+  document.getElementById('resultsContent').innerHTML = html;
+
+  // Draw charts
+  setTimeout(() => {
+    drawRadarChart(dr);
+    drawLineChart(r.monthly_snapshots || []);
+  }, 100);
+}
+
+function formatMoney(v) {
+  if (!v) return '--';
+  if (v >= 1e8) return (v/1e8).toFixed(1) + '亿';
+  if (v >= 1e4) return (v/1e4).toFixed(0) + '万';
+  return '¥' + v.toLocaleString();
+}
+
+// ========== CHARTS ==========
+function drawRadarChart(dimResults) {
+  const canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = 400, H = 400;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  ctx.scale(dpr, dpr);
+
+  const dims = ['药物学评估','流行病学评估','药物经济学评估','医保评估','临床评估','定价评估','市场评估'];
+  const scores = dims.map(d => dimResults[d]?.avg_score || 0);
+  const cx = W/2, cy = H/2, R = 150;
+  const n = dims.length;
+  const angleStep = (Math.PI * 2) / n;
+
+  // Grid
+  for (let level = 1; level <= 5; level++) {
+    const r = R * level / 5;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const a = -Math.PI/2 + i * angleStep;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axes
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.stroke();
+  }
+
+  // Data polygon
+  ctx.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const idx = i % n;
+    const a = -Math.PI/2 + idx * angleStep;
+    const r = R * scores[idx];
+    const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.fillStyle = 'rgba(233,69,96,0.2)';
+  ctx.fill();
+  ctx.strokeStyle = '#e94560';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Dots
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    const r = R * scores[i];
+    ctx.beginPath();
+    ctx.arc(cx + r * Math.cos(a), cy + r * Math.sin(a), 4, 0, Math.PI*2);
+    ctx.fillStyle = '#e94560';
+    ctx.fill();
+  }
+
+  // Labels
+  ctx.font = '12px Inter';
+  ctx.fillStyle = '#94a3b8';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    const lx = cx + (R+25) * Math.cos(a), ly = cy + (R+25) * Math.sin(a);
+    ctx.fillText(dims[i], lx, ly);
+    ctx.fillStyle = '#e94560';
+    ctx.font = 'bold 12px Inter';
+    ctx.fillText((scores[i]*100).toFixed(0)+'%', lx, ly+14);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px Inter';
+  }
+}
+
+function drawLineChart(snapshots) {
+  const canvas = document.getElementById('lineChart');
+  if (!canvas || !snapshots.length) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = 400, H = 400;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  ctx.scale(dpr, dpr);
+
+  const pad = {t:30, r:20, b:40, l:60};
+  const w = W-pad.l-pad.r, h = H-pad.t-pad.b;
+
+  const datasets = [
+    { key:'market_penetration', label:'渗透率', color:'#e94560', pct:true },
+    { key:'doctor_adoption_rate', label:'采纳率', color:'#3b82f6', pct:true },
+    { key:'social_willingness', label:'社交意愿', color:'#10b981', pct:true },
+  ];
+
+  // Y axis range
+  const maxVal = 1.0;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.t + h * (1 - i/5);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+w, y); ctx.stroke();
+    ctx.fillStyle = '#64748b'; ctx.font = '11px Inter'; ctx.textAlign = 'right';
+    ctx.fillText((i*20)+'%', pad.l-8, y+4);
+  }
+
+  // X axis
+  const months = snapshots.map(s => s.month);
+  const step = Math.max(1, Math.floor(months.length/6));
+  months.forEach((m, i) => {
+    if (i % step === 0 || i === months.length-1) {
+      const x = pad.l + (i/(months.length-1)) * w;
+      ctx.fillStyle = '#64748b'; ctx.font = '11px Inter'; ctx.textAlign = 'center';
+      ctx.fillText('M'+m, x, H-pad.b+20);
+    }
+  });
+
+  // Lines
+  datasets.forEach(ds => {
+    ctx.beginPath();
+    ctx.strokeStyle = ds.color;
+    ctx.lineWidth = 2;
+    snapshots.forEach((s, i) => {
+      const x = pad.l + (i/(snapshots.length-1)) * w;
+      const val = s[ds.key] || 0;
+      const y = pad.t + h * (1 - val/maxVal);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Area
+    const last = snapshots[snapshots.length-1];
+    const lastX = pad.l + w;
+    ctx.lineTo(lastX, pad.t+h);
+    ctx.lineTo(pad.l, pad.t+h);
+    ctx.closePath();
+    ctx.fillStyle = ds.color.replace(')', ',0.08)').replace('rgb','rgba');
+    ctx.fill();
+  });
+
+  // Legend
+  let lx = pad.l;
+  datasets.forEach(ds => {
+    ctx.fillStyle = ds.color;
+    ctx.fillRect(lx, 8, 12, 12);
+    ctx.fillStyle = '#94a3b8'; ctx.font = '12px Inter'; ctx.textAlign = 'left';
+    ctx.fillText(ds.label, lx+16, 18);
+    lx += 80;
+  });
+}
+
+// ========== AGENTS PAGE ==========
+async function loadAgents() {
+  try {
+    const data = await api('/agents');
+    S.agents = data.agents || [];
+    renderAgents();
+  } catch (e) {
+    document.getElementById('agentGrid').innerHTML = '<div class="empty"><h3>加载失败</h3></div>';
+  }
+}
+
+function renderAgents() {
+  document.getElementById('agentGrid').innerHTML = S.agents.map(a => {
+    const icon = AGENT_ICONS[a.id] || { cls:'calibrator', svg:'' };
+    const detail = AGENT_DETAILS[a.id] || {};
+    return `<div class="card agent-card" onclick="this.classList.toggle('expanded')">
+      <div class="agent-header">
+        <div class="agent-icon ${icon.cls}">${icon.svg}</div>
+        <div>
+          <div class="agent-name">${a.name}</div>
+          <div style="font-size:12px;color:var(--text2)">${a.id}</div>
+        </div>
+      </div>
+      <div class="agent-desc">${a.description}</div>
+      <div class="agent-detail">
+        <div class="agent-role"><strong>角色:</strong> ${detail.role||'--'}</div>
+        <div class="agent-role" style="margin-top:8px"><strong>决策逻辑:</strong> ${detail.logic||'--'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ========== TOAST ==========
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.replace('#','') || 'drugs';
+  navigate(hash);
+  loadDrugs();
+  loadAgents();
+  initRegions();
+
+  // Restore last result
+  const saved = sessionStorage.getItem('pharmasim_result');
+  if (saved) try { S.simResult = JSON.parse(saved); } catch(e) {}
+
+  window.addEventListener('hashchange', () => {
+    const h = window.location.hash.replace('#','') || 'drugs';
+    navigate(h);
+  });
+});
+</script>
+</body>
+</html>

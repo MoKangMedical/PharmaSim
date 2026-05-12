@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mokangmedical.github.io/PharmaSim/</loc><lastmod>2026-04-28</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/dashboard.html</loc><lastmod>2026-04-28</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/pipeline.html</loc><lastmod>2026-04-28</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/calculator.html</loc><lastmod>2026-04-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/compare.html</loc><lastmod>2026-04-28</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/demo.html</loc><lastmod>2026-04-28</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/api.html</loc><lastmod>2026-04-28</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/about.html</loc><lastmod>2026-04-28</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/pricing.html</loc><lastmod>2026-04-28</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mokangmedical.github.io/PharmaSim/contact.html</loc><lastmod>2026-04-28</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+</urlset>

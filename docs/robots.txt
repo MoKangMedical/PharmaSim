@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Sitemap: https://mokangmedical.github.io/PharmaSim/sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
